@@ -27,7 +27,8 @@ import {
   Key,
   Settings2,
   ExternalLink,
-  Check
+  Check,
+  AlertCircle
 } from 'lucide-react';
 
 export const BloomAiModule: React.FC = () => {
@@ -55,6 +56,46 @@ export const BloomAiModule: React.FC = () => {
   const [showApiModal, setShowApiModal] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState(geminiApiKey || '');
   const [keySavedToast, setKeySavedToast] = useState(false);
+  const [isTestingKey, setIsTestingKey] = useState(false);
+  const [testKeyStatus, setTestKeyStatus] = useState<{ success: boolean; message: string } | null>(null);
+
+  const handleTestApiKey = async () => {
+    if (!apiKeyInput.trim()) {
+      setTestKeyStatus({ success: false, message: 'Please enter a Gemini API Key first.' });
+      return;
+    }
+    setIsTestingKey(true);
+    setTestKeyStatus(null);
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'Hello, confirm you are active and working.',
+          apiKey: apiKeyInput.trim(),
+          gestationalWeek: profile.currentGestationalWeek || 24,
+          language: 'en-US'
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.source?.startsWith('gemini-live')) {
+          setTestKeyStatus({ success: true, message: `Connected! Verified with Google ${data.source}.` });
+        } else {
+          setTestKeyStatus({
+            success: true,
+            message: `Response received successfully (${data.source}).`
+          });
+        }
+      } else {
+        setTestKeyStatus({ success: false, message: `Test failed (HTTP ${res.status}). Please check key validity.` });
+      }
+    } catch (e: any) {
+      setTestKeyStatus({ success: false, message: 'Network connection error while testing key.' });
+    } finally {
+      setIsTestingKey(false);
+    }
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -303,7 +344,7 @@ export const BloomAiModule: React.FC = () => {
     });
   };
 
-  const handleFollowUpClick = (question: string) => {
+  const handleFollowUpClick = async (question: string) => {
     if (question.startsWith('Call Dr.') || question.startsWith('Call Doctor')) {
       window.location.href = `tel:${profile.doctorInfo.phone}`;
       return;
@@ -312,7 +353,13 @@ export const BloomAiModule: React.FC = () => {
       window.location.href = `tel:${profile.doctorInfo.emergencyContact.split(' ')[0]}`;
       return;
     }
-    setInputVal(question);
+    setInputVal('');
+    setIsSending(true);
+    try {
+      await sendUserMessage(question, selectedLanguage);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const getLocalizedPrompts = (lang: string): SuggestedPrompt[] => {
@@ -755,6 +802,23 @@ export const BloomAiModule: React.FC = () => {
               </div>
             </div>
 
+            {testKeyStatus && (
+              <div
+                className={`p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in ${
+                  testKeyStatus.success
+                    ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                    : 'bg-rose-50 border border-rose-200 text-rose-800'
+                }`}
+              >
+                {testKeyStatus.success ? (
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                )}
+                <span>{testKeyStatus.message}</span>
+              </div>
+            )}
+
             {keySavedToast && (
               <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 animate-in fade-in">
                 <Check className="w-4 h-4 text-emerald-600" />
@@ -762,34 +826,56 @@ export const BloomAiModule: React.FC = () => {
               </div>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-              {geminiApiKey && (
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={handleTestApiKey}
+                disabled={isTestingKey}
+                className="px-3.5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isTestingKey ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                    <span>Testing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    <span>Test Connection</span>
+                  </>
+                )}
+              </button>
+
+              <div className="flex items-center gap-2">
+                {geminiApiKey && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGeminiApiKey('');
+                      setApiKeyInput('');
+                      setTestKeyStatus(null);
+                      alert('Gemini API Key cleared.');
+                    }}
+                    className="px-3 py-2 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                  >
+                    Clear Key
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
-                    setGeminiApiKey('');
-                    setApiKeyInput('');
-                    alert('Gemini API Key cleared.');
+                    setGeminiApiKey(apiKeyInput.trim());
+                    setKeySavedToast(true);
+                    setTimeout(() => {
+                      setKeySavedToast(false);
+                      setShowApiModal(false);
+                    }, 1200);
                   }}
-                  className="px-3 py-2 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition-colors"
+                  className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
                 >
-                  Clear Key
+                  Save & Connect Live AI
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  setGeminiApiKey(apiKeyInput.trim());
-                  setKeySavedToast(true);
-                  setTimeout(() => {
-                    setKeySavedToast(false);
-                    setShowApiModal(false);
-                  }, 1200);
-                }}
-                className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold transition-all shadow-xs"
-              >
-                Save & Connect Live AI
-              </button>
+              </div>
             </div>
           </div>
         </div>

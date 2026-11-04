@@ -159,6 +159,22 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
     }
   };
 
+  const handleFollowUpClick = async (question: string) => {
+    if (isSending) return;
+    if (isListening) {
+      try { recognitionRef.current?.stop(); } catch (e) {}
+      setIsListening(false);
+    }
+    setInputVal('');
+    setLiveTranscript('');
+    setIsSending(true);
+    try {
+      await sendUserMessage(question, selectedLanguage);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   // Do not show floating bot if user is already on the dedicated Bloom AI tab
   if (propActiveTab === 'bloom-ai') {
     return null;
@@ -339,8 +355,8 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
                         {msg.suggestedFollowUps.map((fu, fidx) => (
                           <button
                             key={fidx}
-                            onClick={() => setInputVal(fu)}
-                            className="text-[10px] px-2 py-0.5 bg-gray-50 hover:bg-primary-soft text-gray-700 hover:text-primary rounded-lg border border-gray-200 transition-colors text-left truncate max-w-full"
+                            onClick={() => handleFollowUpClick(fu)}
+                            className="text-[10px] px-2 py-0.5 bg-gray-50 hover:bg-primary-soft text-gray-700 hover:text-primary rounded-lg border border-gray-200 transition-colors text-left truncate max-w-full cursor-pointer"
                           >
                             {fu}
                           </button>
@@ -367,7 +383,7 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
             {['Week 24 guidance', 'Relieve back pain', 'Safe kicks count', 'Hospital bag'].map((q, idx) => (
               <button
                 key={idx}
-                onClick={() => setInputVal(q)}
+                onClick={() => handleFollowUpClick(q)}
                 className="px-2 py-0.5 rounded-lg bg-gray-100 hover:bg-blush-50 text-gray-600 hover:text-primary shrink-0 transition-colors cursor-pointer"
               >
                 {q}
