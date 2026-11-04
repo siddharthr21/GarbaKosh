@@ -5,7 +5,7 @@ import { useApp } from '@/context/AppContext';
 import {
   PartyPopper,
   Calendar,
-  DollarSign,
+  IndianRupee,
   Users,
   CheckCircle2,
   Circle,
@@ -159,7 +159,7 @@ export const BabyShowerModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-bold mb-1">Total Budget ($)</label>
+              <label className="block text-gray-700 font-bold mb-1">Total Budget (₹)</label>
               <input
                 type="number"
                 min="0"
@@ -171,7 +171,7 @@ export const BabyShowerModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-bold mb-1">Budget Spent ($)</label>
+              <label className="block text-gray-700 font-bold mb-1">Budget Spent (₹)</label>
               <input
                 type="number"
                 min="0"
@@ -224,7 +224,7 @@ export const BabyShowerModule: React.FC = () => {
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1 relative group">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-              <DollarSign className="w-3 h-3" /> {t('Budget Tracker', 'Budget Tracker')}
+              <IndianRupee className="w-3 h-3 text-emerald-600" /> {t('Budget Tracker (₹)', 'Budget Tracker (₹)')}
             </span>
             <button
               onClick={() => setIsEditingDetails(true)}
@@ -234,8 +234,8 @@ export const BabyShowerModule: React.FC = () => {
               Edit
             </button>
           </div>
-          <div className="text-lg font-black text-emerald-700">${babyShower.budgetSpent} / ${babyShower.budgetTotal}</div>
-          <span className="text-[10px] text-emerald-600 font-semibold">${budgetRemaining} {t('Remaining', 'Remaining')}</span>
+          <div className="text-lg font-black text-emerald-700">₹{babyShower.budgetSpent.toLocaleString('en-IN')} / ₹{babyShower.budgetTotal.toLocaleString('en-IN')}</div>
+          <span className="text-[10px] text-emerald-600 font-semibold">₹{budgetRemaining.toLocaleString('en-IN')} {t('Remaining', 'Remaining')}</span>
         </div>
 
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">

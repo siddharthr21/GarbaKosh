@@ -20,10 +20,10 @@ import {
   Bot,
   User,
   ShieldCheck,
-  PhoneCall,
   CheckCircle,
   HelpCircle,
-  FileText
+  Radio,
+  Loader2
 } from 'lucide-react';
 
 export const BloomAiModule: React.FC = () => {
@@ -40,10 +40,12 @@ export const BloomAiModule: React.FC = () => {
 
   const [inputVal, setInputVal] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [liveTranscript, setLiveTranscript] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'Pregnancy' | 'Labour' | 'Newborn' | 'Postpartum'>('All');
   const [isSending, setIsSending] = useState(false);
+  const [micErrorNotice, setMicErrorNotice] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -51,29 +53,56 @@ export const BloomAiModule: React.FC = () => {
   // Auto-scroll chat to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages]);
+  }, [chatMessages, isSending]);
 
-  // Speech Recognition (Speech-to-Text)
+  // Speech Recognition (Speech-to-Text) Listener
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition =
-        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (typeof window === 'undefined') return;
 
-      if (SpeechRecognition) {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      try {
         const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
+        recognition.continuous = true;
+        recognition.interimResults = true;
         recognition.lang = selectedLanguage;
 
-        recognition.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          if (transcript) {
-            setInputVal(prev => (prev ? `${prev} ${transcript}` : transcript));
-          }
-          setIsListening(false);
+        recognition.onstart = () => {
+          setIsListening(true);
+          setMicErrorNotice(null);
         };
 
-        recognition.onerror = () => {
+        recognition.onresult = (event: any) => {
+          let interim = '';
+          let finalized = '';
+
+          for (let i = 0; i < event.results.length; ++i) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalized += transcript + ' ';
+            } else {
+              interim += transcript;
+            }
+          }
+
+          const currentText = (finalized + interim).trim();
+          if (currentText) {
+            setLiveTranscript(currentText);
+            setInputVal(currentText);
+          }
+        };
+
+        recognition.onerror = (event: any) => {
+          console.warn('Speech recognition error:', event.error);
+          if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            setMicErrorNotice('Microphone permission was denied. Please allow microphone access in your browser settings.');
+          } else if (event.error === 'no-speech') {
+            // silence timeout
+          } else {
+            setMicErrorNotice(`Speech recognition notice: ${event.error}`);
+          }
           setIsListening(false);
         };
 
@@ -82,26 +111,73 @@ export const BloomAiModule: React.FC = () => {
         };
 
         recognitionRef.current = recognition;
+      } catch (e) {
+        console.error('Failed to initialize speech recognition:', e);
       }
     }
   }, [selectedLanguage]);
 
-  const toggleSpeechRecognition = () => {
-    if (!recognitionRef.current) {
-      alert('Speech recognition is not supported in this browser version. You can type directly.');
+  const toggleSpeechRecognition = async () => {
+    setMicErrorNotice(null);
+
+    // If currently listening, stop it
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+      }
+      setIsListening(false);
       return;
     }
 
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      try {
+    // Check if SpeechRecognition is available
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in this browser version. You can type directly in any language.');
+      return;
+    }
+
+    // Request microphone permission first
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+    } catch (micErr) {
+      console.warn('Microphone permission check failed:', micErr);
+      setMicErrorNotice('Please grant microphone permission in your browser to speak with Bloom AI.');
+      return;
+    }
+
+    try {
+      if (!recognitionRef.current) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = selectedLanguage;
+        recognitionRef.current = recognition;
+      } else {
         recognitionRef.current.lang = selectedLanguage;
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch (e) {
-        console.error(e);
+      }
+
+      setLiveTranscript('');
+      recognitionRef.current.start();
+      setIsListening(true);
+    } catch (e: any) {
+      console.error('Error starting speech recognition:', e);
+      if (e?.name === 'InvalidStateError') {
+        // Recognition was already running, stop and restart
+        try {
+          recognitionRef.current.stop();
+          setTimeout(() => {
+            recognitionRef.current.start();
+            setIsListening(true);
+          }, 300);
+        } catch (restartErr) {}
+      } else {
+        setMicErrorNotice('Unable to start speech listener. You can type directly.');
         setIsListening(false);
       }
     }
@@ -121,11 +197,18 @@ export const BloomAiModule: React.FC = () => {
       return;
     }
 
-    window.speechSynthesis.cancel(); // Stop any ongoing speech
+    window.speechSynthesis.cancel();
     const cleanText = text.replace(/[*#_~]/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = selectedLanguage;
     utterance.rate = 0.95;
+
+    // Pick best matching voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const matchingVoice = voices.find(v => v.lang.startsWith(selectedLanguage.split('-')[0]));
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
+    }
 
     utterance.onend = () => {
       setIsSpeaking(false);
@@ -146,8 +229,16 @@ export const BloomAiModule: React.FC = () => {
     if (e) e.preventDefault();
     if (!inputVal.trim() || isSending) return;
 
+    if (isListening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {}
+      setIsListening(false);
+    }
+
     const messageText = inputVal.trim();
     setInputVal('');
+    setLiveTranscript('');
     setIsSending(true);
 
     try {
@@ -158,11 +249,11 @@ export const BloomAiModule: React.FC = () => {
   };
 
   const handleFollowUpClick = (question: string) => {
-    if (question.startsWith('Call Dr.')) {
+    if (question.startsWith('Call Dr.') || question.startsWith('Call Doctor')) {
       window.location.href = `tel:${profile.doctorInfo.phone}`;
       return;
     }
-    if (question.startsWith('Call Hospital')) {
+    if (question.startsWith('Call Hospital') || question.startsWith('Emergency')) {
       window.location.href = `tel:${profile.doctorInfo.emergencyContact.split(' ')[0]}`;
       return;
     }
@@ -222,10 +313,12 @@ export const BloomAiModule: React.FC = () => {
       ? currentPrompts
       : currentPrompts.filter(p => p.category === selectedCategory);
 
+  const selectedLangObj = SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage) || SUPPORTED_LANGUAGES[0];
+
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
       {/* Top Banner with Medical Disclaimer */}
-      <div className="bg-gradient-to-r from-cream-100 via-blush-50 to-lavender-50 rounded-3xl p-5 border border-blush-200/60 shadow-sm space-y-3">
+      <div className="bg-gradient-to-r from-cream-100 via-blush-50 to-lavender-50 rounded-3xl p-5 border border-blush-200/60 shadow-2xs space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blush-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-blush-200 shrink-0">
@@ -233,24 +326,27 @@ export const BloomAiModule: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-gray-900">{t('aiAssistantTitle')}</h1>
+                <h1 className="text-xl font-bold text-gray-900">{t('aiAssistantTitle', 'Bloom AI Pregnancy Companion')}</h1>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                  {t('week')} {profile.currentGestationalWeek}
+                  {t('week', 'Week')} {profile.currentGestationalWeek || 24}
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                  Live Clinical AI
                 </span>
               </div>
               <p className="text-xs text-gray-600">
-                {t('aiAssistantSubtitle')}
+                {t('aiAssistantSubtitle', '24/7 intelligent maternal guidance with voice listener and 6-language translation.')}
               </p>
             </div>
           </div>
 
           {/* Multilingual Selector */}
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-gray-600 shrink-0">{t('lang')}:</label>
+            <label className="text-xs font-semibold text-gray-600 shrink-0">{t('lang', 'Language')}:</label>
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="text-xs bg-white text-gray-800 border border-gray-200 rounded-xl px-3 py-2 font-medium focus:ring-2 focus:ring-blush-400 focus:outline-none"
+              className="text-xs bg-white text-gray-800 border border-gray-200 rounded-xl px-3 py-2 font-medium focus:ring-2 focus:ring-blush-400 focus:outline-none shadow-2xs"
             >
               {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code}>
@@ -261,35 +357,101 @@ export const BloomAiModule: React.FC = () => {
 
             <button
               onClick={clearChat}
-              className="p-2 rounded-xl border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-white transition-colors"
-              title={t('clearChat')}
+              className="px-3 py-2 bg-white text-gray-600 hover:text-gray-900 border border-gray-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
+              title="Reset conversation"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Reset</span>
             </button>
           </div>
         </div>
 
-        {/* Visible Medical Disclaimer Box */}
-        <div className="p-3 bg-white/80 rounded-2xl border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2.5">
-          <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        {/* Safety Disclaimer Banner */}
+        <div className="p-3 bg-white/70 rounded-2xl border border-blush-100 text-[11px] text-gray-600 flex items-start gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            <strong>Clinical Safety Notice:</strong> Bloom AI provides informational education and emotional support. It never replaces your gynecologist, midwife, or pediatrician. For acute emergencies, call 112 / 911 / 108 immediately.
+            <strong>Clinical Safety Guarantee:</strong> Bloom AI answers are tailored to your 24-week gestation. Emergency red flag detection is active 24/7. Not a substitute for direct OB/GYN physical examination.
           </p>
         </div>
       </div>
 
-      {/* Suggested Topic Filters */}
+      {/* Mic Permission Warning Notice if any */}
+      {micErrorNotice && (
+        <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between gap-2 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>{micErrorNotice}</span>
+          </div>
+          <button
+            onClick={() => setMicErrorNotice(null)}
+            className="text-[10px] font-bold text-amber-800 hover:underline shrink-0"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Interactive Active Voice Listener Wave Banner */}
+      {isListening && (
+        <div className="p-4 rounded-3xl bg-gradient-to-r from-rose-500 via-blush-600 to-rose-600 text-white shadow-lg space-y-2 animate-in fade-in duration-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+              </span>
+              <span className="font-bold text-xs uppercase tracking-wider">
+                Listening in {selectedLangObj.native} ({selectedLangObj.name})... Speak Now
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSend}
+                disabled={!inputVal.trim()}
+                className="px-3 py-1 bg-white text-rose-600 font-bold rounded-xl text-xs transition-all hover:bg-rose-50 disabled:opacity-50"
+              >
+                Done & Send
+              </button>
+              <button
+                type="button"
+                onClick={toggleSpeechRecognition}
+                className="p-1.5 bg-black/20 hover:bg-black/30 rounded-xl transition-all"
+                title="Cancel Voice Listener"
+              >
+                <MicOff className="w-4 h-4 text-white" />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-3 bg-black/20 rounded-2xl text-xs font-mono text-white/95 min-h-[44px] flex items-center">
+            {liveTranscript ? (
+              <span>"{liveTranscript}"</span>
+            ) : (
+              <span className="text-white/60 italic flex items-center gap-2">
+                <Radio className="w-4 h-4 animate-spin" />
+                Listening to your microphone... start speaking your question...
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Suggested Questions Filter Pills */}
       <div className="space-y-2">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-          <span className="text-gray-400 font-bold uppercase text-[10px] shrink-0">Topics:</span>
+        <div className="flex items-center gap-1.5 overflow-x-auto text-xs pb-1">
+          <span className="text-gray-500 font-bold text-[11px] shrink-0 uppercase tracking-wider mr-1">
+            Browse Topics:
+          </span>
           {(['All', 'Pregnancy', 'Labour', 'Newborn', 'Postpartum'] as const).map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1 rounded-xl font-bold transition-all shrink-0 ${
+              className={`px-3 py-1 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-blush-500 text-white shadow-xs'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-blush-50 hover:text-blush-600'
+                  ? 'bg-primary text-white shadow-2xs'
+                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
               }`}
             >
               {cat}
@@ -297,25 +459,27 @@ export const BloomAiModule: React.FC = () => {
           ))}
         </div>
 
-        {/* Suggested Quick Prompt Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs scrollbar-thin">
+        {/* Suggested Prompt Buttons */}
+        <div className="flex flex-wrap gap-2 pt-1">
           {filteredPrompts.slice(0, 4).map((p, idx) => (
             <button
               key={idx}
-              onClick={() => handleFollowUpClick(p.question)}
-              className="px-3 py-1.5 rounded-xl bg-white hover:bg-blush-50 border border-blush-100 text-gray-700 hover:text-blush-600 text-left transition-all shrink-0 shadow-2xs font-medium"
+              onClick={() => setInputVal(p.question)}
+              className="text-left text-xs bg-white hover:bg-blush-50 text-gray-700 hover:text-blush-700 px-3 py-2 rounded-2xl border border-gray-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              {p.question}
+              <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
+              <span className="truncate max-w-xs">{p.question}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Chat Messages Container */}
-      <div className="bg-white rounded-3xl p-4 md:p-6 border border-blush-100 shadow-sm flex flex-col h-[520px]">
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-blush-100">
+      {/* Chat Messages Conversation Box */}
+      <div className="bg-white rounded-3xl p-5 border border-blush-100 shadow-2xs space-y-4">
+        <div className="h-[460px] overflow-y-auto pr-2 space-y-4">
           {chatMessages.map((msg) => {
             const isUser = msg.sender === 'user';
+            const isEmergency = msg.isEmergencyAlert;
 
             return (
               <div
@@ -323,30 +487,36 @@ export const BloomAiModule: React.FC = () => {
                 className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
               >
                 {!isUser && (
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blush-500 to-rose-400 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <Bot className="w-4 h-4" />
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                      isEmergency
+                        ? 'bg-rose-500 text-white'
+                        : 'bg-gradient-to-tr from-blush-500 to-rose-400 text-white shadow-2xs'
+                    }`}
+                  >
+                    {isEmergency ? <AlertTriangle className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[85%] md:max-w-[75%] rounded-3xl p-4 space-y-2 text-xs md:text-sm ${
+                  className={`max-w-[85%] rounded-3xl p-4 space-y-2 text-xs md:text-sm leading-relaxed ${
                     isUser
-                      ? 'bg-gradient-to-r from-blush-500 to-rose-500 text-white rounded-tr-xs shadow-xs'
-                      : msg.isEmergencyAlert
-                      ? 'bg-red-50 border-2 border-red-500 text-red-950 rounded-tl-xs shadow-md'
-                      : 'bg-gradient-to-br from-cream-50 to-blush-50/30 border border-blush-100 text-gray-800 rounded-tl-xs'
+                      ? 'bg-gradient-to-r from-primary to-primary-hover text-white rounded-tr-xs'
+                      : isEmergency
+                      ? 'bg-rose-50 border border-rose-200 text-rose-950 rounded-tl-xs shadow-xs'
+                      : 'bg-muted/40 text-gray-900 rounded-tl-xs border border-gray-100'
                   }`}
                 >
-                  {/* Emergency Alert Header inside message if flagged */}
-                  {msg.isEmergencyAlert && (
-                    <div className="flex items-center gap-2 text-red-700 font-extrabold pb-1 border-b border-red-200">
-                      <AlertTriangle className="w-4 h-4 animate-bounce" />
-                      <span>{msg.emergencyTitle || 'CRITICAL CLINICAL ALERT'}</span>
+                  {/* Emergency Header if alert */}
+                  {isEmergency && msg.emergencyTitle && (
+                    <div className="flex items-center gap-1.5 font-bold text-rose-700 text-xs pb-1 border-b border-rose-200">
+                      <AlertTriangle className="w-4 h-4" />
+                      <span>{msg.emergencyTitle}</span>
                     </div>
                   )}
 
-                  {/* Message Body with Markdown-like bold formatting */}
-                  <div className="leading-relaxed whitespace-pre-wrap">
+                  {/* Message Body */}
+                  <div className="space-y-1">
                     {msg.text.split('\n').map((line, lidx) => (
                       <p key={lidx} className={line.startsWith('•') ? 'pl-2 py-0.5' : 'py-0.5'}>
                         {line}
@@ -361,7 +531,7 @@ export const BloomAiModule: React.FC = () => {
                     {!isUser && (
                       <button
                         onClick={() => speakText(msg.text, msg.id)}
-                        className="flex items-center gap-1 hover:opacity-100 font-bold text-blush-600 transition-opacity"
+                        className="flex items-center gap-1 hover:opacity-100 font-bold text-primary transition-opacity cursor-pointer"
                         title="Read message aloud"
                       >
                         {isSpeaking && speakingMessageId === msg.id ? (
@@ -372,7 +542,7 @@ export const BloomAiModule: React.FC = () => {
                         ) : (
                           <>
                             <Volume2 className="w-3.5 h-3.5" />
-                            <span>Listen</span>
+                            <span>Listen in voice</span>
                           </>
                         )}
                       </button>
@@ -390,7 +560,7 @@ export const BloomAiModule: React.FC = () => {
                           <button
                             key={fidx}
                             onClick={() => handleFollowUpClick(fu)}
-                            className="px-2.5 py-1 rounded-xl bg-white text-gray-700 hover:text-blush-600 hover:bg-blush-50 border border-gray-200 text-xs font-semibold transition-colors text-left"
+                            className="px-2.5 py-1 rounded-xl bg-white text-gray-700 hover:text-primary hover:bg-primary-soft border border-gray-200 text-xs font-semibold transition-colors text-left cursor-pointer shadow-2xs"
                           >
                             {fu}
                           </button>
@@ -408,6 +578,20 @@ export const BloomAiModule: React.FC = () => {
               </div>
             );
           })}
+
+          {/* Thinking / Sending Indicator */}
+          {isSending && (
+            <div className="flex gap-3 justify-start items-center">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blush-500 to-rose-400 text-white flex items-center justify-center shrink-0">
+                <Bot className="w-4 h-4" />
+              </div>
+              <div className="p-3.5 rounded-2xl bg-muted/40 border border-gray-100 text-xs text-gray-600 flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                <span>Bloom AI is consulting clinical knowledge & evidence-based guidelines...</span>
+              </div>
+            </div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -417,14 +601,14 @@ export const BloomAiModule: React.FC = () => {
           <button
             type="button"
             onClick={toggleSpeechRecognition}
-            className={`p-3 rounded-2xl transition-all shrink-0 ${
+            className={`p-3 rounded-2xl transition-all shrink-0 cursor-pointer ${
               isListening
-                ? 'bg-rose-600 text-white animate-pulse shadow-md'
-                : 'bg-cream-100 hover:bg-cream-200 text-gray-700'
+                ? 'bg-rose-600 text-white animate-pulse shadow-md ring-4 ring-rose-200'
+                : 'bg-cream-100 hover:bg-cream-200 text-gray-700 shadow-2xs'
             }`}
-            title={isListening ? 'Listening... click to stop' : 'Click to speak in your language'}
+            title={isListening ? 'Voice listener active - click to stop' : 'Click to speak with voice listener in your language'}
           >
-            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+            {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5" />}
           </button>
 
           <input
@@ -433,17 +617,17 @@ export const BloomAiModule: React.FC = () => {
             onChange={(e) => setInputVal(e.target.value)}
             placeholder={
               isListening
-                ? t('aiListening')
-                : t('aiInputPlaceholder')
+                ? `Listening to your voice in ${selectedLangObj.native}...`
+                : t('aiInputPlaceholder', 'Ask about baby kicks, nutrition, safe exercises, labor 5-1-1 rule...')
             }
-            className="flex-1 bg-gray-50 border border-gray-200 focus:border-blush-400 focus:ring-2 focus:ring-blush-200 rounded-2xl px-4 py-3 text-xs md:text-sm text-gray-900 focus:outline-none transition-all"
+            className="flex-1 bg-gray-50 border border-gray-200 focus:border-blush-400 focus:ring-2 focus:ring-blush-200 rounded-2xl px-4 py-3 text-xs md:text-sm text-gray-900 focus:outline-none transition-all shadow-2xs"
           />
 
           <button
             type="submit"
             disabled={!inputVal.trim() || isSending}
-            className="p-3 bg-gradient-to-r from-blush-500 to-rose-500 hover:from-blush-600 hover:to-rose-600 text-white rounded-2xl transition-all shadow-md shadow-blush-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-            title={t('aiSend')}
+            className="p-3 bg-gradient-to-r from-blush-500 to-rose-500 hover:from-blush-600 hover:to-rose-600 text-white rounded-2xl transition-all shadow-md shadow-blush-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0 cursor-pointer"
+            title={t('aiSend', 'Send Message')}
           >
             <Send className="w-5 h-5" />
           </button>

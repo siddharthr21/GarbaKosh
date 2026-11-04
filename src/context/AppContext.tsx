@@ -520,8 +520,8 @@ const INITIAL_SHOWER_PLAN: BabyShowerPlan = {
   eventDate: '2026-12-12',
   theme: 'Traditional Indian',
   venue: 'Gulmohar Garden Courtyard & Banquet',
-  budgetTotal: 1500,
-  budgetSpent: 650,
+  budgetTotal: 75000,
+  budgetSpent: 32000,
   guestCount: 35,
   tasks: [
     { id: 'sh1', title: 'Finalize Seemantham / Godh Bharai floral decoration (Jasmine & Marigold garlands)', completed: true, category: 'decor' },
@@ -1622,7 +1622,43 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setChatMessages(prev => [...prev, userMsg]);
 
-    // Red flag symptom detection check
+    try {
+      // Call dedicated AI Chat API Route
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userText,
+          history: chatMessages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
+          gestationalWeek: profile.currentGestationalWeek || 24,
+          userRole: currentUser?.role || profile.role || 'mother',
+          language: lang,
+          motherName: profile.name.split(' ')[0]
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const assistantMsg: ChatMessage = {
+          id: `ast-${Date.now()}`,
+          sender: 'assistant',
+          text: data.response,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isEmergencyAlert: data.isEmergencyAlert || false,
+          emergencyTitle: data.emergencyTitle,
+          emergencyWarning: data.emergencyWarning,
+          emergencyAction: data.emergencyAction,
+          suggestedFollowUps: data.followUps || [],
+          language: lang
+        };
+        setChatMessages(prev => [...prev, assistantMsg]);
+        return;
+      }
+    } catch (apiErr) {
+      console.warn('API chat fetch failed, using internal offline responder:', apiErr);
+    }
+
+    // Offline / Fallback Symptom & Knowledge Handler
     const lower = userText.toLowerCase();
     const isHeavyBleeding = ['bleed', 'blood', 'soaked pad', 'clots'].some(w => lower.includes(w));
     const isSeverePain = ['severe pain', 'excruciating', 'sharp stabbing', 'intense cramps', 'agony'].some(w => lower.includes(w));
@@ -1683,12 +1719,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const langCode = (['en-US', 'kn-IN', 'hi-IN', 'ta-IN', 'te-IN', 'ml-IN'].includes(lang) ? lang : 'en-US') as SupportedLanguageCode;
       const responsesForLang = MULTILINGUAL_AI_RESPONSES[langCode] || MULTILINGUAL_AI_RESPONSES['en-US'];
 
-      // Check if user asked something that matches keywords in current language OR English
       let matchedItem = responsesForLang.find(item =>
         item.keywords.some(kw => lower.includes(kw.toLowerCase()))
       );
 
-      // If not matched directly in current language, check English keywords to map to current language
       if (!matchedItem && langCode !== 'en-US') {
         const enMatchedIdx = MULTILINGUAL_AI_RESPONSES['en-US'].findIndex(item =>
           item.keywords.some(kw => lower.includes(kw.toLowerCase()))
