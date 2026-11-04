@@ -1,0 +1,482 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useApp } from '@/context/AppContext';
+import {
+  HeartHandshake,
+  Users,
+  Copy,
+  Check,
+  Share2,
+  Calendar,
+  Lock,
+  Unlock,
+  ShieldCheck,
+  BookOpen,
+  Sparkles,
+  Heart,
+  Baby,
+  Smile,
+  ListTodo,
+  Timer,
+  ScrollText,
+  AlertTriangle,
+  ArrowRight,
+  Footprints
+} from 'lucide-react';
+
+export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => void }> = ({ onNavigateTab }) => {
+  const {
+    profile,
+    updateProfile,
+    activeRole,
+    setActiveRole,
+    currentUser,
+    pairPartnerWithMotherCode,
+    unlinkPartner,
+    allAccounts
+  } = useApp();
+
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [motherCodeInput, setMotherCodeInput] = useState('');
+  const [pairingStatus, setPairingStatus] = useState<{ success?: boolean; text?: string } | null>(null);
+
+  const isPartnerUnpaired = currentUser?.role === 'partner' && !currentUser?.isPaired;
+
+  const handlePairSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!motherCodeInput.trim()) return;
+    const res = pairPartnerWithMotherCode(motherCodeInput.trim());
+    setPairingStatus({ success: res.success, text: res.message });
+    if (res.success) {
+      setMotherCodeInput('');
+    }
+  };
+
+  const handleUnlink = () => {
+    if (confirm('Are you sure you want to disconnect from this maternal sanctuary? You will no longer view synced records until re-paired.')) {
+      unlinkPartner();
+      setPairingStatus({ success: true, text: 'Account unlinked. Your partner dashboard is now sequestered.' });
+    }
+  };
+  const [partnerChecklist, setPartnerChecklist] = useState<Record<string, boolean>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('matrena_partner_checklist');
+      if (saved) try { return JSON.parse(saved); } catch {}
+    }
+    return {
+      car_seat: true,
+      bag_packed: false,
+      birth_plan: true,
+      contacts_saved: true,
+      five_one_one: true,
+      station_ready: false,
+    };
+  });
+
+  const toggleChecklistItem = (key: string) => {
+    const updated = { ...partnerChecklist, [key]: !partnerChecklist[key] };
+    setPartnerChecklist(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('matrena_partner_checklist', JSON.stringify(updated));
+    }
+  };
+
+  const copyPairingCode = () => {
+    const code = profile.partnerProfile?.pairingCode || 'MAMA-2026';
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const handleTogglePermission = (permKey: keyof typeof profile.sharingPermissions) => {
+    updateProfile({
+      sharingPermissions: {
+        ...profile.sharingPermissions,
+        [permKey]: !profile.sharingPermissions[permKey]
+      }
+    });
+  };
+
+  const week = profile.currentGestationalWeek;
+
+  // Garbkosh Trimester-Adaptive Partner Mission
+  const getPartnerWeeklyMission = (currentWeek: number) => {
+    if (currentWeek < 14) {
+      return {
+        focus: 'First Trimester Comfort & Reassurance',
+        tip: 'Her body is working overtime building the placenta and adapting to hormonal surges. Take over evening meal prep and grocery runs to protect her from strong cooking aromas that might trigger morning sickness.',
+        action: 'Offer chilled sparkling water with fresh lemon slices, keep crackers by her bedside, and encourage guilt-free 20-minute daytime naps.'
+      };
+    } else if (currentWeek < 28) {
+      return {
+        focus: 'Second Trimester Support & Active Bonding',
+        tip: 'Baby can now clearly hear external low-frequency voices! Placing your hand on her lower belly and talking, singing, or reading aloud helps baby recognize your voice before birth.',
+        action: 'Offer a 10-minute gentle lower back counter-pressure massage while she rests on her left side with a pillow between her knees.'
+      };
+    } else {
+      return {
+        focus: 'Third Trimester Labor Preparation & Readiness',
+        tip: 'Physical strain is at its peak and sleep can be fragmented. Take the lead on installing the car seat, packing partner hospital snacks, and memorizing her birth plan preferences.',
+        action: 'Practice the 5-1-1 contraction timing rule and keep the car fueled so you are calm and ready when labor begins.'
+      };
+    }
+  };
+
+  const mission = getPartnerWeeklyMission(week);
+
+  return (
+    <div className="space-y-6 pb-12 animate-in fade-in duration-300">
+      {/* Title */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-soft text-accent text-xs font-bold mb-2">
+            <HeartHandshake className="w-3.5 h-3.5" />
+            <span>The Partner Sanctuary · Garbkosh Caregiver Suite</span>
+          </div>
+          <h1 className="text-2xl font-serif font-extrabold text-foreground">
+            Partner Sanctuary & Collaboration
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Caregiver tools for labor surge timing, kick monitoring, and supportive trimester missions.
+          </p>
+        </div>
+
+        {/* View Switcher Pill */}
+        <div className="flex items-center gap-2 bg-card p-1 rounded-2xl border border-border shadow-soft text-xs font-semibold">
+          <span className="text-muted-foreground pl-2">Current Mode:</span>
+          <button
+            onClick={() => setActiveRole('mother')}
+            className={`px-3 py-1.5 rounded-xl transition-all ${
+              activeRole === 'mother' ? 'bg-primary text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {profile.name.split(' ')[0]} (Mother)
+          </button>
+          <button
+            onClick={() => setActiveRole('partner')}
+            className={`px-3 py-1.5 rounded-xl transition-all ${
+              activeRole === 'partner' ? 'bg-accent text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {profile.partnerProfile?.name?.split(' ')[0] || 'Rohan'} (Partner)
+          </button>
+        </div>
+      </div>
+
+      {/* Unpaired Partner Security Gateway Banner */}
+      {isPartnerUnpaired && (
+        <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-3xl p-6 shadow-soft space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-xs uppercase tracking-wider">
+                <Lock className="w-4 h-4" />
+                <span>Zero Data Leakage Security Active · Unpaired Partner Account</span>
+              </div>
+              <h2 className="text-lg font-serif font-bold text-foreground">
+                Welcome, {currentUser?.name || 'Partner'}! Connect with your partner's pregnancy journey.
+              </h2>
+              <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+                Your personal partner code is <strong className="font-mono text-accent">{currentUser?.uniqueCode || 'PAPA-9921'}</strong>. Maternal clinical records, ultrasound images, and vitals logs are protected by cryptographic account isolation. Enter the mother's unique code to request synchronized caregiver access.
+              </p>
+            </div>
+
+            <div className="p-3 bg-card rounded-2xl border border-border text-center shrink-0 min-w-[170px]">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Your Partner Code</span>
+              <span className="text-lg font-mono font-black text-foreground">{currentUser?.uniqueCode || 'PAPA-9921'}</span>
+            </div>
+          </div>
+
+          <form onSubmit={handlePairSubmit} className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+            <div className="relative flex-1 w-full">
+              <input
+                type="text"
+                value={motherCodeInput}
+                onChange={e => setMotherCodeInput(e.target.value.toUpperCase())}
+                placeholder="Enter Mother's Unique Code (e.g. MAMA-2026)"
+                className="w-full px-4 py-2.5 rounded-xl bg-card border border-input text-xs font-mono font-bold tracking-wider placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs shrink-0"
+            >
+              Connect Sanctuary
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMotherCodeInput('MAMA-2026');
+                pairPartnerWithMotherCode('MAMA-2026');
+              }}
+              className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-xs font-bold text-foreground transition-all shrink-0"
+              title="Test connection with Siri Rao"
+            >
+              Quick Test: MAMA-2026
+            </button>
+          </form>
+
+          {pairingStatus && (
+            <div className={`p-3 rounded-xl text-xs font-semibold ${
+              pairingStatus.success ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'
+            }`}>
+              {pairingStatus.text}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Account Pairing Status Card */}
+      {!isPartnerUnpaired && (
+        <div className="bg-gradient-to-r from-cream-100 via-primary-soft/30 to-accent-soft/30 rounded-3xl p-6 border border-border shadow-soft flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
+                Couples Synchronized & Connected
+              </span>
+            </div>
+            <h2 className="text-xl font-serif font-bold text-foreground">
+              Connected: {profile.name} & {profile.partnerProfile?.name || 'Rohan Sharma'}
+            </h2>
+            <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
+              Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders. The mother retains granular permission control over personal clinical notes.
+            </p>
+
+            {currentUser?.role === 'partner' && (
+              <div className="pt-1">
+                <button
+                  onClick={handleUnlink}
+                  className="text-xs text-rose-600 hover:text-rose-700 underline font-semibold"
+                >
+                  Disconnect from this mother sanctuary
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Pairing Code Card */}
+          <div className="p-4 bg-card rounded-2xl border border-border shadow-soft text-center shrink-0 min-w-[220px] space-y-2">
+            <div className="flex justify-between items-center text-[10px] uppercase font-bold text-muted-foreground">
+              <span>Mother Code</span>
+              <span className="font-mono text-accent font-black">{profile.partnerProfile?.pairingCode || 'MAMA-2026'}</span>
+            </div>
+            {currentUser?.role === 'partner' && (
+              <div className="flex justify-between items-center text-[10px] uppercase font-bold text-muted-foreground border-t border-border pt-1">
+                <span>Partner Code</span>
+                <span className="font-mono text-foreground font-black">{currentUser.uniqueCode}</span>
+              </div>
+            )}
+            <button
+              onClick={copyPairingCode}
+              className="w-full py-1.5 rounded-xl bg-muted/60 hover:bg-muted text-foreground text-xs font-bold flex items-center justify-center gap-1.5 transition-colors mt-2"
+            >
+              {copiedCode ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedCode ? 'Copied to Clipboard' : 'Copy Invitation Link'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Garbkosh Trimester-Adaptive Partner Mission Banner */}
+      <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-accent-soft text-accent flex items-center justify-center font-bold">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-accent">Week {week} Partner Mission</span>
+              <h3 className="text-base font-serif font-bold text-foreground">{mission.focus}</h3>
+            </div>
+          </div>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-soft text-primary">
+            Trimester {week < 14 ? 1 : week < 28 ? 2 : 3}
+          </span>
+        </div>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {mission.tip}
+        </p>
+
+        <div className="p-3 bg-muted/40 rounded-2xl border border-border text-xs text-foreground flex items-center gap-2">
+          <Heart className="w-4 h-4 text-accent shrink-0" />
+          <span><strong>Action for today:</strong> {mission.action}</span>
+        </div>
+      </div>
+
+      {/* Partner Quick Caregiver Tools & Hospital Checklist */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Caregiver Rapid Actions */}
+        <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-primary-soft text-primary flex items-center justify-center">
+              <Timer className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-serif font-bold text-foreground">Rapid Caregiver Tools</h3>
+              <p className="text-xs text-muted-foreground">Direct actions for birth readiness</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <button
+              onClick={() => onNavigateTab && onNavigateTab('contractions')}
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+            >
+              <div className="flex items-center justify-between text-accent font-bold">
+                <span className="flex items-center gap-1.5">
+                  <Timer className="w-4 h-4" /> Labor Surge Timer
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Time contractions with automated 5-1-1 hospital departure guidance.
+              </p>
+            </button>
+
+            <button
+              onClick={() => onNavigateTab && onNavigateTab('birth-plan')}
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+            >
+              <div className="flex items-center justify-between text-primary font-bold">
+                <span className="flex items-center gap-1.5">
+                  <ScrollText className="w-4 h-4" /> Birth Plan Review
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Review her pain relief choices, lighting, and your partner cord-cutting role.
+              </p>
+            </button>
+
+            <button
+              onClick={() => onNavigateTab && onNavigateTab('health-tracker')}
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+            >
+              <div className="flex items-center justify-between text-foreground font-bold">
+                <span className="flex items-center gap-1.5">
+                  <Footprints className="w-4 h-4 text-emerald-600" /> Evening Kick Counter
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Bond with baby during quiet evening movement sessions.
+              </p>
+            </button>
+
+            <button
+              onClick={() => onNavigateTab && onNavigateTab('bloom-ai')}
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+            >
+              <div className="flex items-center justify-between text-accent font-bold">
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4" /> Partner AI Assistant
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Ask clinical questions on comfort measures, back labor, and red flags.
+              </p>
+            </button>
+          </div>
+        </div>
+
+        {/* Partner Hospital & Nursery Preparedness Checklist (Garbkosh) */}
+        <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-primary-soft text-primary flex items-center justify-center">
+                <ListTodo className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-serif font-bold text-foreground">Partner Readiness Checklist</h3>
+                <p className="text-xs text-muted-foreground">Physical tasks to relieve maternal anxiety</p>
+              </div>
+            </div>
+            <span className="text-xs font-bold text-primary">
+              {Object.values(partnerChecklist).filter(Boolean).length} of {Object.keys(partnerChecklist).length} Ready
+            </span>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            {[
+              { key: 'car_seat', label: 'Infant car seat securely installed & inspected in vehicle' },
+              { key: 'bag_packed', label: 'Partner overnight hospital bag & 10ft phone chargers packed' },
+              { key: 'birth_plan', label: 'Birth preferences and cord-cutting wishes memorized' },
+              { key: 'contacts_saved', label: 'Pediatric triage & labor ward emergency contacts in speed dial' },
+              { key: 'five_one_one', label: '5-1-1 contraction rule understood for hospital departure' },
+              { key: 'station_ready', label: 'Home recovery & newborn bassinet station sanitized and ready' }
+            ].map(item => {
+              const isDone = partnerChecklist[item.key];
+              return (
+                <div
+                  key={item.key}
+                  onClick={() => toggleChecklistItem(item.key)}
+                  className={`p-3 rounded-2xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${
+                    isDone ? 'bg-primary-soft/40 border-primary text-foreground' : 'bg-muted/10 border-border text-muted-foreground'
+                  }`}
+                >
+                  <span className={isDone ? 'line-through opacity-70 font-medium' : 'font-medium'}>
+                    {item.label}
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={isDone}
+                    onChange={() => {}}
+                    className="rounded text-primary focus:ring-primary"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Mother's Privacy & Sharing Permissions Panel */}
+      <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-accent-soft text-accent flex items-center justify-center shrink-0">
+            <Lock className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-base font-serif font-bold text-foreground">User-Controlled Sharing Permissions</h3>
+            <p className="text-xs text-muted-foreground">The mother controls exactly what personal data is synchronized</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+          {[
+            { key: 'shareVitals', label: 'Share Blood Pressure & Weight Logs' },
+            { key: 'shareMood', label: 'Share Daily Emotional Journal' },
+            { key: 'shareUltrasounds', label: 'Share Ultrasound Scans & Moments' },
+            { key: 'shareAppointments', label: 'Share Doctor Appointment Reminders' },
+            { key: 'shareHospitalChecklist', label: 'Share Hospital Bag Checklist' },
+            { key: 'shareBirthPlan', label: 'Share Birth Plan Preferences' }
+          ].map(item => {
+            const isEnabled = (profile.sharingPermissions as any)[item.key];
+
+            return (
+              <div
+                key={item.key}
+                onClick={() => handleTogglePermission(item.key as any)}
+                className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between gap-2 ${
+                  isEnabled
+                    ? 'bg-primary-soft/60 border-primary text-foreground font-semibold'
+                    : 'bg-muted/30 border-border text-muted-foreground'
+                }`}
+              >
+                <span>{item.label}</span>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                  isEnabled ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
+                }`}>
+                  {isEnabled ? 'Shared' : 'Private'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};

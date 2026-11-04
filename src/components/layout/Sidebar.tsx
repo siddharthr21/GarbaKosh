@@ -1,0 +1,292 @@
+'use client';
+
+import React from 'react';
+import { useApp } from '@/context/AppContext';
+import {
+  Home,
+  Milestone,
+  Sparkles,
+  Activity,
+  Timer,
+  ScrollText,
+  Apple,
+  HeartPulse,
+  SunMedium,
+  Headphones,
+  FileText,
+  Users,
+  Briefcase,
+  BookOpen,
+  PartyPopper,
+  ShoppingBag,
+  CalendarHeart,
+  Baby,
+  Settings,
+  Globe,
+  LogOut,
+  X,
+  ShieldAlert,
+  ChevronRight
+} from 'lucide-react';
+
+interface SidebarProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  isOpenMobile: boolean;
+  onCloseMobile: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  activeTab,
+  setActiveTab,
+  isOpenMobile,
+  onCloseMobile
+}) => {
+  const {
+    profile,
+    currentUser,
+    logout,
+    activeRole,
+    setActiveRole,
+    triggerEmergencyModal,
+    selectedLanguage,
+    setSelectedLanguage,
+    is511RuleAlertActive
+  } = useApp();
+
+  const NAV_SECTIONS = [
+    {
+      title: 'Clinical & Daily Tracking',
+      items: [
+        { id: 'dashboard', label: 'Home Dashboard', icon: Home },
+        { id: 'journey', label: '40-Week Journey', icon: Milestone },
+        { id: 'bloom-ai', label: 'Bloom AI Assistant', icon: Sparkles },
+        { id: 'health-tracker', label: 'Vitals & Kick Counter', icon: Activity },
+        { id: 'contractions', label: 'Labor Surge Timer', icon: Timer, badge: is511RuleAlertActive ? '5-1-1' : undefined },
+        { id: 'birth-plan', label: 'Birth Plan Builder', icon: ScrollText },
+      ]
+    },
+    {
+      title: 'Maternal Health & Wellness',
+      items: [
+        { id: 'nutrition', label: 'Clinical Nutrition & Diet', icon: Apple },
+        { id: 'exercise', label: 'Prenatal Fitness & Kegels', icon: HeartPulse },
+        { id: 'mood-wellness', label: 'Emotional Wellness', icon: SunMedium },
+        { id: 'relaxation', label: 'Sleep & Soundscapes', icon: Headphones },
+        { id: 'little-moments', label: 'Ultrasound & Moments Vault', icon: FileText },
+      ]
+    },
+    {
+      title: 'Partner & Family Prep',
+      items: [
+        { id: 'partner-space', label: 'Partner Companion', icon: Users, badge: 'Active' },
+        { id: 'hospital-checklist', label: 'Hospital Bag Checklist', icon: Briefcase },
+        { id: 'baby-names', label: 'Multilingual Baby Names', icon: BookOpen },
+        { id: 'baby-shower', label: 'Baby Shower & Ceremony', icon: PartyPopper },
+        { id: 'baby-shopping', label: 'Nursery Registry', icon: ShoppingBag },
+      ]
+    },
+    {
+      title: 'Postpartum & Settings',
+      items: [
+        { id: 'postpartum', label: 'Fourth Trimester Recovery', icon: CalendarHeart },
+        { id: 'baby-care', label: 'Newborn Care Companion', icon: Baby },
+        { id: 'settings', label: 'Settings & Privacy Sharing', icon: Settings },
+      ]
+    }
+  ];
+
+  const handleSelect = (id: string) => {
+    setActiveTab(id);
+    onCloseMobile();
+  };
+
+  return (
+    <>
+      {/* Mobile Backdrop */}
+      {isOpenMobile && (
+        <div
+          onClick={onCloseMobile}
+          className="fixed inset-0 z-40 bg-foreground/40 backdrop-blur-xs lg:hidden transition-opacity"
+        />
+      )}
+
+      {/* Sidebar with all BloomNest & Matrena features */}
+      <aside
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-card border-r border-border flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-soft lg:shadow-none ${
+          isOpenMobile ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Brand Header */}
+        <div className="p-4 pb-2 flex items-center justify-between border-b border-border/60">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-serif font-black text-lg shadow-xs">
+              M
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-base font-serif font-bold text-foreground leading-tight">
+                  Matrena
+                </h1>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-accent/15 text-accent font-bold">
+                  BloomNest
+                </span>
+              </div>
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">
+                MATERNAL SANCTUARY
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onCloseMobile}
+            className="lg:hidden text-muted-foreground hover:text-foreground p-1.5 rounded-lg"
+            aria-label="Close sidebar"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Multi-Language Quick Selector (Matching photo: 🌐 EN | ಕನ್ನಡ | हिंदी) */}
+        <div className="mx-3 mt-2.5 mb-1.5 p-1 rounded-2xl bg-muted/40 border border-border flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
+          <div className="flex items-center gap-1 pl-2">
+            <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-[10px] text-muted-foreground/80">Lang</span>
+          </div>
+          <div className="flex items-center gap-1 pr-1">
+            {[
+              { code: 'en-US', label: 'EN' },
+              { code: 'kn-IN', label: 'ಕನ್ನಡ' },
+              { code: 'hi-IN', label: 'हिंदी' },
+              { code: 'ta-IN', label: 'தமிழ்' }
+            ].map(lang => (
+              <button
+                key={lang.code}
+                onClick={() => setSelectedLanguage(lang.code)}
+                className={`px-2 py-0.5 rounded-lg transition-all text-[11px] ${
+                  selectedLanguage === lang.code
+                    ? 'bg-card text-foreground font-bold shadow-2xs border border-border/80'
+                    : 'hover:text-foreground'
+                }`}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Complete Features Navigation List */}
+        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4 scrollbar-thin">
+          {NAV_SECTIONS.map((section, sIdx) => (
+            <div key={sIdx} className="space-y-1">
+              <span className="px-2.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                {section.title}
+              </span>
+
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelect(item.id)}
+                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all group ${
+                        isActive
+                          ? 'bg-primary/10 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 truncate">
+                        <Icon
+                          className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
+                            isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+                          }`}
+                        />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+
+                      {item.badge && (
+                        <span
+                          className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold shrink-0 ${
+                            item.badge === '5-1-1'
+                              ? 'bg-semantic-danger text-white animate-pulse'
+                              : 'bg-primary/15 text-primary'
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
+
+        {/* Emergency Protocol Guidance Card */}
+        <div className="px-3 py-2 border-t border-border/60">
+          <button
+            onClick={() => triggerEmergencyModal('Maternal red-flag warning: If bleeding, severe pain, or reduced movements occur, seek emergency care.')}
+            className="w-full py-2 px-2.5 rounded-xl bg-semantic-danger/10 hover:bg-semantic-danger/20 border border-semantic-danger/30 text-xs font-bold text-semantic-danger flex items-center gap-2 transition-all"
+          >
+            <div className="w-5 h-5 rounded-full bg-semantic-danger text-white flex items-center justify-center text-[10px] font-black shrink-0">
+              !
+            </div>
+            <span className="truncate text-left text-[11px]">Emergency Protocol (112)</span>
+          </button>
+        </div>
+
+        {/* Bottom User Card (Exact match to photo: s siri / Mother with Live Toggle) */}
+        <div className="p-3 mx-2 mb-2 border-t border-border flex flex-col gap-2 bg-muted/20 rounded-2xl">
+          <div className="flex items-center justify-between">
+            <div
+              onClick={() => { setActiveTab('settings'); onCloseMobile(); }}
+              className="flex items-center gap-2.5 cursor-pointer flex-1 overflow-hidden"
+            >
+              <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0 font-serif">
+                {profile.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-xs font-bold text-foreground truncate">{profile.name.toLowerCase()}</p>
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground capitalize">
+                  <span>{activeRole === 'mother' ? 'Mother' : 'Partner'}</span>
+                  <span>·</span>
+                  <span className="font-mono text-[9px] px-1 py-0.2 rounded bg-card border border-border font-bold text-foreground">
+                    {currentUser?.uniqueCode || 'MAMA-2026'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setActiveRole(activeRole === 'mother' ? 'partner' : 'mother')}
+                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors text-[10px] font-bold"
+                title="Toggle Mother / Partner Role"
+              >
+                🔄
+              </button>
+              <button
+                onClick={() => { setActiveTab('settings'); onCloseMobile(); }}
+                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors"
+                title="Settings & Privacy Sharing"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => logout()}
+                className="p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg transition-colors"
+                title="Sign Out / Switch User"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+};

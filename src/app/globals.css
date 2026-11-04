@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Garbkosh / Nurtura Warm Maternal Palette Tokens */
+    --background: 40 47% 96%;        /* #FAF6EE Warm Ivory */
+    --foreground: 131 5% 19%;        /* #2F3430 Neutral Grey Text */
+
+    --card: 43 100% 99%;             /* #FFFDF8 Cream */
+    --card-foreground: 131 5% 19%;
+
+    --primary: 127 13% 55%;          /* #7A9A7E Sage Green */
+    --primary-foreground: 43 100% 99%;
+    --primary-hover: 125 12% 46%;    /* #668568 */
+    --primary-soft: 107 19% 91%;     /* #E6EDE4 */
+
+    --accent: 18 47% 56%;            /* #C47A5A Muted Terracotta */
+    --accent-foreground: 43 100% 99%;
+    --accent-soft: 22 47% 91%;       /* #F3E3DA */
+
+    --beige: 39 36% 88%;             /* #EDE4D3 */
+    --muted: 39 20% 92%;
+    --muted-foreground: 130 3% 43%;  /* #6B716C Muted Text */
+
+    --border: 39 27% 85%;            /* #E4DDCE */
+    --input: 39 27% 85%;
+    --ring: 127 13% 55%;             /* Sage Focus Ring */
+
+    /* Semantics */
+    --success: 127 13% 55%;          /* Sage */
+    --warning: 39 67% 55%;           /* Soft Amber #D9A441 */
+    --danger: 5 44% 50%;             /* Muted Red #B5534A */
+
+    --radius: 1rem;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Fraunces', Georgia, serif;
+  }
+}
+
+/* Custom frosted glass utilities from Garbkosh */
+.glass-panel {
+  background: rgba(255, 253, 248, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(228, 221, 206, 0.7);
+}
+
+.glass-pill {
+  background: rgba(255, 253, 248, 0.90);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 30px -5px rgba(47, 52, 48, 0.12);
+}
+
+/* Delicate scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(122, 154, 126, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(122, 154, 126, 0.5);
+}
+
+@media print {
+  aside, header, nav, button, select, input, .no-print {
+    display: none !important;
+  }
+}
