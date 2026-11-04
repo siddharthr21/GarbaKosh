@@ -255,6 +255,22 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
   // ==========================================
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
+      {/* Switcher to Partner View */}
+      <div className="flex items-center justify-between p-3 px-4 rounded-2xl bg-muted/40 border border-border shadow-xs text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span className="font-semibold text-foreground">
+            {t('Active View', 'Active View')}: <strong>{profile.name.split(' ')[0]} ({t('Mother', 'Mother')})</strong>
+          </span>
+        </div>
+        <button
+          onClick={() => setActiveRole('partner')}
+          className="px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-muted text-accent font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+        >
+          <span>{t('Switch to Father / Partner View', 'Switch to Father / Partner View')} →</span>
+        </button>
+      </div>
+
       {/* Welcome Hero Banner (Garbkosh Hero Gradient & Luminous Card) */}
       <div className="relative overflow-hidden rounded-4xl bg-hero-gradient p-6 md:p-8 border border-border shadow-card">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">

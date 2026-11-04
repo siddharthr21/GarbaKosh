@@ -267,21 +267,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setActiveRole(activeRole === 'mother' ? 'partner' : 'mother')}
-                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors text-[10px] font-bold"
-                title="Toggle Mother / Partner Role"
+                className="px-2 py-1 bg-card hover:bg-muted text-foreground border border-border rounded-lg transition-colors text-[10px] font-bold flex items-center gap-1 cursor-pointer"
+                title={`Switch to ${activeRole === 'mother' ? 'Father / Partner' : 'Mother'}`}
               >
-                🔄
+                <span>🔄</span>
+                <span>{activeRole === 'mother' ? 'Father' : 'Mother'}</span>
               </button>
               <button
                 onClick={() => { setActiveTab('settings'); onCloseMobile(); }}
-                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors"
+                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors cursor-pointer"
                 title="Settings & Privacy Sharing"
               >
                 <Settings className="w-4 h-4" />
               </button>
               <button
                 onClick={() => logout()}
-                className="p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg transition-colors"
+                className="p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                 title="Sign Out / Switch User"
               >
                 <LogOut className="w-4 h-4" />

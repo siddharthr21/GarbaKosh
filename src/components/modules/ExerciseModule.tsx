@@ -111,13 +111,13 @@ export const ExerciseModule: React.FC = () => {
       {/* Interactive Pelvic Floor Kegel Trainer & Walking Counter */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Animated Kegel & Labor Breath Trainer */}
-        <div className="bg-gradient-to-br from-lavender-50 via-cream-50 to-blush-50 rounded-3xl p-6 border border-lavender-200/70 shadow-sm space-y-4">
+        <div className="bg-white rounded-3xl p-6 border-2 border-primary/25 shadow-card space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-bold text-gray-900">{t('kegelTitle', 'Pelvic Floor & Kegel Trainer')}</h3>
               <p className="text-xs text-gray-500">{t('Rhythmic contraction and release coaching', 'Rhythmic contraction and release coaching')}</p>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-lavender-200 text-lavender-800 text-xs font-bold">
+            <span className="px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/30 text-xs font-bold">
               {trainerCyclesDone} {t('Reps Completed', 'Reps Completed')}
             </span>
           </div>
@@ -125,19 +125,19 @@ export const ExerciseModule: React.FC = () => {
           {/* Animated Visual Pulsing Ring */}
           <div className="py-6 flex flex-col items-center justify-center">
             <div
-              className={`w-40 h-40 rounded-full flex flex-col items-center justify-center text-white transition-all duration-1000 shadow-xl ${
+              className={`w-44 h-44 rounded-full flex flex-col items-center justify-center transition-all duration-700 shadow-2xl border-4 ${
                 trainerPhase === 'squeeze'
-                  ? 'bg-gradient-to-tr from-lavender-600 to-purple-600 scale-95 shadow-lavender-300'
-                  : 'bg-gradient-to-tr from-teal-500 to-emerald-500 scale-110 shadow-teal-200'
+                  ? 'bg-gradient-to-tr from-purple-800 via-indigo-700 to-primary text-white border-purple-300 scale-95 shadow-purple-500/30'
+                  : 'bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-700 text-white border-emerald-300 scale-105 shadow-emerald-500/30'
               }`}
             >
-              <span className="text-3xl font-black">{trainerCountdown}s</span>
-              <span className="text-xs font-bold uppercase tracking-wider mt-1">
+              <span className="text-4xl font-black text-white drop-shadow-md">{trainerCountdown}s</span>
+              <span className="text-xs font-extrabold uppercase tracking-wider mt-1 px-3 py-1 rounded-full bg-black/35 text-white backdrop-blur-xs shadow-xs">
                 {trainerPhase === 'squeeze' ? `🌸 ${t('Squeeze & Lift', 'Squeeze & Lift')}` : `🍃 ${t('Gently Release', 'Gently Release')}`}
               </span>
             </div>
 
-            <p className="text-xs text-gray-600 mt-4 text-center max-w-sm">
+            <p className="text-xs font-semibold text-gray-800 mt-4 text-center max-w-sm px-4 py-2 bg-stone-50 rounded-xl border border-stone-200">
               {trainerPhase === 'squeeze'
                 ? t('Engage your deep pelvic hammock as if stopping the flow of urine. Do not hold breath.', 'Engage your deep pelvic hammock as if stopping the flow of urine. Do not hold breath.')
                 : t('Allow all muscles to drop and fully relax into your seat. Full release is essential.', 'Allow all muscles to drop and fully relax into your seat. Full release is essential.')}
@@ -149,8 +149,8 @@ export const ExerciseModule: React.FC = () => {
               onClick={toggleTrainer}
               className={`px-5 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer ${
                 isTrainerActive
-                  ? 'bg-rose-500 hover:bg-rose-600 text-white'
-                  : 'bg-lavender-600 hover:bg-lavender-700 text-white'
+                  ? 'bg-rose-600 hover:bg-rose-700 text-white'
+                  : 'bg-primary hover:bg-primary-hover text-white'
               }`}
             >
               {isTrainerActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -159,7 +159,7 @@ export const ExerciseModule: React.FC = () => {
 
             <button
               onClick={resetTrainer}
-              className="p-2.5 rounded-2xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+              className="p-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 transition-colors cursor-pointer"
               title={t('Reset', 'Reset')}
             >
               <RotateCcw className="w-4 h-4" />

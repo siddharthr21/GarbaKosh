@@ -37,20 +37,27 @@ export const BabyNamesModule: React.FC = () => {
   const [customGender, setCustomGender] = useState<'boy' | 'girl' | 'neutral'>('girl');
   const [customOrigin, setCustomOrigin] = useState('Sanskrit');
   const [customMeaning, setCustomMeaning] = useState('');
+  const [notification, setNotification] = useState<string | null>(null);
 
   const handleAddCustom = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customName.trim()) return;
+    const nameToAdd = customName.trim();
     addCustomBabyName(
-      customName.trim(),
+      nameToAdd,
       customGender,
       customOrigin.trim() || 'Sanskrit',
-      customMeaning.trim() || 'Precious blessing'
+      customMeaning.trim() || 'Precious family blessing'
     );
+    // Clear search and origin filter so it displays immediately at the top
+    setSearchQuery('');
+    setSelectedGender('all');
+    setSelectedOrigin('all');
     setCustomName('');
     setCustomMeaning('');
     setShowAddCustom(false);
-    alert(`Added "${customName}" to your shared baby name shortlist!`);
+    setNotification(`✨ "${nameToAdd}" successfully added to your dictionary and shortlist!`);
+    setTimeout(() => setNotification(null), 4500);
   };
 
   const filteredNames = babyNames.filter(item => {
@@ -92,6 +99,15 @@ export const BabyNamesModule: React.FC = () => {
           <span>{t('Add Custom Name', 'Add Custom Name')}</span>
         </button>
       </div>
+
+      {notification && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center justify-between text-xs font-semibold animate-in fade-in">
+          <span>{notification}</span>
+          <button onClick={() => setNotification(null)} className="text-emerald-600 hover:text-emerald-900 text-xs ml-2 font-bold cursor-pointer">
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Add Custom Name Dialog / Panel */}
       {showAddCustom && (

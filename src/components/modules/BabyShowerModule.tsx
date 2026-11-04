@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   PartyPopper,
@@ -14,13 +14,17 @@ import {
   Sparkles,
   MapPin,
   Share2,
-  Check
+  Check,
+  Edit3,
+  X,
+  Save
 } from 'lucide-react';
 
 export const BabyShowerModule: React.FC = () => {
   const {
     babyShower,
     updateBabyShowerTheme,
+    updateBabyShowerDetails,
     toggleShowerTask,
     addShowerTask,
     addShowerGuest,
@@ -32,6 +36,34 @@ export const BabyShowerModule: React.FC = () => {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newGuestName, setNewGuestName] = useState('');
   const [copiedInvite, setCopiedInvite] = useState(false);
+
+  // Edit details state
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
+  const [editDate, setEditDate] = useState(babyShower.eventDate);
+  const [editVenue, setEditVenue] = useState(babyShower.venue);
+  const [editBudgetTotal, setEditBudgetTotal] = useState(babyShower.budgetTotal);
+  const [editBudgetSpent, setEditBudgetSpent] = useState(babyShower.budgetSpent);
+  const [editGuestCount, setEditGuestCount] = useState(babyShower.guestCount);
+
+  useEffect(() => {
+    setEditDate(babyShower.eventDate);
+    setEditVenue(babyShower.venue);
+    setEditBudgetTotal(babyShower.budgetTotal);
+    setEditBudgetSpent(babyShower.budgetSpent);
+    setEditGuestCount(babyShower.guestCount);
+  }, [babyShower]);
+
+  const handleSaveDetails = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateBabyShowerDetails({
+      eventDate: editDate,
+      venue: editVenue.trim() || 'Celebration Venue',
+      budgetTotal: Math.max(0, Number(editBudgetTotal) || 0),
+      budgetSpent: Math.max(0, Number(editBudgetSpent) || 0),
+      guestCount: Math.max(0, Number(editGuestCount) || 0)
+    });
+    setIsEditingDetails(false);
+  };
 
   const THEMES = [
     { id: 'Traditional Indian', label: 'Traditional Indian (Godh Bharai / Seemantham)', color: 'from-amber-400 to-rose-400', desc: 'Marigold & jasmine blooms, saffron sweets, traditional silk blessings' },
@@ -68,33 +100,140 @@ export const BabyShowerModule: React.FC = () => {
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
       {/* Title */}
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold mb-2">
-          <PartyPopper className="w-3.5 h-3.5" />
-          <span>{t('Celebration & Blessing Planning', 'Celebration & Blessing Planning')}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold mb-2">
+            <PartyPopper className="w-3.5 h-3.5" />
+            <span>{t('Celebration & Blessing Planning', 'Celebration & Blessing Planning')}</span>
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900">
+            {t('Baby Shower & Ceremony Planner', 'Baby Shower & Ceremony Planner')}
+          </h1>
+          <p className="text-sm text-gray-600">
+            {t('Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.', 'Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.')}
+          </p>
         </div>
-        <h1 className="text-2xl font-extrabold text-gray-900">
-          {t('Baby Shower & Ceremony Planner', 'Baby Shower & Ceremony Planner')}
-        </h1>
-        <p className="text-sm text-gray-600">
-          {t('Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.', 'Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.')}
-        </p>
+
+        <button
+          onClick={() => setIsEditingDetails(!isEditingDetails)}
+          className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white hover:bg-muted border-2 border-blush-200 text-foreground font-bold text-xs shadow-xs transition-all self-start sm:self-auto cursor-pointer"
+        >
+          {isEditingDetails ? <X className="w-4 h-4 text-rose-500" /> : <Edit3 className="w-4 h-4 text-primary" />}
+          <span>{isEditingDetails ? t('Cancel Editing', 'Cancel Editing') : t('Edit Event Details', 'Edit Event Details')}</span>
+        </button>
       </div>
+
+      {/* Edit Details Drawer/Form */}
+      {isEditingDetails && (
+        <form onSubmit={handleSaveDetails} className="bg-gradient-to-r from-cream-100 via-blush-50 to-cream-100 p-6 rounded-3xl border-2 border-primary/30 shadow-md space-y-4 animate-in fade-in duration-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <Edit3 className="w-4 h-4 text-primary" />
+              <span>Edit Date, Celebration Venue & Budget</span>
+            </h3>
+            <span className="text-[11px] text-muted-foreground font-medium">Changes persist to your account</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+            <div>
+              <label className="block text-gray-700 font-bold mb-1">Celebration Date</label>
+              <input
+                type="date"
+                value={editDate}
+                onChange={e => setEditDate(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                required
+              />
+            </div>
+
+            <div className="lg:col-span-2">
+              <label className="block text-gray-700 font-bold mb-1">Celebration Venue</label>
+              <input
+                type="text"
+                value={editVenue}
+                onChange={e => setEditVenue(e.target.value)}
+                placeholder="e.g. Gulmohar Garden Courtyard & Banquet"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-bold mb-1">Total Budget ($)</label>
+              <input
+                type="number"
+                min="0"
+                value={editBudgetTotal}
+                onChange={e => setEditBudgetTotal(Number(e.target.value))}
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-bold mb-1">Budget Spent ($)</label>
+              <input
+                type="number"
+                min="0"
+                value={editBudgetSpent}
+                onChange={e => setEditBudgetSpent(Number(e.target.value))}
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsEditingDetails(false)}
+              className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer transition-all"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>Save Event Details</span>
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Overview Cards: Date, Budget, Guests, Venue */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-            <Calendar className="w-3 h-3" /> {t('Event Date', 'Event Date')}
-          </span>
+        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1 relative group">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
+              <Calendar className="w-3 h-3" /> {t('Event Date', 'Event Date')}
+            </span>
+            <button
+              onClick={() => setIsEditingDetails(true)}
+              className="text-[10px] text-primary hover:underline font-bold"
+              title="Edit Event Date"
+            >
+              Edit
+            </button>
+          </div>
           <div className="text-lg font-black text-gray-900">{babyShower.eventDate}</div>
           <span className="text-[10px] text-blush-600 font-semibold">{t('Around Week 30', 'Around Week 30')}</span>
         </div>
 
-        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-            <DollarSign className="w-3 h-3" /> {t('Budget Tracker', 'Budget Tracker')}
-          </span>
+        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1 relative group">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
+              <DollarSign className="w-3 h-3" /> {t('Budget Tracker', 'Budget Tracker')}
+            </span>
+            <button
+              onClick={() => setIsEditingDetails(true)}
+              className="text-[10px] text-emerald-700 hover:underline font-bold"
+              title="Edit Budget"
+            >
+              Edit
+            </button>
+          </div>
           <div className="text-lg font-black text-emerald-700">${babyShower.budgetSpent} / ${babyShower.budgetTotal}</div>
           <span className="text-[10px] text-emerald-600 font-semibold">${budgetRemaining} {t('Remaining', 'Remaining')}</span>
         </div>
@@ -107,10 +246,19 @@ export const BabyShowerModule: React.FC = () => {
           <span className="text-[10px] text-gray-500">{babyShower.guestCount} {t('Invited', 'Invited')}</span>
         </div>
 
-        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-            <MapPin className="w-3 h-3" /> {t('Celebration Venue', 'Celebration Venue')}
-          </span>
+        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1 relative group">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
+              <MapPin className="w-3 h-3" /> {t('Celebration Venue', 'Celebration Venue')}
+            </span>
+            <button
+              onClick={() => setIsEditingDetails(true)}
+              className="text-[10px] text-primary hover:underline font-bold"
+              title="Edit Venue"
+            >
+              Edit
+            </button>
+          </div>
           <div className="text-xs font-bold text-gray-800 truncate mt-1">{babyShower.venue}</div>
           <span className="text-[10px] text-gray-400">{t('Indoor & Garden', 'Indoor & Garden')}</span>
         </div>

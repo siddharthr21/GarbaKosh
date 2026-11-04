@@ -32,6 +32,7 @@ export const MoodWellnessModule: React.FC = () => {
   const [anxietyLevel, setAnxietyLevel] = useState(2);
   const [journalNotes, setJournalNotes] = useState('');
   const [activeAffirmationIdx, setActiveAffirmationIdx] = useState(0);
+  const [justLogged, setJustLogged] = useState(false);
 
   // Guided Breathing Coach
   const [breathPhase, setBreathPhase] = useState<'Inhale' | 'Hold' | 'Exhale'>('Inhale');
@@ -48,7 +49,8 @@ export const MoodWellnessModule: React.FC = () => {
       symptoms: []
     });
     setJournalNotes('');
-    alert('Thank you for checking in with your emotional wellbeing.');
+    setJustLogged(true);
+    setTimeout(() => setJustLogged(false), 4000);
   };
 
   const MOOD_OPTIONS = [
@@ -187,6 +189,13 @@ export const MoodWellnessModule: React.FC = () => {
               />
             </div>
 
+            {justLogged && (
+              <div className="p-3 bg-purple-50 border border-purple-200 text-purple-900 rounded-xl text-xs font-semibold animate-in fade-in flex items-center gap-2">
+                <span>🌸</span>
+                <span>{t('Thank you for checking in with your emotional wellbeing. Journal updated.', 'Thank you for checking in with your emotional wellbeing. Journal updated.')}</span>
+              </div>
+            )}
+
             <button
               type="submit"
               className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md transition-all text-xs cursor-pointer"
@@ -246,10 +255,16 @@ export const MoodWellnessModule: React.FC = () => {
 
       {/* Historical Mood Calendar & Patterns */}
       <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
-        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-purple-600" />
-          {t('Recent Emotional Journal History', 'Recent Emotional Journal History')}
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-purple-600" />
+            <span>{t('Recent Emotional Journal History', 'Recent Emotional Journal History')}</span>
+            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-xs font-bold font-mono">
+              {moodLogs.length}
+            </span>
+          </h3>
+          <span className="text-xs text-muted-foreground">{t('Persisted securely', 'Persisted securely')}</span>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {moodLogs.map(log => (
@@ -260,7 +275,12 @@ export const MoodWellnessModule: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="capitalize font-bold text-gray-800 flex items-center gap-1.5">
                   <span className="text-lg">
-                    {log.mood === 'joyful' ? '🥰' : log.mood === 'calm' ? '🌸' : log.mood === 'anxious' ? '😟' : '😴'}
+                    {log.mood === 'joyful' ? '🥰' :
+                     log.mood === 'calm' ? '🌸' :
+                     log.mood === 'anxious' ? '😟' :
+                     log.mood === 'exhausted' ? '🥱' :
+                     log.mood === 'tearful' ? '🥺' :
+                     log.mood === 'nauseated' ? '🤢' : '🌸'}
                   </span>
                   {log.mood}
                 </span>

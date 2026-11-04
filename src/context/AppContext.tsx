@@ -91,6 +91,7 @@ interface AppContextType {
   meals: MealItem[];
   addMealItem: (meal: Omit<MealItem, 'id'>) => void;
   deleteMealItem: (id: string) => void;
+  resetMeals: () => void;
   waterGlasses: number;
   incrementWater: () => void;
   decrementWater: () => void;
@@ -125,6 +126,7 @@ interface AppContextType {
   // Baby Shower
   babyShower: BabyShowerPlan;
   updateBabyShowerTheme: (theme: BabyShowerPlan['theme']) => void;
+  updateBabyShowerDetails: (details: Partial<BabyShowerPlan>) => void;
   toggleShowerTask: (id: string) => void;
   addShowerTask: (title: string, category: string) => void;
   addShowerGuest: (name: string) => void;
@@ -635,11 +637,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   });
 
-  const [moodLogs, setMoodLogs] = useState<MoodLog[]>([
-    { id: 'm-1', date: '2026-11-01', mood: 'calm', stressLevel: 3, anxietyLevel: 2, journalNotes: 'Slept well with the pregnancy pillow. Baby was gently fluttering this morning.', symptoms: ['Mild lower back tightness'] },
-    { id: 'm-2', date: '2026-11-02', mood: 'joyful', stressLevel: 2, anxietyLevel: 2, journalNotes: 'Rohan helped make dinner. We picked out baby nursery colors!', symptoms: ['Glowing skin', 'Appetite boost'] },
-    { id: 'm-3', date: '2026-11-03', mood: 'anxious', stressLevel: 5, anxietyLevel: 6, journalNotes: 'A bit anxious thinking about labor stages, but listening to the ocean soundscape helped calm my mind.', symptoms: ['Heartburn', 'Braxton Hicks'] }
-  ]);
+  const [moodLogs, setMoodLogs] = useState<MoodLog[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bloomnest_moods');
+      if (saved) try { return JSON.parse(saved); } catch (e) {}
+    }
+    return [
+      { id: 'm-1', date: '2026-11-01', mood: 'calm', stressLevel: 3, anxietyLevel: 2, journalNotes: 'Slept well with the pregnancy pillow. Baby was gently fluttering this morning.', symptoms: ['Mild lower back tightness'] },
+      { id: 'm-2', date: '2026-11-02', mood: 'joyful', stressLevel: 2, anxietyLevel: 2, journalNotes: 'Rohan helped make dinner. We picked out baby nursery colors!', symptoms: ['Glowing skin', 'Appetite boost'] },
+      { id: 'm-3', date: '2026-11-03', mood: 'anxious', stressLevel: 5, anxietyLevel: 6, journalNotes: 'A bit anxious thinking about labor stages, but listening to the ocean soundscape helped calm my mind.', symptoms: ['Heartburn', 'Braxton Hicks'] }
+    ];
+  });
 
   const [memories, setMemories] = useState<MemoryVaultItem[]>(() => {
     if (typeof window !== 'undefined') {
@@ -665,7 +673,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return INITIAL_BABY_NAMES;
   });
 
-  const [babyShower, setBabyShower] = useState<BabyShowerPlan>(INITIAL_SHOWER_PLAN);
+  const [babyShower, setBabyShower] = useState<BabyShowerPlan>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bloomnest_babyshower');
+      if (saved) try { return JSON.parse(saved); } catch (e) {}
+    }
+    return INITIAL_SHOWER_PLAN;
+  });
   const [hospitalChecklist, setHospitalChecklist] = useState<HospitalChecklistItem[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('bloomnest_hospital');
@@ -976,7 +990,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setProfile(acc.profile);
       if (typeof window !== 'undefined') {
         localStorage.setItem('bloomnest_auth_session', JSON.stringify(acc));
+        localStorage.setItem('bloomnest_active_role', acc.role);
       }
+    }
+  };
+
+  const handleSetActiveRole = (newRole: 'mother' | 'partner') => {
+    setActiveRole(newRole);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_active_role', newRole);
+    }
+    const matchingAccount = allAccounts.find(a => a.role === newRole);
+    if (matchingAccount) {
+      setCurrentUser(matchingAccount);
+      setProfile(matchingAccount.profile);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_auth_session', JSON.stringify(matchingAccount));
+      }
+    } else {
+      setProfile(prev => ({
+        ...prev,
+        role: newRole
+      }));
     }
   };
 
@@ -1058,11 +1093,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...meal,
       id: `meal-${Date.now()}`
     };
-    setMeals(prev => [newMeal, ...prev]);
+    setMeals(prev => {
+      const updated = [newMeal, ...prev];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_meals', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const deleteMealItem = (id: string) => {
-    setMeals(prev => prev.filter(m => m.id !== id));
+    setMeals(prev => {
+      const updated = prev.filter(m => m.id !== id);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_meals', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  const resetMeals = () => {
+    setMeals([]);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_meals', JSON.stringify([]));
+    }
   };
 
   const incrementWater = () => setWaterGlasses(prev => prev + 1);
@@ -1106,7 +1160,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: `mood-${Date.now()}`,
       date: new Date().toISOString().split('T')[0]
     };
-    setMoodLogs(prev => [newEntry, ...prev]);
+    setMoodLogs(prev => {
+      const updated = [newEntry, ...prev];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_moods', JSON.stringify(updated));
+      }
+      return updated;
+    });
 
     if (entry.stressLevel >= 9 || entry.anxietyLevel >= 9) {
       triggerEmergencyModal(
@@ -1147,22 +1207,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const toggleFavoriteName = (id: string) => {
-    setBabyNames(prev =>
-      prev.map(n => (n.id === id ? { ...n, isFavorite: !n.isFavorite, isShortlisted: !n.isFavorite ? true : n.isShortlisted } : n))
-    );
+    setBabyNames(prev => {
+      const updated = prev.map(n => (n.id === id ? { ...n, isFavorite: !n.isFavorite, isShortlisted: !n.isFavorite ? true : n.isShortlisted } : n));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babynames', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const voteName = (id: string, voter: 'mother' | 'partner', vote: number) => {
-    setBabyNames(prev =>
-      prev.map(n => {
+    setBabyNames(prev => {
+      const updated = prev.map(n => {
         if (n.id === id) {
           return voter === 'mother'
             ? { ...n, motherVote: vote }
             : { ...n, partnerVote: vote };
         }
         return n;
-      })
-    );
+      });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babynames', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const addCustomBabyName = (name: string, gender: 'boy' | 'girl' | 'neutral', origin: string, meaning: string) => {
@@ -1179,40 +1247,86 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       motherVote: 1,
       partnerVote: 0
     };
-    setBabyNames(prev => [newName, ...prev]);
+    setBabyNames(prev => {
+      const updated = [newName, ...prev];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babynames', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  const updateBabyShowerDetails = (details: Partial<BabyShowerPlan>) => {
+    setBabyShower(prev => {
+      const updated = { ...prev, ...details };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const updateBabyShowerTheme = (theme: BabyShowerPlan['theme']) => {
-    setBabyShower(prev => ({ ...prev, theme }));
+    setBabyShower(prev => {
+      const updated = { ...prev, theme };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const toggleShowerTask = (id: string) => {
-    setBabyShower(prev => ({
-      ...prev,
-      tasks: prev.tasks.map(t => (t.id === id ? { ...t, completed: !t.completed } : t))
-    }));
+    setBabyShower(prev => {
+      const updated = {
+        ...prev,
+        tasks: prev.tasks.map(t => (t.id === id ? { ...t, completed: !t.completed } : t))
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const addShowerTask = (title: string, category: string) => {
-    setBabyShower(prev => ({
-      ...prev,
-      tasks: [...prev.tasks, { id: `task-${Date.now()}`, title, completed: false, category }]
-    }));
+    setBabyShower(prev => {
+      const updated = {
+        ...prev,
+        tasks: [...prev.tasks, { id: `task-${Date.now()}`, title, completed: false, category }]
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const addShowerGuest = (name: string) => {
-    setBabyShower(prev => ({
-      ...prev,
-      guestCount: prev.guestCount + 1,
-      guests: [...prev.guests, { id: `g-${Date.now()}`, name, rsvp: 'pending' }]
-    }));
+    setBabyShower(prev => {
+      const updated = {
+        ...prev,
+        guestCount: prev.guestCount + 1,
+        guests: [...prev.guests, { id: `g-${Date.now()}`, name, rsvp: 'pending' as const }]
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const updateGuestRsvp = (id: string, rsvp: 'attending' | 'declined' | 'pending') => {
-    setBabyShower(prev => ({
-      ...prev,
-      guests: prev.guests.map(g => (g.id === id ? { ...g, rsvp } : g))
-    }));
+    setBabyShower(prev => {
+      const updated = {
+        ...prev,
+        guests: prev.guests.map(g => (g.id === id ? { ...g, rsvp } : g))
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const toggleHospitalItem = (id: string) => {
@@ -1441,7 +1555,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         profile,
         updateProfile,
         activeRole,
-        setActiveRole,
+        setActiveRole: handleSetActiveRole,
         contractions,
         addContraction,
         clearContractions,
@@ -1463,6 +1577,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         meals,
         addMealItem,
         deleteMealItem,
+        resetMeals,
         waterGlasses,
         incrementWater,
         decrementWater,
@@ -1485,6 +1600,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addCustomBabyName,
         babyShower,
         updateBabyShowerTheme,
+        updateBabyShowerDetails,
         toggleShowerTask,
         addShowerTask,
         addShowerGuest,

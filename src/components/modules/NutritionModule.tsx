@@ -32,7 +32,8 @@ import {
   CheckCircle2,
   XCircle,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  RotateCcw
 } from 'lucide-react';
 
 export const NutritionModule: React.FC = () => {
@@ -41,6 +42,7 @@ export const NutritionModule: React.FC = () => {
     meals,
     addMealItem,
     deleteMealItem,
+    resetMeals,
     waterGlasses,
     incrementWater,
     decrementWater,
@@ -73,6 +75,7 @@ export const NutritionModule: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedNutrientFilter, setSelectedNutrientFilter] = useState<string>('all');
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
+  const [showAllSlots, setShowAllSlots] = useState(false);
 
   // Custom Food Entry
   const [showManualForm, setShowManualForm] = useState(false);
@@ -412,38 +415,89 @@ export const NutritionModule: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Today's Meal Diary */}
           <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-card space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-serif font-bold text-gray-900">Today’s Meal Diary</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-serif font-bold text-gray-900">Today’s Meal Diary</h3>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                    {meals.length} {meals.length === 1 ? 'item' : 'items'}
+                  </span>
+                </div>
                 <p className="text-xs text-gray-500">Track real clinical nutrients across your meals</p>
               </div>
 
-              {/* Meal slot selector */}
-              <div className="flex items-center gap-1.5 p-1 bg-[#FAF6EE] rounded-xl border border-stone-200 text-xs">
-                {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map(type => (
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Meal slot selector */}
+                <div className="flex items-center gap-1 p-1 bg-[#FAF6EE] rounded-xl border border-stone-200 text-xs">
+                  {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map(type => {
+                    const count = meals.filter(m => m.mealType === type).length;
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => {
+                          setSelectedMealType(type);
+                          setShowAllSlots(false);
+                        }}
+                        className={`px-2.5 py-1.5 rounded-lg capitalize font-semibold transition-all flex items-center gap-1 cursor-pointer ${
+                          !showAllSlots && selectedMealType === type
+                            ? 'bg-emerald-700 text-white shadow-xs'
+                            : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        <span>{type}</span>
+                        {count > 0 && (
+                          <span className={`text-[10px] px-1 rounded-full font-bold ${
+                            !showAllSlots && selectedMealType === type ? 'bg-white/20 text-white' : 'bg-stone-200 text-stone-700'
+                          }`}>
+                            {count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                   <button
-                    key={type}
-                    onClick={() => setSelectedMealType(type)}
-                    className={`px-3 py-1.5 rounded-lg capitalize font-semibold transition-all ${
-                      selectedMealType === type
+                    onClick={() => setShowAllSlots(!showAllSlots)}
+                    className={`px-2.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                      showAllSlots
                         ? 'bg-emerald-700 text-white shadow-xs'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    {type}
+                    All Day
                   </button>
-                ))}
+                </div>
+
+                {/* Reset meals button */}
+                <button
+                  onClick={() => {
+                    if (meals.length === 0) return;
+                    if (window.confirm("Reset today's meal diary? All logged food items will be cleared.")) {
+                      resetMeals();
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer shrink-0"
+                  title="Reset today's meals"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset</span>
+                </button>
               </div>
             </div>
 
             {/* List of meals logged */}
             <div className="space-y-2.5">
-              {meals.length === 0 ? (
-                <div className="p-8 text-center bg-[#FAF6EE]/50 rounded-2xl border border-dashed border-stone-300 text-gray-500 text-xs">
-                  No meals logged yet today. Choose from the real USDA/ICMR food database below!
-                </div>
-              ) : (
-                meals.map(m => (
+              {(() => {
+                const slotMeals = showAllSlots ? meals : meals.filter(m => m.mealType === selectedMealType);
+                if (slotMeals.length === 0) {
+                  return (
+                    <div className="p-8 text-center bg-[#FAF6EE]/50 rounded-2xl border border-dashed border-stone-300 text-gray-500 text-xs">
+                      {showAllSlots
+                        ? "No meals logged yet today. Choose from the real USDA/ICMR food database below!"
+                        : `No ${selectedMealType} items logged yet today. Select any food below to log it directly into ${selectedMealType}!`}
+                    </div>
+                  );
+                }
+                return slotMeals.map(m => (
                   <div
                     key={m.id}
                     className="p-3.5 bg-[#FFFDF8] hover:bg-white rounded-2xl border border-stone-200 hover:border-emerald-300 transition-all flex items-center justify-between gap-3 text-xs shadow-xs"
@@ -467,14 +521,14 @@ export const NutritionModule: React.FC = () => {
 
                     <button
                       onClick={() => deleteMealItem(m.id)}
-                      className="text-stone-300 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50"
+                      className="text-stone-300 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 cursor-pointer"
                       title="Remove food item"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                ))
-              )}
+                ));
+              })()}
             </div>
           </div>
 

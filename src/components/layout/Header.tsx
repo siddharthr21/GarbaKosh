@@ -113,25 +113,25 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
           <div className="flex items-center bg-muted/50 p-0.5 rounded-xl text-xs font-semibold">
             <button
               onClick={() => setActiveRole('mother')}
-              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
                 activeRole === 'mother'
                   ? 'bg-card text-primary shadow-xs font-bold'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <UserCheck className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t('mother')}</span>
+              <span className="hidden sm:inline">{t('mother', 'Mother')}</span>
             </button>
             <button
               onClick={() => setActiveRole('partner')}
-              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
                 activeRole === 'partner'
                   ? 'bg-card text-accent shadow-xs font-bold'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t('partner')}</span>
+              <span className="hidden sm:inline">{t('partnerFather', 'Father / Partner')}</span>
             </button>
           </div>
 

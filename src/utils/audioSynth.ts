@@ -96,6 +96,57 @@ class AudioSynthesizer {
 
       this.activeNodes.source = pinkNoise;
       this.activeNodes.lfo = lfo;
+    } else if (synthType === 'forest') {
+      // Gentle forest wind + rhythmic soft birdsong chirps
+      const bufferSize = this.ctx.sampleRate * 2.5;
+      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = (Math.random() * 2 - 1) * 0.15;
+      }
+
+      const windSource = this.ctx.createBufferSource();
+      windSource.buffer = noiseBuffer;
+      windSource.loop = true;
+
+      const windFilter = this.ctx.createBiquadFilter();
+      windFilter.type = 'bandpass';
+      windFilter.frequency.setValueAtTime(320, this.ctx.currentTime);
+      windFilter.Q.setValueAtTime(1.2, this.ctx.currentTime);
+
+      const windGain = this.ctx.createGain();
+      windGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+
+      windSource.connect(windFilter);
+      windFilter.connect(windGain);
+      windGain.connect(masterGain);
+      windSource.start();
+
+      // Morning songbird sine oscillator with bird-like modulation
+      const birdOsc = this.ctx.createOscillator();
+      const birdGain = this.ctx.createGain();
+      birdOsc.type = 'sine';
+      birdOsc.frequency.setValueAtTime(2600, this.ctx.currentTime);
+
+      // LFO for chirp melody
+      const chirpLfo = this.ctx.createOscillator();
+      const chirpLfoGain = this.ctx.createGain();
+      chirpLfo.frequency.setValueAtTime(3.5, this.ctx.currentTime);
+      chirpLfoGain.gain.setValueAtTime(600, this.ctx.currentTime);
+
+      chirpLfo.connect(birdOsc.frequency);
+      birdGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+
+      birdOsc.connect(birdGain);
+      birdGain.connect(masterGain);
+
+      birdOsc.start();
+      chirpLfo.start();
+
+      this.activeNodes.source = windSource;
+      this.activeNodes.windFilter = windFilter;
+      this.activeNodes.birdOsc = birdOsc;
+      this.activeNodes.chirpLfo = chirpLfo;
     } else {
       // Tibetan singing bowl / meditative sine harmonics
       const osc1 = this.ctx.createOscillator();
