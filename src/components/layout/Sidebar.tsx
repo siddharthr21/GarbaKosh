@@ -51,47 +51,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
     triggerEmergencyModal,
     selectedLanguage,
     setSelectedLanguage,
-    is511RuleAlertActive
+    is511RuleAlertActive,
+    t
   } = useApp();
 
   const NAV_SECTIONS = [
     {
-      title: 'Clinical & Daily Tracking',
+      title: t('clinicalTracking'),
       items: [
-        { id: 'dashboard', label: 'Home Dashboard', icon: Home },
-        { id: 'journey', label: '40-Week Journey', icon: Milestone },
-        { id: 'bloom-ai', label: 'Bloom AI Assistant', icon: Sparkles },
-        { id: 'health-tracker', label: 'Vitals & Kick Counter', icon: Activity },
-        { id: 'contractions', label: 'Labor Surge Timer', icon: Timer, badge: is511RuleAlertActive ? '5-1-1' : undefined },
-        { id: 'birth-plan', label: 'Birth Plan Builder', icon: ScrollText },
+        { id: 'dashboard', label: t('homeDashboard'), icon: Home },
+        { id: 'journey', label: t('journey'), icon: Milestone },
+        { id: 'bloom-ai', label: t('bloomAi'), icon: Sparkles },
+        { id: 'health-tracker', label: t('vitalsKicks'), icon: Activity },
+        { id: 'contractions', label: t('contractions'), icon: Timer, badge: is511RuleAlertActive ? '5-1-1' : undefined },
+        { id: 'birth-plan', label: t('birthPlan'), icon: ScrollText },
       ]
     },
     {
-      title: 'Maternal Health & Wellness',
+      title: t('maternalHealth'),
       items: [
-        { id: 'nutrition', label: 'Clinical Nutrition & Diet', icon: Apple },
-        { id: 'exercise', label: 'Prenatal Fitness & Kegels', icon: HeartPulse },
-        { id: 'mood-wellness', label: 'Emotional Wellness', icon: SunMedium },
-        { id: 'relaxation', label: 'Sleep & Soundscapes', icon: Headphones },
-        { id: 'little-moments', label: 'Ultrasound & Moments Vault', icon: FileText },
+        { id: 'nutrition', label: t('nutrition'), icon: Apple },
+        { id: 'exercise', label: t('exercise'), icon: HeartPulse },
+        { id: 'mood-wellness', label: t('emotionalWellness'), icon: SunMedium },
+        { id: 'relaxation', label: t('soundscapes'), icon: Headphones },
+        { id: 'little-moments', label: t('memoryVault'), icon: FileText },
       ]
     },
     {
-      title: 'Partner & Family Prep',
+      title: t('partnerFamily'),
       items: [
-        { id: 'partner-space', label: 'Partner Companion', icon: Users, badge: 'Active' },
-        { id: 'hospital-checklist', label: 'Hospital Bag Checklist', icon: Briefcase },
-        { id: 'baby-names', label: 'Multilingual Baby Names', icon: BookOpen },
-        { id: 'baby-shower', label: 'Baby Shower & Ceremony', icon: PartyPopper },
-        { id: 'baby-shopping', label: 'Nursery Registry', icon: ShoppingBag },
+        { id: 'partner-space', label: t('partnerCompanion'), icon: Users, badge: t('active') },
+        { id: 'hospital-checklist', label: t('hospitalBag'), icon: Briefcase },
+        { id: 'baby-names', label: t('babyNames'), icon: BookOpen },
+        { id: 'baby-shower', label: t('babyShower'), icon: PartyPopper },
+        { id: 'baby-shopping', label: t('nurseryRegistry'), icon: ShoppingBag },
       ]
     },
     {
-      title: 'Postpartum & Settings',
+      title: t('postpartumSettings'),
       items: [
-        { id: 'postpartum', label: 'Fourth Trimester Recovery', icon: CalendarHeart },
-        { id: 'baby-care', label: 'Newborn Care Companion', icon: Baby },
-        { id: 'settings', label: 'Settings & Privacy Sharing', icon: Settings },
+        { id: 'postpartum', label: t('fourthTrimester'), icon: CalendarHeart },
+        { id: 'baby-care', label: t('newbornCare'), icon: Baby },
+        { id: 'settings', label: t('settings'), icon: Settings },
       ]
     }
   ];
@@ -133,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">
-                MATERNAL SANCTUARY
+                {t('maternalSanctuary')}
               </p>
             </div>
           </div>
@@ -147,11 +148,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* Multi-Language Quick Selector (Matching photo: 🌐 EN | ಕನ್ನಡ | हिंदी) */}
+        {/* Multi-Language Quick Selector (Matching photo: 🌐 EN | ಕನ್ನಡ | हिंदी | தமிழ்) */}
         <div className="mx-3 mt-2.5 mb-1.5 p-1 rounded-2xl bg-muted/40 border border-border flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
           <div className="flex items-center gap-1 pl-2">
             <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-[10px] text-muted-foreground/80">Lang</span>
+            <span className="text-[10px] text-muted-foreground/80">{t('lang')}</span>
           </div>
           <div className="flex items-center gap-1 pr-1">
             {[
@@ -235,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="w-5 h-5 rounded-full bg-semantic-danger text-white flex items-center justify-center text-[10px] font-black shrink-0">
               !
             </div>
-            <span className="truncate text-left text-[11px]">Emergency Protocol (112)</span>
+            <span className="truncate text-left text-[11px]">{t('emergencyProtocol')}</span>
           </button>
         </div>
 
@@ -252,7 +253,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="overflow-hidden">
                 <p className="text-xs font-bold text-foreground truncate">{profile.name.toLowerCase()}</p>
                 <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground capitalize">
-                  <span>{activeRole === 'mother' ? 'Mother' : 'Partner'}</span>
+                  <span>{activeRole === 'mother' ? t('mother') : t('partner')}</span>
+                  <span>·</span>
+                  <span>{t('week')} {profile.currentGestationalWeek}</span>
                   <span>·</span>
                   <span className="font-mono text-[9px] px-1 py-0.2 rounded bg-card border border-border font-bold text-foreground">
                     {currentUser?.uniqueCode || 'MAMA-2026'}

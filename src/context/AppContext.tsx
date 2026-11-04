@@ -24,6 +24,8 @@ import {
 import { FOOD_PRESETS, NON_FOOD_PICA_SUBSTANCES } from '@/data/nutritionData';
 import { EXERCISE_ROUTINES } from '@/data/exerciseData';
 import { BABY_NAMES_DATABASE } from '@/data/babyNamesData';
+import { getTranslation, SupportedLanguageCode } from '@/data/translations';
+import { MULTILINGUAL_AI_RESPONSES, getLocalizedAiGreeting } from '@/data/multilingualAiKnowledge';
 
 export interface ChatMessage {
   id: string;
@@ -145,6 +147,7 @@ interface AppContextType {
   clearChat: () => void;
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
+  t: (key: string, fallback?: string) => string;
   
   // Utility
   resetToDemoData: () => void;
@@ -701,12 +704,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return INITIAL_CHAT_MESSAGES;
   });
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bloomnest_language');
+      if (saved) return saved;
+    }
+    return 'en-US';
+  });
+
   const [activeEmergencyModal, setActiveEmergencyModal] = useState<string | null>(null);
+
+  const t = (key: string, fallback?: string): string => {
+    return getTranslation(selectedLanguage, key, fallback);
+  };
 
   // Sync to localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    localStorage.setItem('bloomnest_language', selectedLanguage);
     localStorage.setItem('bloomnest_profile', JSON.stringify(profile));
     localStorage.setItem('bloomnest_contractions', JSON.stringify(contractions));
     localStorage.setItem('bloomnest_birthplan', JSON.stringify(birthPlan));
@@ -720,7 +735,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('bloomnest_babynames', JSON.stringify(babyNames));
     localStorage.setItem('bloomnest_hospital', JSON.stringify(hospitalChecklist));
     localStorage.setItem('bloomnest_chat', JSON.stringify(chatMessages));
-  }, [profile, contractions, birthPlan, dailyChecklist, vitals, meals, waterGlasses, cravings, memories, reminders, babyNames, hospitalChecklist, chatMessages]);
+  }, [selectedLanguage, profile, contractions, birthPlan, dailyChecklist, vitals, meals, waterGlasses, cravings, memories, reminders, babyNames, hospitalChecklist, chatMessages]);
 
   const updateProfile = (updated: Partial<UserProfile>) => {
     setProfile(prev => ({ ...prev, ...updated }));
@@ -1318,40 +1333,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       let responseText = '';
       let followUps: string[] = [];
 
-      if (lower.includes('morning sickness') || lower.includes('nausea')) {
-        responseText = `During pregnancy, nausea is heavily influenced by human chorionic gonadotropin (hCG) and progesterone slowing gastric emptying.\n\nKey clinician-backed strategies:\n• **Keep blood sugar level:** Nibble on plain dry crackers before getting out of bed in the morning.\n• **Small, frequent meals:** Eat protein-dense bites every 2 hours (almonds, Greek yogurt, roasted chana).\n• **Ginger & Vitamin B6:** Fresh ginger tea, lemon water, or consult Dr. ${profile.doctorInfo.name} about 25mg Pyridoxine (B6).\n• **Hydration:** Sip room-temperature electrolytes or coconut water between meals rather than gulping during food.`;
-        followUps = ['Can vitamin B6 help with nausea?', 'When does morning sickness typically subside?', 'Safe foods for an upset stomach'];
-      } else if (lower.includes('sleep') || lower.includes('position')) {
-        responseText = `At ${profile.currentGestationalWeek} weeks, sleeping on your **Left Side (SOS - Sleep On Side)** is the gold standard.\n\nWhy it matters:\n• It prevents your growing uterus and baby from compressing the **inferior vena cava (IVC)**, the large vein returning blood to your heart.\n• Maximizes blood and oxygen flow to the placenta and baby's kidneys.\n• **Comfort tip:** Place a contoured pregnancy pillow between your knees and another supporting your lower back and belly.`;
-        followUps = ['Can I sleep on my right side safely?', 'What if I wake up on my back?', 'Best pillows for pregnancy'];
-      } else if (lower.includes('round ligament') || lower.includes('groin pain') || lower.includes('cramp')) {
-        responseText = `Round ligament pain is very common around weeks 16-26 as your uterus expands. The ligaments stretch like thick elastic bands.\n\nHow to find relief:\n• Change positions gently and avoid sudden jerking or twisting movements.\n• Flex your hips when you feel a cough or sneeze coming.\n• Apply a warm (not hot) water bottle to your lower abdomen or take a warm shower.\n• Gentle cat-cow stretches and wearing a supportive maternity belly band can distribute uterine weight comfortably.`;
-        followUps = ['How do I distinguish round ligament pain from labor?', 'Can I use a heating pad safely?', 'Kegel exercises to support pelvic floor'];
-      } else if (lower.includes('kick') || lower.includes('movement') || lower.includes('quickening')) {
-        responseText = `At week ${profile.currentGestationalWeek}, fetal movements become much more defined! Baby now has distinct active and sleep cycles (often 20-40 minutes of sleep at a time).\n\nCounting kicks:\n• Pick a time when baby is usually active (often 8:00 PM - 10:00 PM after dinner).\n• Lie on your left side in a quiet room.\n• Count distinct kicks, swishes, and rolls. Aim for **10 movements within a 2-hour window** (usually reached within 30-45 minutes).`;
-        followUps = ['Log today’s kick count in Health Tracker', 'Why are kicks stronger at night?', 'What do baby hiccups feel like?'];
-      } else if (lower.includes('contraction') || lower.includes('surge') || lower.includes('5-1-1')) {
-        responseText = `Timing your contractions helps identify true active labor vs Braxton Hicks practice contractions.\n\n**The 5-1-1 Rule:**\n• **5 Minutes Apart:** Contractions start every 5 minutes or less.\n• **1 Minute Long:** Each surge lasts for at least 60 seconds.\n• **1 Hour Consistent:** This regular pattern continues uninterrupted for at least 1 full hour.\n\nUse our new **Labor Contraction Timer** to record surge intervals automatically!`;
-        followUps = ['Open Labor Contraction Timer', 'How do Braxton Hicks feel different?', 'Call Hospital Triage'];
-      } else if (lower.includes('partner') || lower.includes('husband') || lower.includes('support')) {
-        responseText = `Partner collaboration is vital for maternal wellbeing!\n\nTop ways Rohan can support you this week:\n• Take charge of heavy grocery lifting, vacuuming, and evening foot massages.\n• Practice labor breathing with you and review the hospital checklist.\n• Join the BloomNest Partner Space to view the Week ${profile.currentGestationalWeek} Partner Mission and vote on shortlisted baby names.`;
-        followUps = ['Switch to Partner Sanctuary View', 'Shared hospital bag essentials', 'Weekly partner checklist'];
-      } else if (lang.startsWith('hi')) {
-        responseText = `नमस्ते अनीता! गर्भावस्था के 24वें सप्ताह में आपका और आपके शिशु का स्वास्थ्य बहुत महत्वपूर्ण है। इस समय शिशु की सुनने की क्षमता विकसित हो रही है और वह आपकी आवाज़ पहचान सकता है। यदि आपको मतली, पैरों में सूजन या पीठ दर्द जैसी कोई भी समस्या हो, तो मुझे बताएं। हम आपके साथ हैं!`;
-        followUps = ['शिशु की हलचल कैसे गिनें?', 'गर्भावस्था में क्या खाएं?', 'डॉक्टर से कब संपर्क करें?'];
-      } else if (lang.startsWith('kn')) {
-        responseText = `ನಮಸ್ಕಾರ ಅನಿತಾ! ನಿಮ್ಮ ಗರ್ಭಧಾರಣೆಯ 24 ನೇ ವಾರದಲ್ಲಿ ಮಗು ತುಂಬಾ ಚುರುಕಾಗಿರುತ್ತದೆ. ಪ್ರತಿದಿನ ಸಂಜೆ 10 ಒದೆತಗಳನ್ನು (kick count) ಗಮನಿಸಿ. ಪೌಷ್ಟಿಕ ಆಹಾರ ಮತ್ತು ಸಾಕಷ್ಟು ನೀರು ಕುಡಿಯುವುದು ನಿಮ್ಮ ಮತ್ತು ಮಗುವಿನ ಆರೋಗ್ಯಕ್ಕೆ ಅತ್ಯಗತ್ಯ.`;
-        followUps = ['24 ನೇ ವಾರದ ಮುಖ್ಯ ಲಕ್ಷಣಗಳು', 'ಸುರಕ್ಷಿತ ಗರ್ಭಧಾರಣೆ ವ್ಯಾಯಾಮಗಳು', 'ಆಸ್ಪತ್ರೆಯ ಬ್ಯಾಗ್ ತಯಾರಿ'];
-      } else if (lang.startsWith('ta')) {
-        responseText = `வணக்கம் அனிதா! கர்ப்பத்தின் 24வது வாரத்தில் குழந்தை உங்கள் குரலை தெளிவாக கேட்க முடியும். தினமும் சத்தான உணவு, கீரைகள், உலர் பழங்கள் மற்றும் போதுமான தண்ணீர் எடுத்துக்கொள்ளுங்கள். ஏதேனும் சந்தேகங்கள் இருந்தால் கேளுங்கள்!`;
-        followUps = ['குழந்தையின் உதை எண்ணிக்கை', 'கர்ப்பகால உணவு முறை', 'மருத்துவ பரிசோதனைகள்'];
+      const langCode = (['en-US', 'kn-IN', 'hi-IN', 'ta-IN', 'te-IN', 'ml-IN'].includes(lang) ? lang : 'en-US') as SupportedLanguageCode;
+      const responsesForLang = MULTILINGUAL_AI_RESPONSES[langCode] || MULTILINGUAL_AI_RESPONSES['en-US'];
+
+      // Check if user asked something that matches keywords in current language OR English
+      let matchedItem = responsesForLang.find(item =>
+        item.keywords.some(kw => lower.includes(kw.toLowerCase()))
+      );
+
+      // If not matched directly in current language, check English keywords to map to current language
+      if (!matchedItem && langCode !== 'en-US') {
+        const enMatchedIdx = MULTILINGUAL_AI_RESPONSES['en-US'].findIndex(item =>
+          item.keywords.some(kw => lower.includes(kw.toLowerCase()))
+        );
+        if (enMatchedIdx !== -1 && responsesForLang[enMatchedIdx]) {
+          matchedItem = responsesForLang[enMatchedIdx];
+        }
+      }
+
+      if (matchedItem) {
+        responseText = matchedItem.response;
+        followUps = matchedItem.followUps;
       } else {
-        responseText = `Hello ${profile.name.split(' ')[0]}! At ${profile.currentGestationalWeek} weeks (Month 6), your baby (${profile.babyNickname || 'Little Bean'}) is approximately the size of an ear of corn (~30 cm, 600g). Their hearing is acute, lungs are developing surfactant, and skin is protected by vernix.\n\nBased on your profile, ensure you continue your 100mg Ferrous Ascorbate and stay active with gentle walks. How else can I assist your journey today?`;
-        followUps = [
-          'What foods boost iron absorption?',
-          'How to safely relieve round ligament pain?',
-          'Check upcoming prenatal reminders'
-        ];
+        responseText = getLocalizedAiGreeting(langCode, profile.name.split(' ')[0]);
+        followUps = responsesForLang.flatMap(r => r.followUps.slice(0, 1)).slice(0, 3);
       }
 
       assistantMsg = {
@@ -1496,6 +1501,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         clearChat,
         selectedLanguage,
         setSelectedLanguage,
+        t,
         resetToDemoData,
         exportAllDataJson,
         triggerEmergencyModal,

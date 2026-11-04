@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useApp } from '@/context/AppContext';
 import {
   LayoutDashboard,
   Sparkles,
@@ -21,11 +22,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   setActiveTab,
   onOpenMobileMenu
 }) => {
+  const { t } = useApp();
+
   const NAV_ITEMS = [
-    { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
-    { id: 'journey', label: 'Journey', icon: Sparkles },
-    { id: 'bloom-ai', label: 'AI Help', icon: Bot },
-    { id: 'contractions', label: 'Surges', icon: Timer },
+    { id: 'dashboard', label: t('homeDashboard'), icon: LayoutDashboard },
+    { id: 'journey', label: t('journey'), icon: Sparkles },
+    { id: 'bloom-ai', label: t('bloomAi'), icon: Bot },
+    { id: 'contractions', label: t('contractions'), icon: Timer },
   ];
 
   return (

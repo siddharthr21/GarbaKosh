@@ -5,6 +5,7 @@ import { useApp } from '@/context/AppContext';
 import {
   SUPPORTED_LANGUAGES,
   SUGGESTED_PROMPTS,
+  SuggestedPrompt,
   MEDICAL_DISCLAIMER
 } from '@/data/aiMedicalKnowledge';
 import {
@@ -33,7 +34,8 @@ export const BloomAiModule: React.FC = () => {
     clearChat,
     selectedLanguage,
     setSelectedLanguage,
-    triggerEmergencyModal
+    triggerEmergencyModal,
+    t
   } = useApp();
 
   const [inputVal, setInputVal] = useState('');
@@ -167,10 +169,58 @@ export const BloomAiModule: React.FC = () => {
     setInputVal(question);
   };
 
+  const getLocalizedPrompts = (lang: string): SuggestedPrompt[] => {
+    switch (lang) {
+      case 'kn-IN':
+        return [
+          { category: 'Pregnancy', question: 'ಬೆಳಗಿನ ವಾಕರಿಕೆ ಮತ್ತು ವಾಂತಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುವುದು ಹೇಗೆ?' },
+          { category: 'Pregnancy', question: 'ಗರ್ಭಧಾರಣೆಯ ೨ನೇ ತ್ರೈಮಾಸಿಕದಲ್ಲಿ ಉತ್ತಮ ಮಲಗುವ ಭಂಗಿ ಯಾವುದು?' },
+          { category: 'Labour', question: 'ಹೆರಿಗೆ ನೋವಿನ ೫-೧-೧ ಗೋಲ್ಡನ್ ನಿಯಮ ಎಂದರೇನು?' },
+          { category: 'Newborn', question: 'ನವಜಾತ ಶಿಶುವಿಗೆ ಮೊದಲ ಎದೆಹಾಲುಣಿಸುವ ಸರಿಯಾದ ವಿಧಾನ' },
+          { category: 'Postpartum', question: 'ಹೆರಿಗೆಯ ನಂತರದ ಮಾನಸಿಕ ಮತ್ತು ದೈಹಿಕ ಚೇತರಿಕೆ' },
+        ];
+      case 'hi-IN':
+        return [
+          { category: 'Pregnancy', question: 'मॉर्निंग सिकनेस और मतली से राहत पाने के घरेलू उपाय क्या हैं?' },
+          { category: 'Pregnancy', question: 'गर्भावस्था में सोने की सबसे सुरक्षित स्थिति कौन सी है?' },
+          { category: 'Labour', question: 'प्रसव संकुचन का 5-1-1 नियम क्या है?' },
+          { category: 'Newborn', question: 'नवजात शिशु को सही तरीके से स्तनपान कैसे कराएं?' },
+          { category: 'Postpartum', question: 'प्रसवोत्तर रिकवरी और भावनात्मक स्वास्थ्य का ख्याल' },
+        ];
+      case 'ta-IN':
+        return [
+          { category: 'Pregnancy', question: 'கர்ப்பகால வாந்தி மற்றும் குமட்டலைத் தவிர்ப்பது எப்படி?' },
+          { category: 'Pregnancy', question: 'கர்ப்ப காலத்தில் தூங்குவதற்கு சிறந்த நிலை எது?' },
+          { category: 'Labour', question: 'பிரசவ சுருக்கங்களின் 5-1-1 விதி என்றால் என்ன?' },
+          { category: 'Newborn', question: 'பிறந்த குழந்தைக்கு தாய்ப்பால் கொடுப்பதற்கான சரியான வழி' },
+          { category: 'Postpartum', question: 'பிரசவத்திற்குப் பிந்தைய உடல் மற்றும் மன நலம்' },
+        ];
+      case 'te-IN':
+        return [
+          { category: 'Pregnancy', question: 'గర్భధారణ సమయంలో వాంతులు మరియు వికారాన్ని ఎలా తగ్గించాలి?' },
+          { category: 'Pregnancy', question: 'గర్భధారణలో పడుకోవడానికి ఉత్తమమైన భంగిమ ఏది?' },
+          { category: 'Labour', question: 'కాన్పు నొప్పుల 5-1-1 గోల్డెన్ నియమం అంటే ఏమిటి?' },
+          { category: 'Newborn', question: 'నవజాత శిశువుకు పాలిచ్చే సరైన పద్ధతి ఏమిటి?' },
+          { category: 'Postpartum', question: 'ప్రసవానంతర మానసిక మరియు శారీరక రికవరీ' },
+        ];
+      case 'ml-IN':
+        return [
+          { category: 'Pregnancy', question: 'ഗർഭകാലത്തെ ഓക്കാനവും ഛർദ്ദിയും എങ്ങനെ കുറയ്ക്കാം?' },
+          { category: 'Pregnancy', question: 'ഗർഭകാലത്ത് കിടക്കാൻ ഏറ്റവും അനുയോജ്യമായ രീതി ഏതാണ്?' },
+          { category: 'Labour', question: 'പ്രസവവേദനയുടെ 5-1-1 സുവർണ്ണ നിയമം എന്താണ്?' },
+          { category: 'Newborn', question: 'നവജാതശിശുവിന് മുലപ്പാൽ കൊടുക്കുന്ന ശരിയായ രീതി' },
+          { category: 'Postpartum', question: 'പ്രസവാനന്തര ആരോഗ്യവും മാനസിക സമാധാനവും' },
+        ];
+      default:
+        return SUGGESTED_PROMPTS;
+    }
+  };
+
+  const currentPrompts = getLocalizedPrompts(selectedLanguage);
   const filteredPrompts =
     selectedCategory === 'All'
-      ? SUGGESTED_PROMPTS
-      : SUGGESTED_PROMPTS.filter(p => p.category === selectedCategory);
+      ? currentPrompts
+      : currentPrompts.filter(p => p.category === selectedCategory);
 
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
@@ -183,20 +233,20 @@ export const BloomAiModule: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-gray-900">Bloom AI Companion</h1>
+                <h1 className="text-xl font-bold text-gray-900">{t('aiAssistantTitle')}</h1>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                  Context: Week {profile.currentGestationalWeek}
+                  {t('week')} {profile.currentGestationalWeek}
                 </span>
               </div>
               <p className="text-xs text-gray-600">
-                Warm, evidence-grounded answers for pregnancy, labor, newborn care, and postpartum recovery.
+                {t('aiAssistantSubtitle')}
               </p>
             </div>
           </div>
 
           {/* Multilingual Selector */}
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-gray-600 shrink-0">Language:</label>
+            <label className="text-xs font-semibold text-gray-600 shrink-0">{t('lang')}:</label>
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
@@ -212,7 +262,7 @@ export const BloomAiModule: React.FC = () => {
             <button
               onClick={clearChat}
               className="p-2 rounded-xl border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-white transition-colors"
-              title="Reset conversation"
+              title={t('clearChat')}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -383,8 +433,8 @@ export const BloomAiModule: React.FC = () => {
             onChange={(e) => setInputVal(e.target.value)}
             placeholder={
               isListening
-                ? 'Listening to your voice...'
-                : `Ask Bloom AI about pregnancy, symptoms, baby care in ${selectedLanguage.split('-')[0].toUpperCase()}...`
+                ? t('aiListening')
+                : t('aiInputPlaceholder')
             }
             className="flex-1 bg-gray-50 border border-gray-200 focus:border-blush-400 focus:ring-2 focus:ring-blush-200 rounded-2xl px-4 py-3 text-xs md:text-sm text-gray-900 focus:outline-none transition-all"
           />
@@ -393,7 +443,7 @@ export const BloomAiModule: React.FC = () => {
             type="submit"
             disabled={!inputVal.trim() || isSending}
             className="p-3 bg-gradient-to-r from-blush-500 to-rose-500 hover:from-blush-600 hover:to-rose-600 text-white rounded-2xl transition-all shadow-md shadow-blush-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-            title="Send"
+            title={t('aiSend')}
           >
             <Send className="w-5 h-5" />
           </button>

@@ -33,7 +33,8 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
     setSelectedLanguage,
     triggerEmergencyModal,
     setIsOnboardingOpen,
-    setIsDesignSystemOpen
+    setIsDesignSystemOpen,
+    t
   } = useApp();
 
   const getDaysRemaining = () => {
@@ -72,13 +73,13 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
         <div className="flex items-center gap-2 md:gap-3 bg-muted/40 px-3.5 py-1.5 rounded-full border border-border shadow-xs text-xs md:text-sm">
           <div className="flex items-center gap-1.5 text-primary font-bold">
             <Heart className="w-3.5 h-3.5 fill-primary" />
-            <span>Week {profile.currentGestationalWeek}</span>
-            <span className="hidden md:inline font-normal text-muted-foreground">· Month {currentMonth}</span>
+            <span>{t('week')} {profile.currentGestationalWeek}</span>
+            <span className="hidden md:inline font-normal text-muted-foreground">· {t('month')} {currentMonth}</span>
           </div>
           <span className="text-border">|</span>
           <div className="flex items-center gap-1.5 text-accent font-medium">
             <Calendar className="w-3.5 h-3.5" />
-            <span>{daysLeft} days to EDD</span>
+            <span>{daysLeft} {t('daysToEdd')}</span>
           </div>
         </div>
 
@@ -91,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
             title="Open Setup Wizard"
           >
             <Compass className="w-3.5 h-3.5 text-primary" />
-            <span>Onboarding</span>
+            <span>{t('onboarding')}</span>
           </button>
 
           {/* Language Selector */}
@@ -119,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
               }`}
             >
               <UserCheck className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Mother</span>
+              <span className="hidden sm:inline">{t('mother')}</span>
             </button>
             <button
               onClick={() => setActiveRole('partner')}
@@ -130,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Partner</span>
+              <span className="hidden sm:inline">{t('partner')}</span>
             </button>
           </div>
 
@@ -141,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
             title="Emergency Medical Triage Protocol"
           >
             <AlertTriangle className="w-3.5 h-3.5 animate-bounce" />
-            <span className="hidden sm:inline">SOS Emergency</span>
+            <span className="hidden sm:inline">{t('sosEmergency')}</span>
           </button>
 
           {/* Logout button */}
@@ -151,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
             title="Sign Out"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">Sign Out</span>
+            <span className="hidden lg:inline">{t('signOut')}</span>
           </button>
         </div>
       </div>

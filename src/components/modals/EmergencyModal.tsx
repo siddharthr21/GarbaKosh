@@ -5,7 +5,7 @@ import { useApp } from '@/context/AppContext';
 import { AlertTriangle, Phone, X, ShieldAlert, HeartHandshake } from 'lucide-react';
 
 export const EmergencyModal: React.FC = () => {
-  const { activeEmergencyModal, dismissEmergencyModal, profile } = useApp();
+  const { activeEmergencyModal, dismissEmergencyModal, profile, t } = useApp();
 
   if (!activeEmergencyModal) return null;
 
@@ -28,10 +28,10 @@ export const EmergencyModal: React.FC = () => {
           </div>
           <div>
             <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-700 mb-1">
-              Urgent Medical Alert
+              {t('sosEmergency')}
             </span>
             <h3 className="text-xl font-bold text-gray-900 leading-snug">
-              Immediate Clinical Attention Required
+              {t('emergencyProtocol')}
             </h3>
           </div>
         </div>

@@ -50,7 +50,8 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
     activeRole,
     setActiveRole,
     is511RuleAlertActive,
-    contractions
+    contractions,
+    t
   } = useApp();
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -260,21 +261,21 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
           <div className="space-y-2 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card/80 backdrop-blur-md text-xs font-semibold text-primary border border-border">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Month {currentMonth} · Second Trimester</span>
+              <span>{t('month')} {currentMonth} · {t('trimester')} {currentMonth <= 3 ? 1 : currentMonth <= 6 ? 2 : 3}</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-serif font-extrabold text-foreground tracking-tight">
-              Good day, {profile.name}! 🌸
+              {t('welcomeBack')}, {profile.name}! 🌸
             </h1>
             <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-              You are in <strong>Week {profile.currentGestationalWeek}</strong>. Baby ({profile.babyNickname || 'Little Bean'}) is approximately the size of an <strong>{weekInfo.babySizeFruit} {weekInfo.fruitEmoji}</strong> and is practicing rhythmic kicks and swallowing!
+              {t('week')} <strong>{profile.currentGestationalWeek}</strong>. {t('babySizeOf')} <strong>{weekInfo.babySizeFruit} {weekInfo.fruitEmoji}</strong>.
             </p>
           </div>
 
           {/* Delivery Countdown Card */}
           <div className="shrink-0 bg-card/90 backdrop-blur-md p-5 rounded-3xl border border-border text-center min-w-[170px] shadow-soft">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Countdown to Due Date</span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t('dueCountdown')}</span>
             <div className="text-4xl font-mono font-black my-1 text-foreground">{daysRemaining}</div>
-            <span className="text-xs text-muted-foreground font-medium">days until {profile.estimatedDueDate}</span>
+            <span className="text-xs text-muted-foreground font-medium">{daysRemaining} {t('daysUntil')} {profile.estimatedDueDate}</span>
           </div>
         </div>
       </div>
@@ -374,7 +375,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
                 <Activity className="w-4 h-4 text-accent" />
-                Mother’s Vitals Overview
+                {t('recentVitals')}
               </h3>
               <button
                 onClick={() => onNavigateTab('health-tracker')}
@@ -386,7 +387,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
 
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 bg-muted/30 rounded-2xl border border-border">
-                <span className="text-[11px] text-muted-foreground font-medium">Blood Pressure</span>
+                <span className="text-[11px] text-muted-foreground font-medium">{t('bloodPressure')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.bloodPressureSys}/{latestVital.bloodPressureDia}{' '}
                   <span className="text-[10px] font-normal text-muted-foreground">mmHg</span>
@@ -397,7 +398,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               </div>
 
               <div className="p-3 bg-muted/30 rounded-2xl border border-border">
-                <span className="text-[11px] text-muted-foreground font-medium">Weight Progress</span>
+                <span className="text-[11px] text-muted-foreground font-medium">{t('weight')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.weightKg}{' '}
                   <span className="text-[10px] font-normal text-muted-foreground">kg</span>
@@ -408,7 +409,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               </div>
 
               <div className="p-3 bg-muted/30 rounded-2xl border border-border">
-                <span className="text-[11px] text-muted-foreground font-medium">Resting Pulse</span>
+                <span className="text-[11px] text-muted-foreground font-medium">{t('pulse')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.pulseBpm}{' '}
                   <span className="text-[10px] font-normal text-muted-foreground">bpm</span>
@@ -417,7 +418,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               </div>
 
               <div className="p-3 bg-muted/30 rounded-2xl border border-border">
-                <span className="text-[11px] text-muted-foreground font-medium">Kick Count</span>
+                <span className="text-[11px] text-muted-foreground font-medium">{t('kicksToday')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.kickCount || 18}{' '}
                   <span className="text-[10px] font-normal text-muted-foreground">kicks</span>
@@ -444,9 +445,9 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Droplets className="w-5 h-5 text-sky-500" />
-                <h3 className="text-sm font-serif font-bold text-foreground">Hydration Tracker</h3>
+                <h3 className="text-sm font-serif font-bold text-foreground">{t('waterIntake')}</h3>
               </div>
-              <span className="text-xs font-bold text-primary">{waterGlasses} of 10 Glasses ({(waterGlasses * 0.25).toFixed(1)}L)</span>
+              <span className="text-xs font-bold text-primary">{waterGlasses} of 10 {t('glasses')} ({(waterGlasses * 0.25).toFixed(1)}L)</span>
             </div>
 
             <div className="grid grid-cols-5 gap-2">
@@ -489,9 +490,9 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               <div>
                 <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary" />
-                  Today’s Health Checklist
+                  {t('todaysHealthChecklist')}
                 </h3>
-                <p className="text-xs text-muted-foreground">{completedTasks} of {dailyChecklist.length} tasks completed ({checklistPercent}%)</p>
+                <p className="text-xs text-muted-foreground">{completedTasks} of {dailyChecklist.length} {t('completedTasks')} ({checklistPercent}%)</p>
               </div>
               <span className="text-xs font-extrabold text-primary bg-primary-soft px-2.5 py-1 rounded-xl">
                 {checklistPercent}%
@@ -561,7 +562,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
                 <Apple className="w-4 h-4 text-primary" />
-                Today’s Nutrition Progress
+                {t('dailyNutritionOverview')}
               </h3>
               <button
                 onClick={() => onNavigateTab('nutrition')}
@@ -574,7 +575,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-muted-foreground">Calories: {totalCalories} / {targetCalories} kcal</span>
+                  <span className="text-muted-foreground">{t('calories')}: {totalCalories} / {targetCalories} kcal</span>
                   <span className="text-muted-foreground">{Math.round((totalCalories / targetCalories) * 100)}%</span>
                 </div>
                 <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
@@ -587,7 +588,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
 
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-muted-foreground">Protein: {totalProtein} / {targetProtein} g</span>
+                  <span className="text-muted-foreground">{t('protein')}: {totalProtein} / {targetProtein} g</span>
                   <span className="text-muted-foreground">{Math.round((totalProtein / targetProtein) * 100)}%</span>
                 </div>
                 <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
@@ -608,7 +609,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-accent" />
-                Upcoming Medical Dates
+                {t('upcomingReminders')}
               </h3>
               <button
                 onClick={() => onNavigateTab('health-tracker')}
