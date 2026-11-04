@@ -248,6 +248,52 @@ export const BloomAiModule: React.FC = () => {
     }
   };
 
+  const renderFormattedText = (text: string) => {
+    const lines = text.split('\n');
+    return lines.map((line, idx) => {
+      const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-');
+      const cleanLine = isBullet ? line.trim().replace(/^[•\-]\s*/, '') : line;
+      const parts = cleanLine.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+
+      const formattedParts = parts.map((part, pIdx) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return (
+            <strong key={pIdx} className="font-bold text-gray-900">
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+        if (part.startsWith('*') && part.endsWith('*')) {
+          return (
+            <em key={pIdx} className="italic text-gray-700">
+              {part.slice(1, -1)}
+            </em>
+          );
+        }
+        return part;
+      });
+
+      if (isBullet) {
+        return (
+          <div key={idx} className="flex items-start gap-2 pl-2 py-0.5">
+            <span className="text-primary font-bold mt-1 text-xs">•</span>
+            <span className="flex-1">{formattedParts}</span>
+          </div>
+        );
+      }
+
+      if (!line.trim()) {
+        return <div key={idx} className="h-1.5" />;
+      }
+
+      return (
+        <p key={idx} className="py-0.5">
+          {formattedParts}
+        </p>
+      );
+    });
+  };
+
   const handleFollowUpClick = (question: string) => {
     if (question.startsWith('Call Dr.') || question.startsWith('Call Doctor')) {
       window.location.href = `tel:${profile.doctorInfo.phone}`;
@@ -517,11 +563,7 @@ export const BloomAiModule: React.FC = () => {
 
                   {/* Message Body */}
                   <div className="space-y-1">
-                    {msg.text.split('\n').map((line, lidx) => (
-                      <p key={lidx} className={line.startsWith('•') ? 'pl-2 py-0.5' : 'py-0.5'}>
-                        {line}
-                      </p>
-                    ))}
+                    {renderFormattedText(msg.text)}
                   </div>
 
                   {/* Message Footer: Timestamp, Voice TTS playback button */}

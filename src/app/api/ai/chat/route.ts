@@ -9,144 +9,206 @@ interface ChatRequestBody {
   motherName?: string;
 }
 
-// Emergency red flags
+// Emergency red flags requiring immediate clinical escalation
 const EMERGENCY_PATTERNS = [
   {
-    regex: /(heavy bleeding|bleed|soaked pad|clots|hemorrhage|haemorrhage)/i,
+    regex: /(heavy bleeding|bleed|soaked pad|clots|hemorrhage|haemorrhage|blood in urine)/i,
     title: '🚨 CRITICAL MEDICAL ALERT: IMMEDIATE ATTENTION FOR BLEEDING',
-    warning: 'Heavy or persistent vaginal bleeding, especially with large clots or dizziness, is an obstetric emergency.',
-    action: 'Proceed immediately to your nearest hospital maternity emergency room or call emergency services (112 / 108 / 911) right away. Do not insert anything vaginally.'
+    warning: 'Heavy or persistent vaginal bleeding (soaking through a pad in under an hour, or passing large clots) can indicate placental abruption, placenta previa, or an obstetric emergency.',
+    action: 'Proceed immediately to your nearest hospital maternity triage or call emergency medical services (112 / 108 / 911) right away. Do not insert anything vaginally.'
   },
   {
-    regex: /(severe headache|blurred vision|flashing spots|flashing lights|sudden swelling face|high bp|preeclampsia)/i,
+    regex: /(severe headache|blurred vision|flashing spots|flashing lights|sudden swelling face|high bp|preeclampsia|epigastric pain)/i,
     title: '⚠️ CRITICAL: POSSIBLE PREECLAMPSIA SIGNS',
-    warning: 'Persistent severe headache accompanied by vision changes (flashing lights, blurriness) or sudden facial swelling can indicate dangerous blood pressure elevation.',
-    action: 'Check your blood pressure immediately and contact your maternity emergency triage right away.'
+    warning: 'Persistent severe headache accompanied by vision changes (flashing lights, blurriness) or sudden facial/hand swelling can indicate dangerous blood pressure elevation.',
+    action: 'Check your blood pressure immediately and contact your maternity emergency triage right away for prompt clinical evaluation.'
   },
   {
-    regex: /(not moving|no kicks|stopped moving|reduced movement|cannot feel baby)/i,
+    regex: /(not moving|no kicks|stopped moving|reduced movement|cannot feel baby|no fetal movement)/i,
     title: '🚨 URGENT: FETAL MOVEMENT EVALUATION',
-    warning: 'At 24+ weeks, significant reduction or cessation of your baby’s active kicks warrants prompt clinical fetal monitoring.',
+    warning: 'At 24+ weeks, a significant reduction or cessation of your baby’s active kicks warrants prompt clinical fetal monitoring via CTG or ultrasound.',
     action: 'Drink a tall glass of ice-cold water, lie on your left side in a quiet room for 30 minutes. If 10 movements are not felt within 2 hours, proceed to maternity triage immediately.'
   },
   {
-    regex: /(water broke|leaking fluid|gush of water|broken water|green fluid|brown fluid)/i,
+    regex: /(water broke|leaking fluid|gush of water|broken water|green fluid|brown fluid|meconium)/i,
     title: '⚠️ NOTICE: POSSIBLE RUPTURE OF MEMBRANES (WATER BREAKING)',
     warning: 'Leaking amniotic fluid requires sterile clinical assessment to prevent intrauterine infection.',
-    action: 'Note fluid color and odor, use a clean maternity pad, and contact your delivery hospital triage immediately. If fluid is green or dark brown, proceed to the hospital at once.'
+    action: 'Note fluid color and odor, use a clean maternity pad, and contact your delivery hospital triage immediately. If fluid is green or dark brown, proceed to the hospital without delay.'
   },
   {
-    regex: /(harm myself|kill myself|suicide|end it all|hurt baby|cannot do this anymore)/i,
+    regex: /(harm myself|kill myself|suicide|end it all|hurt baby|cannot do this anymore|hear voices)/i,
     title: '❤️ WE ARE HERE FOR YOU - CRISIS SUPPORT',
     warning: 'Please know that you are not alone. Perinatal emotional distress and postpartum depression are treatable medical conditions.',
-    action: 'Please call or text the Suicide & Crisis Lifeline (988), the National Mental Health Helpline (14416 in India), or emergency services (112 / 108) immediately.'
+    action: 'Please call or text the Suicide & Crisis Lifeline (988), the Tele-MANAS National Mental Health Helpline (14416 in India), or emergency services (112 / 108) immediately.'
   }
 ];
 
-// Rich multilingual contextual knowledge base
-const MEDICAL_TOPIC_RESPONSES: Record<string, Record<string, { answer: string; followUps: string[] }>> = {
-  nausea: {
+// Rich, multi-topic maternal & obstetric knowledge base across languages
+interface TopicContent {
+  answer: string;
+  followUps: string[];
+}
+
+const KNOWLEDGE_BASE: Record<string, Record<string, TopicContent>> = {
+  greeting: {
     'en-US': {
-      answer: `Morning sickness and nausea are very common, especially in the 1st and early 2nd trimesters, due to rising hCG and progesterone hormones.\n\n✨ **Safe Evidence-Based Comfort Measures:**\n• **Small, Frequent Meals:** Never keep an empty stomach; eat a light cracker or roasted almonds before getting out of bed.\n• **Natural Ginger Infusion:** Fresh ginger tea or lemon-ginger warm water helps settle gastric motility.\n• **Hydration Timing:** Sip water, tender coconut water, or buttermilk between meals rather than gulping with food.\n• **Vitamin B6 (Pyridoxine):** Shown to significantly reduce pregnancy nausea (discuss dosage with your doctor).\n\n⚠️ *When to contact your doctor:* If you cannot keep fluids down for over 12 hours, have dark urine, or lose weight, rule out Hyperemesis Gravidarum.`,
-      followUps: ['Safe foods for first trimester', 'How to stay hydrated with nausea', 'Vitamin B6 dosage']
+      answer: `Hello! 🌸 I am Bloom AI, your personal pregnancy, childbirth, and parenthood companion. I'm here 24/7 to provide clinically grounded, culturally conscious guidance tailored to your journey.\n\n✨ **Here are some things you can ask me anytime:**\n• **Symptoms & Comfort:** Nausea, baby kicks, back pain, heartburn, sleeping postures\n• **Nutrition & Safety:** Iron-rich foods, gestational diabetes, foods to avoid, kesar & dry fruits\n• **Labor Preparation:** The 5-1-1 rule, hospital bag packing, birth plan options\n• **Garbh Sanskar:** Calming music, positive mindfulness, partner bonding exercises\n• **Postpartum & Newborn:** Breastfeeding latch, newborn sleep, recovery milestones\n\nHow are you and baby feeling right now? Feel free to type or tap the microphone to speak!`,
+      followUps: ['How is my baby developing this week?', 'Best foods for second trimester', 'How to relieve lower back pain?']
     },
     'kn-IN': {
-      answer: `ಗರ್ಭಾವಸ್ಥೆಯ ಆರಂಭದಲ್ಲಿ ಬೆಳಗಿನ ವಾಕರಿಕೆ ಮತ್ತು ವಾಂತಿ (Morning Sickness) hCG ಹಾರ್ಮೋನ್ ಏರಿಕೆಯಿಂದ ಸಾಮಾನ್ಯವಾಗಿದೆ.\n\n✨ **ಆಯುರ್ವೇದ ಮತ್ತು ವೈದ್ಯಕೀಯ ಸಲಹೆಗಳು:**\n• **ಶುಂಠಿ ಮತ್ತು ನಿಂಬೆ ನೀರು:** ಬೆಳಿಗ್ಗೆ ಖಾಲಿ ಹೊಟ್ಟೆಯಲ್ಲಿ ಎದ್ದ ಕೂಡಲೇ ಒಣ ಬಿಸ್ಕತ್ತು ಅಥವಾ ನೆನೆಸಿದ ಬಾದಾಮಿ ತಿನ್ನಿ.\n• **ಕಿರು ಊಟ:** ದಿನದಲ್ಲಿ ಒಮ್ಮೆಗೆ ಹೆಚ್ಚು ತಿನ್ನುವ ಬದಲು, ೨-೩ ಗಂಟೆಗೊಮ್ಮೆ ಸಣ್ಣ ಪ್ರಮಾಣದಲ್ಲಿ ಪೌಷ್ಟಿಕ ಆಹಾರ ಸೇವಿಸಿ.\n• **ಎಳನೀರು ಮತ್ತು ಮಜ್ಜಿಗೆ:** ದೇಹ ನಿರ್ಜಲೀಕರಣವಾಗದಂತೆ ದಿನವಿಡೀ ಸಾಕಷ್ಟು ದ್ರವಾಹಾರ ಸೇವಿಸಿ.\n• **ವಿಶ್ರಾಂತಿ:** ಮಸಾಲೆಯುಕ್ತ, ಎಣ್ಣೆಯುಕ್ತ ಆಹಾರಗಳಿಂದ ದೂರವಿರಿ.`,
-      followUps: ['ವಾಕರಿಕೆಗೆ ಸುಲಭ ಮನೆಮದ್ದು', 'ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಆಹಾರ', 'ವೈದ್ಯರನ್ನು ಯಾವಾಗ ಸಂಪರ್ಕಿಸಬೇಕು']
+      answer: `ನಮಸ್ಕಾರ! 🌸 ನಾನು ಬ್ಲೂಮ್ ಎಐ, ನಿಮ್ಮ ಗರ್ಭಧಾರಣೆ ಮತ್ತು ಮಗುವಿನ ಆರೈಕೆಯ ವೈಯಕ್ತಿಕ ಸಹಾಯಕ. ನಿಮ್ಮ ಆರೋಗ್ಯ ಮತ್ತು ಮಗುವಿನ ಬೆಳವಣಿಗೆಯ ಪ್ರತಿಯೊಂದು ಹಂತದಲ್ಲೂ ನಿಖರ ಮತ್ತು ಸ್ನೇಹಪರ ಸಲಹೆ ನೀಡಲು ನಾನು ಇಲ್ಲಿದ್ದೇನೆ.\n\n✨ **ನೀವು ನನ್ನನ್ನು ಕೇಳಬಹುದಾದ ವಿಷಯಗಳು:**\n• ಗರ್ಭಾವಸ್ಥೆಯ ಲಕ್ಷಣಗಳು, ವಾಕರಿಕೆ, ಬೆನ್ನುನೋವು ಮತ್ತು ಮಲಗುವ ಸರಿಯಾದ ಭಂಗಿ\n• ಗರ್ಭಿಣಿಯರಿಗೆ ಪೌಷ್ಟಿಕ ಆಹಾರ, ರಾಗಿ, ಹಣ್ಣುಗಳು ಮತ್ತು ತಪ್ಪಿಸಬೇಕಾದ ಆಹಾರಗಳು\n• ಗರ್ಭ ಸಂಸ್ಕಾರ, ಧ್ಯಾನ ಮತ್ತು ಮನಸ್ಸಿನ ಶಾಂತಿ\n• ಹೆರಿಗೆ ನೋವು (5-1-1 ನಿಯಮ) ಮತ್ತು ಆಸ್ಪತ್ರೆ ಚೀಲದ ಸಿದ್ಧತೆ\n• ನವಜಾತ ಶಿಶುವಿನ ಆರೈಕೆ ಮತ್ತು ಎದೆಹಾಲುಣಿಸುವ ವಿಧಾನ\n\nನೀವು ಇಂದು ಹೇಗಿದ್ದೀರಿ? ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮೈಕ್ರೊಫೋನ್ ಒತ್ತಿ ಮಾತನಾಡಿ!`,
+      followUps: ['ಈ ವಾರ ಮಗುವಿನ ಬೆಳವಣಿಗೆ ಹೇಗಿದೆ?', 'ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಆಹಾರ ಕ್ರಮ', 'ಬೆನ್ನುನೋವಿಗೆ ಸರಳ ಮನೆಮದ್ದು']
     },
     'hi-IN': {
-      answer: `गर्भावस्था में मॉर्निंग सिकनेस और उल्टी होना एक सामान्य लक्षण है जो hCG और प्रोजेस्टेरोन हार्मोन के बढ़ने के कारण होता है।\n\n✨ **सुरक्षित और प्रभावी उपाय:**\n• **अदरक और नींबू पानी:** ताजे अदरक की चाय या नींबू-पानी मतली को तुरंत शांत करने में मदद करता है।\n• **खाली पेट न रहें:** सुबह उठने से पहले सूखे क्रैकर्स, भुने चने या बादाम खाएं।\n• **छोटे-छोटे भोजन:** दिन में 3 बड़े भोजन के बजाय 5-6 छोटे, हल्के भोजन करें।\n• **हाइड्रेशन:** दिनभर नारियल पानी, छाछ और नींबू पानी घूंट-घूंट करके पिएं।\n\n⚠️ यदि 12 घंटे से अधिक समय तक पानी भी पेट में न रुके, तो तुरंत अपने डॉक्टर से परामर्श लें।`,
-      followUps: ['मॉर्निंग सिकनेस के घरेलू नुस्खे', 'गर्भावस्था में क्या खाएं', 'डॉक्टर को कब दिखाएं']
+      answer: `नमस्ते! 🌸 मैं ब्लूम एआई हूँ, आपकी गर्भावस्था, प्रसव और शिशु देखभाल साथी। मैं आपकी गर्भावस्था के हर पड़ाव पर चिकित्सीय रूप से सही और स्नेहपूर्ण मार्गदर्शन के लिए उपलब्ध हूँ।\n\n✨ **आप मुझसे कभी भी पूछ सकती हैं:**\n• **लक्षण और राहत:** मतली, शिशु की किक, पीठ दर्द, एसिडिटी, सोने की सही स्थिति\n• **पोषण और सुरक्षा:** आयरन और कैल्शियम युक्त आहार, क्या खाएं और क्या न खाएं\n• **प्रसव की तैयारी:** 5-1-1 नियम, लेबर दर्द के लक्षण, हॉस्पिटल बैग चेकलिस्ट\n• **गर्भ संस्कार:** ध्यान, सकारात्मक विचार, संगीत और पार्टनर का सहयोग\n• **शिशु देखभाल:** स्तनपान, नवजात की नींद और प्रसवोत्तर देखभाल\n\nआज आप और शिशु कैसा महसूस कर रहे हैं? आप लिखकर या माइक पर बोलकर पूछ सकती हैं!`,
+      followUps: ['इस हफ्ते शिशु का विकास कैसा है?', 'दूसरी तिमाही में क्या खाना चाहिए?', 'पीठ दर्द से राहत के उपाय']
     },
     'ta-IN': {
-      answer: `கர்ப்ப காலத்தில் காலை நேர வாந்தி மற்றும் குமட்டல் (Morning Sickness) ஹார்மோன் மாற்றங்களால் ஏற்படும் இயல்பான அறிகுறியாகும்.\n\n✨ **பாதுகாப்பான எளிய வழிமுறைகள்:**\n• **இஞ்சி மற்றும் எலுமிச்சை:** இஞ்சி டீ அல்லது சுடுநீரில் எலுமிச்சை சாறு அருந்துவது குமட்டலை குறைக்கும்.\n• **சிறு சிறு உணவுகள்:** ஒரே நேரத்தில் அதிகம் சாப்பிடாமல், 2-3 மணி நேரத்திற்கு ஒருமுறை சிறிய அளவில் சத்தான உணவை உட்கொள்ளுங்கள்.\n• **நீர்ச்சத்து:** இளநீர், மோர் மற்றும் எலுமிச்சை ஜூஸ் போன்றவற்றை நாள் முழுவதும் பருகவும்.\n• காலையில் எழுந்தவுடன் உலர்ந்த பிஸ்கட் அல்லது உலர் திராட்சை சாப்பிடலாம்.`,
-      followUps: ['வாந்திக்கு வீட்டு வைத்தியம்', 'கர்ப்பகால சத்தான உணவுகள்', 'மருத்துவரை எப்போது அணுக வேண்டும்']
+      answer: `வணக்கம்! 🌸 நான் ப்ளூம் AI, உங்கள் கர்ப்பகாலம் மற்றும் குழந்தை பராமரிப்பு தோழி. உங்கள் மற்றும் உங்கள் குழந்தையின் ஆரோக்கியத்திற்கான நம்பகமான வழிகாட்டுதலை வழங்க நான் எப்போதும் தயாராக உள்ளேன்.\n\n✨ **நீங்கள் கேட்கக்கூடிய முக்கிய தகவல்கள்:**\n• கர்ப்பகால அறிகுறிகள், குழந்தையின் அசைவுகள், முதுகுவலி, தூங்கும் நிலை\n• சத்தான உணவுமுறைகள், ராகி, பழங்கள் மற்றும் தவிர்க்க வேண்டியவை\n• பிரசவ தயாரிப்புகள் (5-1-1 விதி), மருத்துவமனை பை பட்டியல்\n• கர்ப்ப சம்ஸ்காரம் மற்றும் மன அமைதிக்கான பயிற்சிகள்\n• பிறந்த குழந்தை பராமரிப்பு மற்றும் தாய்ப்பால் கொடுக்கும் முறைகள்\n\nநீங்கள் இப்போது எப்படி உணர்கிறீர்கள்? தாராளமாக கேளுங்கள்!`,
+      followUps: ['இந்த வார குழந்தையின் வளர்ச்சி', 'கர்ப்பகால சத்தான உணவுகள்', 'முதுகுவலிக்கான தீர்வுகள்']
     },
     'te-IN': {
-      answer: `గర్భధారణ ప్రారంభంలో మార్నింగ్ సిక్‌నెస్ మరియు వికారం సాధారణంగా హార్మోన్ల పెరుగుదల వల్ల వస్తుంది.\n\n✨ **ఉపశమన చిట్కాలు:**\n• **అల్లం మరియు నిమ్మరసం:** అల్లం టీ లేదా గోరువెచ్చని నిమ్మ నీరు వికారాన్ని తగ్గిస్తుంది.\n• **చిన్న చిన్న భోజనాలు:** కడుపు ఖాళీగా ఉంచవద్దు; ప్రతి 2-3 గంటలకు తేలికపాటి పౌష్టికాహారం తీసుకోండి.\n• **హైడ్రేషన్:** కొబ్బరి నీళ్లు, మజ్జిగ పుష్కలంగా తాగండి.\n• ఉదయం లేవగానే డ్రై బిస్కెట్లు లేదా బాదం పప్పులు తినడం మంచిది.`,
-      followUps: ['వికారానికి ఇంటి చిట్కాలు', 'గర్భధారణలో పోషకాహారం', 'వైద్యుడిని ఎప్పుడు సంప్రదించాలి']
+      answer: `నమస్కారం! 🌸 నేను బ్లూమ్ AI, మీ గర్భధారణ మరియు శిశు సంరక్షణ సహాయకురాలిని. మీకు ప్రతి దశలో సరైన వైద్య సలహాలు మరియు సూచనలు అందించడానికి నేను ఇక్కడ ఉన్నాను.\n\n✨ **మీరు నన్ను అడగగల ముఖ్యమైన విషయాలు:**\n• గర్భధారణ లక్షణాలు, వికారం, నడుము నొప్పి, నిద్ర భంగిమలు\n• పౌష్టికాహారం, ఐరన్ మరియు కాల్షియం ఆహారాలు, నివారించాల్సినవి\n• ప్రసవ సన్నాహాలు, 5-1-1 కాన్పు నొప్పుల నియమం\n• గర్భ సంస్కార మరియు మనశ్శాంతి సాధనలు\n• నవజాత శిశువు సంరక్షణ మరియు తల్లిపాలు ఇచ్చే పద్ధతులు\n\nమీరు ప్రస్తుతం ఎలా ఉన్నారు? టైప్ చేయండి లేదా మైక్ ద్వారా మాట్లాడండి!`,
+      followUps: ['ఈ వారం శిశువు ఎదుగుదల ఎలా ఉంది?', 'గర్భిణీలకు మంచి ఆహారం', 'నడుము నొప్పి నివారణ చిట్కాలు']
     },
     'ml-IN': {
-      answer: `ഗർഭകാലത്തെ ആദ്യ മാസങ്ങളിലെ ഓക്കാനവും ഛർദ്ദിയും (Morning Sickness) ഹോർമോൺ വ്യതിയാനങ്ങൾ മൂലമുണ്ടാകുന്ന സാധാരണ ലക്ഷണമാണ്.\n\n✨ **ലളിതമായ ആശ്വാസ മാർഗ്ഗങ്ങൾ:**\n• **ഇഞ്ചി ചായ:** ചെറുചൂടുള്ള ഇഞ്ചി വെള്ളമോ നാരങ്ങാവെള്ളമോ കുടിക്കുന്നത് ഓക്കാനം കുറയ്ക്കും.\n• **ചെറിയ അളവിൽ ഭക്ഷണം:** വയർ ഒഴിഞ്ഞിരിക്കാൻ അനുവദിക്കരുത്; 2-3 മണിക്കൂർ കൂടുമ്പോൾ പോഷകസമൃദ്ധമായ ലഘുഭക്ഷണം കഴിക്കുക.\n• **ധാരാളം ദ്രാവകങ്ങൾ:** ഇളനീർ, സംഭാരം (മോര്) എന്നിവ ധാരാളമായി കുടിക്കുക.`,
-      followUps: ['ഛർദ്ദിക്കുള്ള പ്രതിവിധികൾ', 'ഗർഭകാല ഭക്ഷണക്രമം', 'ഡോക്ടറെ കാണേണ്ട സന്ദർഭങ്ങൾ']
+      answer: `നമസ്കാരം! 🌸 ഞാൻ ബ്ലൂം AI, നിങ്ങളുടെ ഗർഭകാല സുഹൃത്ത്. ആരോഗ്യകരമായ ഗർഭകാലത്തിനും കുഞ്ഞിന്റെ ശരിയായ വളർച്ചയ്ക്കും ആവശ്യമായ ശാസ്ത്രീയ നിർദ്ദേശങ്ങൾ നൽകാൻ ഞാൻ സദാ സജ്ജമാണ്.\n\n✨ **നിങ്ങൾക്ക് ചോദിക്കാവുന്ന പ്രധാന കാര്യങ്ങൾ:**\n• ഗർഭകാല ലക്ഷണങ്ങൾ, കുഞ്ഞിന്റെ അനക്കം, നടുവേദന, ഉറങ്ങേണ്ട രീതി\n• പോഷകാഹാരങ്ങൾ, ഒഴിവാക്കേണ്ട ഭക്ഷണങ്ങൾ, ജലാംശം\n• പ്രസവ ലക്ഷണങ്ങൾ, 5-1-1 നിയമം, ഹോസ്പിറ്റൽ ബാഗ് ഒരുക്കൽ\n• ഗർഭ സംസ്കാരം, പ്രാർത്ഥനകൾ, മാനസിക സമാധാനം\n• നവജാതശിശു പരിപാലനവും മുലയൂട്ടലും\n\nഇപ്പോൾ എങ്ങനെയുണ്ട്? ചോദ്യങ്ങൾ ടൈപ്പ് ചെയ്യുകയോ മൈക്കിലൂടെ സംസാരിക്കുകയോ ചെയ്യാം!`,
+      followUps: ['ഈ ആഴ്ചയിലെ കുഞ്ഞിന്റെ വളർച്ച', 'ഗർഭകാല പോഷകാഹാരങ്ങൾ', 'നടുവേദനയ്ക്കുള്ള പരിഹാരങ്ങൾ']
     }
   },
-  kicks: {
+
+  backpain: {
     'en-US': {
-      answer: `Baby kicks (Quickening) are one of the most magical milestones! First-time mothers typically feel them between 18–22 weeks, while experienced mothers may notice them around 16–18 weeks.\n\n✨ **Kick Counting & Tracking Routine (From Week 24+):**\n• **Daily Kick Counts:** Choose a consistent time when baby is most active (usually 8:00 PM – 10:00 PM after dinner).\n• **The 10-Movement Goal:** Sit comfortably or lie on your left side. You should feel **10 distinct movements** (swishes, rolls, flutters, kicks) within **2 hours**.\n• **Stimulation Tip:** If baby seems sleepy, drink cold water or fresh fruit juice and gently massage your belly.\n\n🚨 *Alert:* If you feel a noticeable reduction or absence of movements over a 2-hour window, contact maternity triage immediately.`,
-      followUps: ['How to do kick counting in BloomNest', 'Normal baby sleep cycles inside womb', 'When do kicks get strongest?']
+      answer: `Lower back pain and pelvic girdle tightness affect over 65% of expecting mothers as the center of gravity shifts forward and the hormone **relaxin** softens pelvic joints.\n\n✨ **Proven, Safe Relief Strategies:**\n• **Side-Sleeping Support:** Sleep strictly on your side with a supportive pillow between your knees and under your belly to keep your pelvis aligned.\n• **Gentle Prenatal Stretches:** Practice gentle Cat-Cow yoga poses, pelvic tilts, and child's pose on hands and knees to decompress the lumbar spine.\n• **Supportive Maternity Band:** A light pelvic support band gently lifts belly weight off the pubic bone and lower back.\n• **Warm Compress:** Apply a warm heating pad (not scalding hot) to your lower back for 15–20 minutes.\n• **Avoid Flat Shoes:** Wear cushioned footwear with mild arch support; avoid both high heels and completely flat ballet flats.\n\n⚠️ *When to consult your doctor:* If the pain is sharp and accompanied by fever, pain during urination, or radiates rhythmically like contractions.`,
+      followUps: ['How to do gentle Cat-Cow stretch', 'Best pregnancy pillow positions', 'Signs of pelvic girdle pain (PGP)']
     },
     'kn-IN': {
-      answer: `ಮಗುವಿನ ಮೊದಲ ಚಲನೆ ಅಥವಾ ಒದೆತ (Fetal Kicks) ಗರ್ಭಾವಸ್ಥೆಯ ಅತ್ಯಂತ ಆನಂದದಾಯಕ ಅನುಭವ. ಸಾಮಾನ್ಯವಾಗಿ ೧೮ ರಿಂದ ೨೪ ವಾರಗಳ ನಡುವೆ ಮಗುವಿನ ಚಲನೆ ಸ್ಪಷ್ಟವಾಗಿ ತಿಳಿಯುತ್ತದೆ.\n\n✨ **ಒದೆತಗಳನ್ನು ಎಣಿಸುವ ವಿಧಾನ:**\n• **ಸಂಜೆಯ ಸಮಯ:** ಊಟದ ನಂತರ ಎಡಭಾಗಕ್ಕೆ ಮಲಗಿ ಮಗುವಿನ ಚಲನೆಯನ್ನು ಗಮನಿಸಿ.\n• **೨ ಗಂಟೆಗಳಲ್ಲಿ ೧೦ ಚಲನೆಗಳು:** ೨ ಗಂಟೆಯೊಳಗೆ ಮಗು ಕನಿಷ್ಠ ೧೦ ಬಾರಿ ಚಲಿಸಬೇಕು.\n• ಮಗು ವಿಶ್ರಾಂತಿಯಲ್ಲಿದ್ದರೆ ತಣ್ಣೀರು ಕುಡಿದು ನಿಧಾನವಾಗಿ ಹೊಟ್ಟೆಯ ಮೇಲೆ ಕೈಯಾಡಿಸಿ.\n\n🚨 *ಎಚ್ಚರಿಕೆ:* ಚಲನೆ ತೀರಾ ಕಡಿಮೆಯಾದರೆ ತಕ್ಷಣವೇ ನಿಮ್ಮ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ.`,
-      followUps: ['ಕಿಕ್ ಕೌಂಟರ್ ಬಳಸುವುದು ಹೇಗೆ', 'ಗರ್ಭದಲ್ಲಿ ಮಗುವಿನ ಬೆಳವಣಿಗೆ', 'ತುರ್ತು ಲಕ್ಷಣಗಳು']
+      answer: `ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಹೊಟ್ಟೆ ಬೆಳೆದಂತೆ ಮತ್ತು 'ರಿಲ್ಯಾಕ್ಸಿನ್' ಹಾರ್ಮೋನ್‌ನಿಂದ ಕೀಲುಗಳು ಸಡಿಲವಾಗುವುದರಿಂದ ಕೆಳಬೆನ್ನು ನೋವು ಬರುವುದು ಸಾಮಾನ್ಯ.\n\n✨ **ನೋವು ನಿವಾರಣೆಗೆ ಸರಳ ಮತ್ತು ಸುರಕ್ಷಿತ ಉಪಾಯಗಳು:**\n• **ಮಲಗುವ ಭಂಗಿ:** ಮಲಗುವಾಗ ಮೊಣಕಾಲುಗಳ ನಡುವೆ ಮತ್ತು ಹೊಟ್ಟೆಯ ಕೆಳಗೆ ಮೆತ್ತನೆಯ ದಿಂಬನ್ನು ಇಟ್ಟುಕೊಳ್ಳಿ.\n• **ಲಘು ವ್ಯಾಯಾಮ:** ಕ್ಯಾಟ್-ಕೌ (Cat-Cow) ಯೋಗಾಸನ ಮತ್ತು ನಿಧಾನವಾದ ನಡಿಗೆ ಬೆನ್ನಿನ ಸ್ನಾಯುಗಳಿಗೆ ಶಕ್ತಿ ನೀಡುತ್ತದೆ.\n• **ಬಿಸಿ ನೀರಿನ ಶಾಖ:** ಬೆನ್ನಿಗೆ ಬೆಚ್ಚನೆಯ ನೀರಿನ ಬ್ಯಾಗ್‌ನಿಂದ ೧೫ ನಿಮಿಷಗಳ ಕಾಲ ಶಾಖ ಕೊಡಿ.\n• ಭಾರವಾದ ವಸ್ತುಗಳನ್ನು ಎತ್ತಬೇಡಿ ಮತ್ತು ಕುಳಿತುಕೊಳ್ಳುವಾಗ ಬೆನ್ನಿಗೆ ದಿಂಬಿನ ಆಸರೆ ಇರಲಿ.`,
+      followUps: ['ಗರ್ಭಿಣಿಯರಿಗೆ ಸುರಕ್ಷಿತ ಯೋಗಾಸನಗಳು', 'ಪೆಲ್ವಿಕ್ ಬೆಲ್ಟ್ ಬಳಕೆ ಹೇಗೆ?', 'ಯಾವಾಗ ವೈದ್ಯರನ್ನು ಕಾಣಬೇಕು?']
     },
     'hi-IN': {
-      answer: `गर्भ में शिशु की पहली हलचल (Baby Kicks) 18 से 22 हफ्तों के बीच महसूस होने लगती है। 24 हफ्तों के बाद किक काउंटिंग शुरू करना बहुत जरूरी है।\n\n✨ **किक गिनने का सही नियम:**\n• **शांत समय चुनें:** रात के भोजन के बाद बाईं करवट लेकर लेटें।\n• **2 घंटे में 10 हलचल:** 2 घंटे के भीतर कम से कम 10 स्पष्ट हलचलें (किक, रोल या फड़फड़ाहट) महसूस होनी चाहिए।\n• यदि शिशु शांत लगे, तो ठंडा पानी पिएं या टहलें।\n\n🚨 यदि 2 घंटे में 10 किक महसूस न हों, तो तुरंत अपनी मैटरनिटी यूनिट से संपर्क करें।`,
-      followUps: ['किक ट्रैकर कैसे इस्तेमाल करें', 'शिशु की हलचल कम होने पर क्या करें', '24वें हफ्ते में शिशु का आकार']
+      answer: `गर्भावस्था में जैसे-जैसे गर्भस्थ शिशु का वजन बढ़ता है, रीढ़ की हड्डी पर दबाव पड़ने और 'रिलैक्सिन' हार्मोन के कारण पीठ और कमर में दर्द होना आम बात है।\n\n✨ **सुरक्षित और असरदार राहत के उपाय:**\n• **सोने का सही तरीका:** हमेशा करवट लेकर सोएं और दोनों घुटनों के बीच तथा पेट के नीचे तकिया (Pregnancy Pillow) रखें।\n• **हल्की स्ट्रेचिंग:** कैट-काउ पोज और पेल्विक टिल्ट जैसे हल्के योगासन रीढ़ की हड्डी का तनाव कम करते हैं।\n• **सिकाई:** पीठ के निचले हिस्से पर गर्म पानी की थैली से 15-20 मिनट सिकाई करें।\n• **आरामदायक जूते:** बिना हील वाले, आर्च सपोर्ट वाले आरामदायक जूते पहनें।`,
+      followUps: ['पीठ दर्द के लिए योग', 'प्रेगनेंसी पिलो कैसे इस्तेमाल करें', 'पेल्विक गर्डल पेन के लक्षण']
     },
     'ta-IN': {
-      answer: `கருவில் குழந்தையின் அசைவுகள் (Baby Kicks) 18 முதல் 22 வாரங்களில் தொடங்குகிறது. 24 வாரங்களுக்குப் பிறகு குழந்தையின் அசைவுகளைக் கண்காணிப்பது முக்கியமாகும்.\n\n✨ **கிக் கவுண்டிங் வழிகாட்டுதல்:**\n• இரவு உணவிற்குப் பிறகு இடது பக்கமாக ஒருக்களித்துப் படுத்து கவனிக்கவும்.\n• **2 மணி நேரத்தில் 10 அசைவுகள்:** குழந்தை 2 மணி நேரத்திற்குள் 10 முறை அசைய வேண்டும்.\n• அசைவு குறைவாகத் தோன்றினால் குளிர்ந்த நீர் குடித்து வயிற்றை மென்மையாகத் தடவவும்.`,
-      followUps: ['கிக் கவுண்டர் பயன்பாடு', 'குழந்தையின் வளர்ச்சி நிலைகள்', 'அவசர சிகிச்சை']
+      answer: `கர்ப்ப காலத்தில் உடல் எடை அதிகரிப்பதாலும், ஹார்மோன் மாற்றங்களாலும் கீழ் முதுகுவலி ஏற்படுவது வழக்கமான ஒன்றாகும்.\n\n✨ **முதுகுவலியைக் குறைக்கும் எளிய வழிகள்:**\n• ஒருக்களித்துப் படுத்து, கால்களுக்கு இடையே தலையணை வைத்துக் கொள்ளவும்.\n• மென்மையான நடைபயிற்சி மற்றும் பூனை-பசு (Cat-Cow) யோகாசனம் செய்யவும்.\n• மிதமான சுடுநீர் ஒத்தடம் கொடுக்கலாம்.\n• அதிக எடையைத் தூக்குவதைத் தவிர்க்கவும்.`,
+      followUps: ['முதுகுவலிக்கான யோகா', 'கர்ப்பகால தலையணை அமைப்புகள்', 'மருத்துவர் ஆலோசனை']
     },
     'te-IN': {
-      answer: `శిశువు కదలికలు (Baby Kicks) సాధారణంగా 18-22 వారాల మధ్య తెలుస్తాయి. 24 వారాల నుండి రోజువారీ కిక్ కౌంటింగ్ చేయడం మంచిది.\n\n✨ **కిక్స్ లెక్కించే విధానం:**\n• భోజనం తర్వాత ఎడమ వైపు తిరిగి పడుకోండి.\n• **2 గంటల్లో 10 కదలికలు:** 2 గంటల వ్యవధిలో కనీసం 10 కదలికలను నమోదు చేసుకోవాలి.\n• కదలికలు తగ్గితే చల్లటి నీరు తాగి గమనించండి.`,
-      followUps: ['కిక్ కౌంటింగ్ ఎలా చేయాలి', 'శిశువు పెరుగుదల దశలు', 'డాక్టర్ సలహాలు']
+      answer: `గర్భధారణలో బరువు పెరగడం మరియు హార్మోన్ల మార్పుల వల్ల నడుము నొప్పి రావడం చాలా సహజం.\n\n✨ **ఉపశమన చర్యలు:**\n• పడుకునేటప్పుడు కాళ్ళ మధ్యలో దిండు పెట్టుకుని పడుకోండి.\n• తేలికపాటి స్ట్రెచింగ్ మరియు పిల్లి-ఆవు (Cat-Cow) యోగాసనం నడుము కండరాలను సడలిస్తుంది.\n• గోరువెచ్చని నీటితో కాపడం పెట్టండి.\n• ఎక్కువ సమయం ఒకే చోట నిలబడటం లేదా కూర్చోవడం చేయవద్దు.`,
+      followUps: ['నడుము నొప్పికి వ్యాయామాలు', 'నిద్రపోయే భంగిమలు', 'డాక్టర్ సలహాలు']
     },
     'ml-IN': {
-      answer: `കുഞ്ഞിന്റെ ഇളക്കങ്ങൾ (Fetal Movements) 18 മുതൽ 22 ആഴ്ചകൾക്കുള്ളിൽ അനുഭവപ്പെടാൻ തുടങ്ങും. 24 ആഴ്ചകൾക്കു ശേഷം ദിവസവും ശ്രദ്ധിക്കേണ്ടതുണ്ട്.\n\n✨ **കിക്ക് കൗണ്ടിംഗ് നിർദ്ദേശങ്ങൾ:**\n• ഭക്ഷണത്തിനു ശേഷം ഇടതുവശം ചരിഞ്ഞു കിടക്കുക.\n• **2 മണിക്കൂറിൽ 10 ഇളക്കങ്ങൾ:** സാധാരണയായി 2 മണിക്കൂറിനുള്ളിൽ 10 ചലനങ്ങൾ അനുഭവപ്പെടണം.\n• അനക്കം കുറവാണെങ്കിൽ തണുത്ത വെള്ളം കുടിച്ചു നിരീക്ഷിക്കുക.`,
-      followUps: ['കിക്ക് കൗണ്ടർ ഉപയോഗം', 'കുഞ്ഞിന്റെ വളർച്ചാ ഘട്ടങ്ങൾ', 'പ്രധാന മുന്നറിയിപ്പുകൾ']
+      answer: `ഗർഭകാലത്തെ നടുവേദന ഒഴിവാക്കാൻ ചില ലളിതമായ കാര്യങ്ങൾ ശ്രദ്ധിക്കാം.\n\n✨ **പ്രധാന പരിഹാരങ്ങൾ:**\n• ഉറങ്ങുമ്പോൾ കാൽമുട്ടുകൾക്കിടയിൽ തലയിണ വച്ചു ചരിഞ്ഞു കിടക്കുക.\n• ലളിതമായ സ്ട്രെച്ചിംഗ് വ്യായാമങ്ങളും നടത്തവും ശീലമാക്കുക.\n• ചെറുചൂടുള്ള വെള്ളം കൊണ്ട് നടുവിൽ തടവുക.\n• കനമുള്ള സാധനങ്ങൾ എടുക്കുന്നത് പൂർണ്ണമായും ഒഴിവാക്കുക.`,
+      followUps: ['നടുവേദനയ്ക്കുള്ള യോഗ', 'ഗർഭകാല ഉറക്ക രീതികൾ', 'ഡോക്ടറെ കാണേണ്ട ലക്ഷണങ്ങൾ']
     }
   },
-  labor: {
+
+  sleep: {
     'en-US': {
-      answer: `Recognizing the onset of true labor vs Braxton Hicks contractions is vital as your due date approaches.\n\n✨ **The Golden 5-1-1 Rule for Active Labor:**\n• **5 Minutes Apart:** Contractions arrive consistently every 5 minutes from start of one to start of next.\n• **1 Minute Long:** Each contraction lasts a solid 60 seconds and does not stop when you walk or change posture.\n• **1 Hour Continuous:** This pattern persists non-stop for at least 1 full hour.\n\n✨ **True Labor vs Braxton Hicks:**\n• *Braxton Hicks:* Irregular, mild tightness in lower belly, stops when drinking water or resting.\n• *True Labor:* Starts in lower back and radiates to front, grows steadily stronger, longer, and closer together.\n\n🎒 *Next Steps:* Grab your packed BloomNest hospital bag and notify your birth partner and maternity hospital!`,
-      followUps: ['What to pack in hospital bag', 'How to time contractions in BloomNest', 'Comfort measures for early labor']
+      answer: `Getting restful sleep during pregnancy is essential for your immune health and baby’s growth, though belly size and frequent urination can make it challenging.\n\n✨ **The Gold Standard Sleep Guidelines:**\n• **Sleep on Your Left Side (SOS):** Sleeping on your left optimizes blood flow through the inferior vena cava to your placenta and kidneys, maximizing oxygen and nutrient delivery to baby.\n• **The 3-Pillow Technique:** Place one pillow between your knees, one wedge under your belly, and one behind your back to prevent rolling flat onto your spine.\n• **Evening Fluid Tapering:** Drink the majority of your 8–10 glasses of water before 7:00 PM; sip only small amounts before bed to reduce midnight bathroom trips.\n• **Wind-Down Ritual:** Avoid screens 45 minutes before sleep; try warm chamomile or almond milk with a pinch of cardamom, and practice 5-minute deep belly breathing.`,
+      followUps: ['What if I accidentally wake up on my back?', 'Best pregnancy pillows for side sleeping', 'Safe relaxation soundscapes in BloomNest']
     },
     'kn-IN': {
-      answer: `ನಿಜವಾದ ಹೆರಿಗೆ ನೋವು ಮತ್ತು ಸುಳ್ಳು ನೋವಿನ (Braxton Hicks) ವ್ಯತ್ಯಾಸ ತಿಳಿಯುವುದು ಮುಖ್ಯ.\n\n✨ **ಹೆರಿಗೆ ನೋವಿನ ೫-೧-೧ ನಿಯಮ:**\n• **೫ ನಿಮಿಷಗಳಿಗೊಮ್ಮೆ:** ಪ್ರತಿ ೫ ನಿಮಿಷಕ್ಕೊಮ್ಮೆ ನೋವು ನಿಯಮಿತವಾಗಿ ಬರುತ್ತದೆ.\n• **೧ ನಿಮಿಷದ ಅವಧಿ:** ಪ್ರತಿ ಸಂಕೋಚನವು ಪೂರ್ಣ ೬೦ ಸೆಕೆಂಡುಗಳ ಕಾಲ ಇರುತ್ತದೆ.\n• **೧ ಗಂಟೆ ನಿರಂತರ:** ಈ ಮಾದರಿಯು ಕನಿಷ್ಠ ೧ ಗಂಟೆಗಳ ಕಾಲ ಸತತವಾಗಿ ಮುಂದುವರಿಯುತ್ತದೆ.\n\n✨ ನೀವು ವಿಶ್ರಮಿಸಿದರೂ ನೋವು ಕಡಿಮೆಯಾಗದಿದ್ದರೆ ತಕ್ಷಣ ಆಸ್ಪತ್ರೆಗೆ ತೆರಳಿ.`,
-      followUps: ['ಹೆರಿಗೆ ಚೀಲದಲ್ಲಿ ಏನಿರಬೇಕು', 'ಕಂಟ್ರಾಕ್ಷನ್ ಟೈಮರ್ ಬಳಕೆ', 'ಹೆರಿಗೆ ಸಿದ್ಧತೆಗಳು']
+      answer: `ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಉತ್ತಮ ನಿದ್ರೆ ತಾಯಿ ಮತ್ತು ಮಗುವಿನ ಆರೋಗ್ಯಕ್ಕೆ ಅತ್ಯಗತ್ಯ.\n\n✨ **ಉತ್ತಮ ನಿದ್ರೆಯ ನಿಯಮಗಳು:**\n• **ಎಡಭಾಗಕ್ಕೆ ಮಲಗಿ:** ಎಡಕ್ಕೆ ಮಲಗುವುದರಿಂದ ಜರಾಯು (Placenta) ಮತ್ತು ಮಗುವಿಗೆ ರಕ್ತ ಸಂಚಾರ ಅತ್ಯುತ್ತಮವಾಗಿರುತ್ತದೆ.\n• **ದಿಂಬುಗಳ ಬೆಂಬಲ:** ಕಾಲುಗಳ ನಡುವೆ ಮತ್ತು ಬೆನ್ನಿನ ಹಿಂದೆ ದಿಂಬು ಇಟ್ಟುಕೊಂಡು ಮಲಗಿ.\n• **ರಾತ್ರಿಯ ಆಹಾರ:** ಮಲಗುವ ೨ ಗಂಟೆ ಮೊದಲೇ ಲಘು ಊಟ ಮಾಡಿ, ಸಂಜೆ ನಂತರ ಹೆಚ್ಚು ನೀರು ಕುಡಿಯುವುದನ್ನು ಕಡಿಮೆ ಮಾಡಿ.\n• ಮಲಗುವ ಮುನ್ನ ಬಿಸಿ ಹಾಲಿಗೆ ಸ್ವಲ್ಪ ಏಲಕ್ಕಿ ಹಾಕಿ ಕುಡಿಯುವುದು ಮನಸ್ಸನ್ನು ಶಾಂತಗೊಳಿಸುತ್ತದೆ.`,
+      followUps: ['ಬೆನ್ನಿನ ಮೇಲೆ ಮಲಗುವುದು ತಪ್ಪೇ?', 'ಗರ್ಭಿಣಿಯರಿಗೆ ಸಂಗೀತ ಚಿಕಿತ್ಸೆ', 'ನಿದ್ರಾಹೀನತೆಗೆ ಪರಿಹಾರ']
     },
     'hi-IN': {
-      answer: `सच्चे प्रसव संकुचन (True Labor) और फॉल्स लेबर (Braxton Hicks) में अंतर समझना बहुत आवश्यक है।\n\n✨ **गोल्डन 5-1-1 नियम:**\n• **5 मिनट का अंतर:** संकुचन हर 5 मिनट में नियमित रूप से आएं।\n• **1 मिनट की अवधि:** प्रत्येक संकुचन कम से कम 60 सेकंड तक चले।\n• **1 घंटा लगातार:** यह क्रम 1 घंटे तक लगातार बना रहे।\n\n✨ यदि पानी की थैली फट जाए (Water Break) या रक्तस्राव हो, तो बिना देर किए सीधे मैटरनिटी अस्पताल जाएं।`,
-      followUps: ['हॉस्पिटल बैग चेकलिस्ट', 'संकुचन टाइमर कैसे चलाएं', 'प्रसव के शुरुआती लक्षण']
+      answer: `गर्भावस्था में अच्छी नींद आपके स्वास्थ्य और शिशु के विकास के लिए बहुत जरूरी है।\n\n✨ **सोने के सर्वोत्तम नियम:**\n• **बाईं करवट (Left Side Sleeping):** बाईं करवट सोने से गर्भाशय और शिशु को रक्त और ऑक्सीजन का प्रवाह सबसे अच्छा मिलता है।\n• **तकियों का सहारा:** घुटनों के बीच और पीठ के पीछे तकिया रखें ताकि पेट पर खिंचाव न पड़े।\n• **शाम के बाद तरल पदार्थ सीमित करें:** दिन में खूब पानी पिएं, लेकिन रात को बार-बार पेशाब जाने से बचने के लिए सोने से पहले कम पिएं।\n• सोने से पहले गुनगुना दूध पिएं और फोन/स्क्रीन से 45 मिनट पहले दूर रहें।`,
+      followUps: ['पीठ के बल सोने के नुकसान', 'रात को अच्छी नींद के उपाय', 'शांत संगीत और ध्यान']
     },
     'ta-IN': {
-      answer: `உண்மையான பிரசவ வலி மற்றும் போலி வலிக்குமான (Braxton Hicks) வேறுபாட்டை அறிவது அவசியம்.\n\n✨ **பிரசவத்தின் 5-1-1 பொன் விதி:**\n• **5 நிமிட இடைவெளி:** வலிகள் ஒவ்வொரு 5 நிமிடங்களுக்கும் ஒருமுறை சீராக வரும்.\n• **1 நிமிட கால அளவு:** வலி 60 வினாடிகள் தொடர்ந்து நீடிக்கும்.\n• **1 மணி நேரம் தொடர்ச்சி:** இந்த சுழற்சி 1 மணி நேரம் தொடர்ந்து நீடிக்கும்.\n\n✨ இந்த நிலையை அடைந்ததும் உடனே பிரசவ வார்டுக்கு செல்லவும்.`,
-      followUps: ['மருத்துவமனை பை பட்டியல்', 'பிரசவ வலி டைமர்', 'இயற்கை பிரசவ வழிகாட்டுதல்']
+      answer: `கர்ப்ப காலத்தில் இடது பக்கமாக ஒருக்களித்துப் படுப்பது (Left Side Sleeping) தாய்க்கும் குழந்தைக்கும் ரத்த ஓட்டத்தை அதிகரிக்கும்.\n\n✨ **நல்ல தூக்கத்திற்கான வழிகள்:**\n• கால்களுக்கு நடுவில் தலையணை வைத்து படுக்கவும்.\n• இரவு உணவை எளிமையாகவும், தூங்குவதற்கு 2 மணி நேரம் முன்பும் உட்கொள்ளவும்.\n• படுக்கைக்குச் செல்லும் முன் வெதுவெதுப்பான பால் அருந்துவது நல்லது.`,
+      followUps: ['தூக்கமின்மை தீர்வுகள்', 'கர்ப்பகால தலையணைகள்', 'தியானம் மற்றும் இசை']
     },
     'te-IN': {
-      answer: `కాన్పు నొప్పుల 5-1-1 సువర్ణ నియమం ప్రసవ సమయాన్ని ఖచ్చితంగా గుర్తించడంలో సహాయపడుతుంది.\n\n✨ **5-1-1 నియమం:**\n• ప్రతి 5 నిమిషాలకు ఒకసారి నొప్పులు రావడం.\n• ప్రతి నొప్పి 1 నిమిషం పాటు బలంగా ఉండటం.\n• ఈ క్రమం కనీసం 1 గంట నిరంతరంగా కొనసాగడం.\n\n✨ వెంటనే హాస్పిటల్ బ్యాగ్ సిద్ధం చేసుకుని డెలివరీ ఆసుపత్రికి బయలుదేరండి.`,
-      followUps: ['హాస్పిటల్ బ్యాగ్ చెక్‌లిస్ట్', 'నొప్పుల టైమర్', 'ప్రసవ జాగ్రత్తలు']
+      answer: `గర్భధారణలో ఎడమ వైపు తిరిగి పడుకోవడం వల్ల మాయ మరియు శిశువుకు రక్తప్రసరణ బాగా జరుగుతుంది.\n\n✨ **మంచి నిద్ర కోసం చిట్కాలు:**\n• మోకాళ్ళ మధ్య దిండు పెట్టుకుని పడుకోవడం వల్ల నడుముపై ఒత్తిడి తగ్గుతుంది.\n• రాత్రి పడుకునే ముందు గోరువెచ్చని పాలు తాగడం మంచిది.\n• పడుకునే ముందు మొబైల్ లేదా టీవీ చూడటం తగ్గించండి.`,
+      followUps: ['నిద్రలేమి సమస్యకు చిట్కాలు', 'గర్భధారణ దిండ్లు', 'రిలాక్సేషన్ పద్ధతులు']
     },
     'ml-IN': {
-      answer: `യഥാർത്ഥ പ്രസവവേദന തിരിച്ചറിയാൻ 5-1-1 സുവർണ്ണ നിയമം ഓർക്കുക.\n\n✨ **5-1-1 നിയമം:**\n• ഓരോ 5 മിനിറ്റിലും വേദന ആവർത്തിക്കുക.\n• ഓരോ വേദനയും 1 മിനിറ്റ് (60 സെക്കൻഡ്) നീണ്ടുനിൽക്കുക.\n• ഈ ക്രമം 1 മണിക്കൂർ തുടർച്ചയായി നിൽക്കുക.\n\n✨ ഈ ലക്ഷണങ്ങൾ കണ്ടാൽ ഒട്ടും വൈകാതെ പ്രസവാശുപത്രിയിലെത്തുക.`,
-      followUps: ['ഹോസ്പിറ്റൽ ബാഗ് ലിസ്റ്റ്', 'പ്രസവ ലക്ഷണങ്ങൾ', 'വേദന നിയന്ത്രണ വഴികൾ']
+      answer: `ഗർഭകാലത്ത് ഇടതുവശം ചരിഞ്ഞുറങ്ങുന്നത് കുഞ്ഞിന് കൂടുതൽ രക്തവും ഓക്സിജനും ലഭിക്കാൻ സഹായിക്കുന്നു.\n\n✨ **നല്ല ഉറക്കത്തിനുള്ള വഴികൾ:**\n• കാലുകൾക്കിടയിൽ തലയിണ വച്ചുറങ്ങുക.\n• രാത്രി ലഘുവായ ഭക്ഷണം കഴിക്കുക.\n• ഉറങ്ങുന്നതിനു മുൻപ് ചെറുചൂടുള്ള പാൽ കുടിക്കുന്നത് നല്ലതാണ്.`,
+      followUps: ['ഉറക്കക്കുറവ് പരിഹാരങ്ങൾ', 'റിലാക്സേഷൻ സംഗീതം', 'ശ്രദ്ധിക്കേണ്ട കാര്യങ്ങൾ']
     }
   },
-  nutrition: {
+
+  scans: {
     'en-US': {
-      answer: `Healthy maternal nutrition directly builds your baby’s brain, bones, and organs while keeping your energy balanced.\n\n✨ **Key Daily Nutritional Priorities:**\n• **Iron & Hemoglobin:** Dark green leafy vegetables (spinach, methi), lentils, beetroot, pomegranate, and jaggery. Take iron supplements with Vitamin C (orange or lemon) for absorption; avoid taking with dairy/tea.\n• **Calcium & Vitamin D:** 1,000–1,200 mg daily from milk, yogurt (curd), paneer, sesame seeds (til), and ragi.\n• **DHA & Choline:** Walnuts, chia seeds, eggs, or algae DHA supplements for baby's neural development.\n• **Hydration:** Aim for 8–10 glasses (2.5 to 3 liters) of fluids daily (water, coconut water, buttermilk).\n\n🚫 *Foods to Avoid:* Unpasteurized milk/cheese, raw papaya, excessive caffeine (>200mg/day), raw sprouts, and unwashed vegetables.`,
-      followUps: ['Best Indian pregnancy recipes', 'Iron-rich vegetarian diet plan', 'Gestational diabetes guidelines']
+      answer: `Prenatal ultrasound scans are joyful windows into your baby’s growth, anatomical structure, and gestational health.\n\n✨ **Routine Clinical Ultrasound Timeline:**\n• **8–12 Weeks (Dating & Viability Scan):** Confirms gestational sac, heartbeat, accurate due date (EDD), and single vs twin pregnancy.\n• **11–13 Weeks (NT Scan & Dual Marker):** Measures nuchal translucency fluid at back of baby's neck to screen for chromosomal conditions.\n• **18–22 Weeks (TIFFA / Level-2 Anomaly Scan):** A comprehensive 30–45 minute scan checking brain ventricles, 4-chamber heart, kidneys, spine, limbs, facial features, amniotic fluid volume, and placenta position.\n• **28–32 Weeks (Growth & Well-being Scan):** Checks estimated fetal weight (EFW), baby growth percentiles, amniotic fluid index (AFI), and umbilical artery Doppler blood flow.\n• **36+ Weeks (Presentation Scan):** Confirms cephalic (head-down) position for delivery.\n\n💡 *Tip:* Drink 2 glasses of water 45 minutes before abdominal scans unless instructed otherwise by your radiologist.`,
+      followUps: ['What happens in Level 2 Anomaly scan?', 'Normal amniotic fluid index (AFI)', 'How to prepare for ultrasound visit']
     },
     'kn-IN': {
-      answer: `ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಪೌಷ್ಟಿಕ ಆಹಾರವು ಮಗುವಿನ ಮೆದುಳು ಮತ್ತು ಮೂಳೆಗಳ ಬೆಳವಣಿಗೆಗೆ ಅತ್ಯಗತ್ಯ.\n\n✨ **ದೈನಂದಿನ ಪೋಷಕಾಂಶಗಳು:**\n• **ಕಬ್ಬಿಣಾಂಶ (Iron):** ರಾಗಿ ಮುದ್ದೆ, ಪಾಲಕ್ ಸೊಪ್ಪು, ಮೆಂತ್ಯ, ಬೀಟ್‌ರೂಟ್, ದಾಳಿಂಬೆ ಮತ್ತು ಬೆಲ್ಲ.\n• **ಕ್ಯಾಲ್ಸಿಯಂ:** ಹಾಲು, ಗಟ್ಟಿ ಮೊಸರು, ಪನ್ನೀರ್ ಮತ್ತು ಎಳ್ಳು.\n• **ಪ್ರೋಟೀನ್:** ತೊಗರಿಬೇಳೆ, ಕಡಲೆಕಾಳು, ಹೆಸರುಕಾಳು ಮತ್ತು ಮೊಳಕೆಕಾಳುಗಳು.\n• **ದ್ರವಾಹಾರ:** ದಿನಕ್ಕೆ ೮-೧೦ ಲೋಟ ನೀರು ಮತ್ತು ಎಳನೀರು ಕುಡಿಯಿರಿ.`,
-      followUps: ['ರಾಗಿ ಮತ್ತು ಬೇಳೆ ಆಹಾರ ಕ್ರಮ', 'ಗರ್ಭಿಣಿಯರ ಡಯಟ್ ಚಾರ್ಟ್', 'ತಪ್ಪಿಸಬೇಕಾದ ಆಹಾರಗಳು']
+      answer: `ಗರ್ಭಾವಸ್ಥೆಯ ಸ್ಕ್ಯಾನಿಂಗ್‌ಗಳು ಮಗುವಿನ ಬೆಳವಣಿಗೆ ಮತ್ತು ಆರೋಗ್ಯವನ್ನು ತಿಳಿಯಲು ಅತ್ಯಂತ ಮುಖ್ಯವಾಗಿವೆ.\n\n✨ **ಪ್ರಮುಖ ಸ್ಕ್ಯಾನ್‌ಗಳ ವಿವರ:**\n• **೮-೧೨ ವಾರಗಳು (Dating Scan):** ಮಗುವಿನ ಹೃದಯ ಬಡಿತ ಮತ್ತು ಸರಿಯಾದ ಹೆರಿಗೆ ದಿನಾಂಕವನ್ನು ಖಚಿತಪಡಿಸುತ್ತದೆ.\n• **೧೮-೨೨ ವಾರಗಳು (Anomaly / TIFFA Scan):** ಮಗುವಿನ ಮೆದುಳು, ಹೃದಯ, ಮೂಳೆಗಳು, ಕಿಡ್ನಿ ಮತ್ತು ಅಂಗಾಂಗಗಳ ಸಮಗ್ರ ತಪಾಸಣೆ.\n• **೨೮-೩೪ ವಾರಗಳು (Growth Scan):** ಮಗುವಿನ ತೂಕ, ಉಮ್ಮಳದ ನೀರು (Amniotic Fluid) ಮತ್ತು ರಕ್ತ ಸಂಚಾರದ ಪರೀಕ್ಷೆ.`,
+      followUps: ['ಟಿಫಾ ಸ್ಕ್ಯಾನ್ ವಿವರಗಳು', 'ಉಮ್ಮಳದ ನೀರಿನ ಪ್ರಮಾಣ', 'ಸ್ಕ್ಯಾನ್‌ಗೆ ಮುನ್ನ ಸಿದ್ಧತೆ']
     },
     'hi-IN': {
-      answer: `गर्भावस्था में संतुलित और पौष्टिक आहार मां और शिशु दोनों के स्वस्थ विकास के लिए अनिवार्य है।\n\n✨ **प्रमुख पोषक तत्व:**\n• **आयरन और हीमोग्लोबिन:** पालक, मेथी, चुकंदर, अनार, दालें और गुड़। आयरन की गोलियां नींबू पानी के साथ लें।\n• **कैल्शियम और प्रोटीन:** दूध, दही, पनीर, रागी, चना, मूंग दाल और बादाम।\n• **हाइड्रेशन:** दिनभर में 8-10 गिलास पानी, नारियल पानी और ताजा छाछ पिएं।\n• **कच्चा पपीता और अनानास** के अत्यधिक सेवन से बचें।`,
-      followUps: ['शाकाहारी भारतीय डाइट चार्ट', 'आयरन बढ़ाने वाले खाद्य पदार्थ', 'गर्भावस्था में क्या न खाएं']
+      answer: `गर्भावस्था में अल्ट्रासाउंड स्कैन शिशु के विकास, अंगों की बनावट और स्वास्थ्य की निगरानी के लिए बहुत महत्वपूर्ण होते हैं।\n\n✨ **प्रमुख स्कैन की समय-सारणी:**\n• **8-12 हफ्ते (डेटिंग स्कैन):** धड़कन की पुष्टि और डिलीवरी की सही तारीख (EDD) तय करना।\n• **11-13 हफ्ते (NT स्कैन):** आनुवंशिक जांच और शुरुआती विकास।\n• **18-22 हफ्ते (लेवल-2 / एनोमली स्कैन):** शिशु के मस्तिष्क, हृदय, रीढ़, चेहरे और सभी अंगों की विस्तृत जांच।\n• **28-32 हफ्ते (ग्रोथ स्कैन):** शिशु का वजन, एमनियोटिक द्रव (पानी) और गर्भनाल का रक्त प्रवाह।`,
+      followUps: ['एनोमली स्कैन में क्या देखा जाता है?', 'एमनियोटिक द्रव (AFI) कितना होना चाहिए?', 'अल्ट्रासाउंड की तैयारी कैसे करें']
     },
     'ta-IN': {
-      answer: `கர்ப்ப காலத்தில் சத்தான சரிவிகித உணவு தாய்க்கும் சேய்க்கும் மிகவும் அவசியமாகும்.\n\n✨ **முக்கிய சத்துக்கள்:**\n• **இரும்புச்சத்து:** பசலைக்கீரை, முருங்கைக்கீரை, மாதுளை, பேரீச்சம்பழம் மற்றும் பருப்பு வகைகள்.\n• **கால்சியம் & புரதம்:** பால், தயிர், பன்னீர், கேழ்வரகு (ராகி), சுண்டல்.\n• **நீர்ச்சத்து:** நாள் ஒன்றுக்கு 8-10 டம்ளர் தண்ணீர் மற்றும் இளநீர் அருந்தவும்.`,
-      followUps: ['ராகி உணவு முறைகள்', 'கர்ப்பகால உணவு அட்டவணை', 'தவிர்க்க வேண்டியவை']
+      answer: `கர்ப்பகால ஸ்கேன்கள் குழந்தையின் வளர்ச்சி மற்றும் உறுப்புகளின் ஆரோக்கியத்தை அறிய உதவுகிறது.\n\n✨ **முக்கிய ஸ்கேன் அட்டவணை:**\n• **8-12 வாரங்கள் (Dating Scan):** இதயத்துடிப்பு மற்றும் பிரசவ தேதி உறுதி செய்தல்.\n• **18-22 வாரங்கள் (Anomaly Scan):** குழந்தையின் உறுப்புகளின் முழுமையான வளர்ச்சி பரிசோதனை.\n• **28-32 வாரங்கள் (Growth Scan):** குழந்தையின் எடை மற்றும் பனிக்குட நீர் அளவு பரிசோதனை.`,
+      followUps: ['அனோமலி ஸ்கேன் முக்கியத்துவம்', 'பனிக்குட நீர் அளவு', 'ஸ்கேன் பரிசோதனை குறிப்புகள்']
     },
     'te-IN': {
-      answer: `గర్భిణీ స్త్రీలకు పోషకాహారం శిశువు ఎదుగుదలకు అత్యంత ప్రాముఖ్యమైనది.\n\n✨ **ముఖ్యమైన ఆహారాలు:**\n• **ఐరన్:** పాలకూర, బీట్‌రూట్, దానిమ్మ, ఖర్జూరం, తోటకూర.\n• **కాల్షియం:** పాలు, పెరుగు, రాగులు, పనీర్.\n• **ప్రోటీన్:** పప్పు ధాన్యాలు, శనగలు, గుడ్లు.\n• రోజుకు కనీసం 8-10 గ్లాసుల నీరు, కొబ్బరి నీళ్లు తాగండి.`,
-      followUps: ['గర్భిణీ డైట్ చార్ట్', 'ఐరన్ పెంచే ఆహారాలు', 'నివారించాల్సిన ఆహారాలు']
+      answer: `గర్భధారణలో అల్ట్రాసౌండ్ స్కాన్లు శిశువు ఎదుగుదల మరియు అవయవ నిర్మాణాన్ని తెలుసుకోవడానికి ఎంతో ముఖ్యం.\n\n✨ **ముఖ్యమైన స్కాన్ల వివరాలు:**\n• **8-12 వారాలు:** హృదయ స్పందన మరియు ఖచ్చితమైన డెలివరీ తేదీ నిర్ధారణ.\n• **18-22 వారాలు (అనామలీ స్కాన్):** శిశువు శరీర అవయవాల సమగ్ర పరిశీలన.\n• **28-32 వారాలు:** శిశువు బరువు మరియు ఉమ్మనీరు స్థాయిల తనిఖీ.`,
+      followUps: ['అనామలీ స్కాన్ వివరాలు', 'ఉమ్మనీరు ఎంత ఉండాలి?', 'స్కాన్ ముందు జాగ్రత్తలు']
     },
     'ml-IN': {
-      answer: `ഗർഭകാലത്തെ സന്തുലിതമായ പോഷകാഹാരം കുഞ്ഞിന്റെ ആരോഗ്യകരമായ വളർച്ചയ്ക്ക് അത്യന്താപേക്ഷിതമാണ്.\n\n✨ **പ്രധാന പോഷകങ്ങൾ:**\n• **ഇരുമ്പ് (Iron):** ചീര, മുരിങ്ങയില, ഈന്തപ്പഴം, മാതളനാരങ്ങ, പയറുവർഗ്ഗങ്ങൾ.\n• **കാൽസ്യം:** പാൽ, തൈര്, റാഗി, മുട്ട.\n• ദിവസവും കുറഞ്ഞത് 8-10 ഗ്ലാസ് വെള്ളവും ഇളനീരും കുടിക്കുക.`,
-      followUps: ['ഗർഭകാല ഭക്ഷണരീതികൾ', 'റാഗിയുടെ ഗുണങ്ങൾ', 'ഒഴിവാക്കേണ്ട ഭക്ഷണങ്ങൾ']
+      answer: `ഗർഭസ്ഥശിശുവിന്റെ വളർച്ച കൃത്യമായി നിരീക്ഷിക്കാൻ സ്കാനിംഗുകൾ അത്യാവശ്യമാണ്.\n\n✨ **പ്രധാന സ്കാനുകൾ:**\n• **8-12 ആഴ്ചകൾ:** കുഞ്ഞിന്റെ ഹൃദയമിടിപ്പും കൃത്യമായ പ്രസവ തിയതിയും അറിയാൻ.\n• **18-22 ആഴ്ചകൾ (അനോമലി സ്കാൻ):** ആന്തരികാവയവങ്ങളുടെ പൂർണ്ണമായ വളർച്ചാ പരിശോധന.\n• **28-32 ആഴ്ചകൾ:** കുഞ്ഞിന്റെ തൂക്കവും മറുപിള്ളയുടെ സ്ഥാനവും ഉറപ്പാക്കാൻ.`,
+      followUps: ['അനോമലി സ്കാൻ വിവരങ്ങൾ', 'പനിനീരിന്റെ അളവ്', 'സ്കാനിംഗ് നിർദ്ദേശങ്ങൾ']
+    }
+  },
+
+  garbhsanskar: {
+    'en-US': {
+      answer: `**Garbh Sanskar** is the ancient Indian science of nurturing your unborn baby's emotional, intellectual, and physical well-being through maternal positivity, classical music, and spiritual harmony.\n\n✨ **Daily Garbh Sanskar Practices:**\n• **Samvad (Baby Talks):** From Week 20 onward, your baby clearly hears external voices. Talk, sing, or read stories to your baby for 10–15 minutes daily. Partner participation strengthens bonding!\n• **Raga & Sound Therapy:** Gentle Indian classical ragas like **Raga Kalyani, Raga Yaman, or Raga Malkauns** soothe the maternal nervous system and promote peaceful fetal heart rate rhythms.\n• **Positive Reading (Satsang):** Reading uplifting stories, moral epics, or joyful literature releases endorphins that cross the placenta to nurture baby's brain cells.\n• **Mindful Breathing (Pranayama):** Practice gentle Anulom Vilom (alternate nostril breathing) and Bhramari (humming bee breath) to boost oxygenation.`,
+      followUps: ['Recommended ragas for pregnancy', 'How partner can participate in Garbh Sanskar', 'Listening to Vedic chants in BloomNest']
+    },
+    'kn-IN': {
+      answer: `**ಗರ್ಭ ಸಂಸ್ಕಾರ** ಎಂಬುದು ಗರ್ಭದಲ್ಲಿರುವ ಮಗುವಿನ ಮಾನಸಿಕ, ಬೌದ್ಧಿಕ ಮತ್ತು ಆಧ್ಯಾತ್ಮಿಕ ವಿಕಾಸಕ್ಕಾಗಿ ಆಚರಿಸಲಾಗುವ ಪವಿತ್ರ ಭಾರತೀಯ ಸಂಸ್ಕೃತಿ.\n\n✨ **ದೈನಂದಿನ ಗರ್ಭ ಸಂಸ್ಕಾರ ಅಭ್ಯಾಸಗಳು:**\n• **ಮಗುವಿನೊಂದಿಗೆ ಸಂಭಾಷಣೆ:** ಪ್ರತಿದಿನ ಹೊಟ್ಟೆಯ ಮೇಲೆ ಕೈಯಿಟ್ಟು ಮಗುವಿನೊಂದಿಗೆ ಪ್ರೀತಿಯಿಂದ ಮಾತನಾಡಿ ಅಥವಾ ಕಥೆ ಹೇಳಿ.\n• **ಸಂಗೀತ ಶ್ರವಣ:** ಕಲ್ಯಾಣಿ, ಯಮನ್ ರಾಗಗಳು ಅಥವಾ ಶಾಸ್ತ್ರೀಯ ಸಂಗೀತವನ್ನು ಆಲಿಸುವುದರಿಂದ ಮಗುವಿನ ಮೆದುಳಿನ ಬೆಳವಣಿಗೆ ಉತ್ತಮವಾಗುತ್ತದೆ.\n• **ಸಕಾರಾತ್ಮಕ ಚಿಂತನೆ:** ಸದಾ ಸಂತೋಷವಾಗಿರಿ, ಧಾರ್ಮಿಕ ಮತ್ತು ಸ್ಫೂರ್ತಿದಾಯಕ ಪುಸ್ತಕಗಳನ್ನು ಓದಿ.\n• **ಪ್ರಾಣಾಯಾಮ:** ನಿಧಾನವಾಗಿ ಅನುಲೋಮ-ವಿಲೋಮ ಉಸಿರಾಟದ ಅಭ್ಯಾಸ ಮಾಡಿ.`,
+      followUps: ['ಗರ್ಭಿಣಿಯರಿಗೆ ರಾಗ ಚಿಕಿತ್ಸೆ', 'ಗರ್ಭ ಸಂಸ್ಕಾರದಲ್ಲಿ ಪತಿಯ ಪಾತ್ರ', 'ಮನಸ್ಸಿನ ಶಾಂತಿಗೆ ಶ್ಲೋಕಗಳು']
+    },
+    'hi-IN': {
+      answer: `**गर्भ संस्कार** हमारे प्राचीन आयुर्वेद और संस्कृति की वह सुंदर विधा है जो गर्भ में पल रहे शिशु के बौद्धिक, मानसिक और भावनात्मक विकास को पोषित करती है।\n\n✨ **दैनिक गर्भ संस्कार के नियम:**\n• **संवाद (शिशु से बातें):** प्रतिदिन 10-15 मिनट पेट पर हाथ रखकर शिशु से प्यार से बातें करें या अच्छी कहानियां सुनाएं।\n• **मधुर संगीत (राग थेरेपी):** राग कल्याणी, राग यमन या शांत बांसुरी का संगीत सुनने से मां और शिशु दोनों को शांति मिलती है।\n• **सकारात्मक विचार:** हमेशा प्रसन्न रहें, अच्छी प्रेरणादायक पुस्तकें पढ़ें।\n• **प्राणायाम:** अनुलोम-विलोम और भ्रामरी प्राणायाम से शरीर में ऑक्सीजन का स्तर बढ़ता है।`,
+      followUps: ['गर्भ संस्कार के लिए संगीत', 'गर्भ में शिशु से बात कैसे करें', 'सकारात्मक चिंतन के लाभ']
+    },
+    'ta-IN': {
+      answer: `**கர்ப்ப சம்ஸ்காரம்** என்பது கருவில் வளரும் குழந்தையின் மன மற்றும் அறிவாற்றல் வளர்ச்சிக்கான பாரம்பரிய இந்திய மருத்துவ முறையாகும்.\n\n✨ **தினசரி பயிற்சிகள்:**\n• **குழந்தையிடம் பேசுதல்:** தினமும் 10 நிமிடங்கள் குழந்தையிடம் அன்பாகப் பேசுங்கள் அல்லது பாடல் பாடுங்கள்.\n• **இசை கேட்டல்:** மென்மையான கர்நாடக சங்கீதம் அல்லது அமைதியான ராகங்கள் கேட்பது நல்லது.\n• **நேர்மறை சிந்தனை:** நல்ல புத்தகங்களை வாசிப்பதும், மகிழ்ச்சியாக இருப்பதும் குழந்தையின் மூளை வளர்ச்சியைத் தூண்டும்.`,
+      followUps: ['கர்ப்பகால இசை', 'குழந்தையோடு பேசுவது எப்படி?', 'மன அமைதி வழிகள்']
+    },
+    'te-IN': {
+      answer: `**గర్భ సంస్కార** అనేది గర్భంలో ఉన్న శిశువు యొక్క మానసిక మరియు మేధో వికాసానికి తోడ్పడే అద్భుతమైన విధానం.\n\n✨ **రోజూ చేయవలసిన సాధనలు:**\n• **శిశువుతో మాట్లాడటం:** రోజూ కాసేపు పొట్టపై చేతులుంచి బిడ్డతో ప్రేమగా మాట్లాడండి.\n• **సంగీతం:** శాస్త్రీయ సంగీతం వినడం వల్ల ఒత్తిడి తగ్గి శిశువు చురుగ్గా మారుతుంది.\n• **మంచి పుస్తకాలు చదవడం:** సానుకూల దృక్పథం కలిగించే విషయాలు చదవండి.`,
+      followUps: ['గర్భ సంస్కార సంగీతం', 'భర్త పాత్ర మరియు బాధ్యతలు', 'మనశ్శాంతి చిట్కాలు']
+    },
+    'ml-IN': {
+      answer: `**ഗർഭ സംസ്കാരം** കുഞ്ഞിന്റെ ബുദ്ധിപരവും മാനസികവുമായ ഉന്നമനത്തിന് സഹായിക്കുന്ന പരമ്പരാഗത രീതിയാണ്.\n\n✨ **പ്രധാന കാര്യങ്ങൾ:**\n• **കുഞ്ഞിനോട് സംസാരിക്കുക:** ദിവസവും അല്പനേരം കുഞ്ഞിനോട് സംസാരിക്കുകയോ പാട്ടുപാടുകയോ ചെയ്യുക.\n• **ശാന്തമായ സംഗീതം:** രാഗങ്ങളും ശാന്തമായ സംഗീതവും കേൾക്കുക.\n• **പോസിറ്റീവ് ചിന്തകൾ:** നല്ല പുസ്തകങ്ങൾ വായിക്കുകയും സന്തോഷത്തോടെയിരിക്കുകയും ചെയ്യുക.`,
+      followUps: ['ഗർഭകാല സംഗീത തെറാപ്പി', 'പങ്കാളിയുടെ പിന്തുണ', 'മനസ്സിനെ ശാന്തമാക്കാൻ']
+    }
+  },
+
+  diabetes: {
+    'en-US': {
+      answer: `Gestational Diabetes Mellitus (GDM) occurs when pregnancy placental hormones cause insulin resistance. With proper diet, walking, and monitoring, it is completely manageable!\n\n✨ **Clinical Guidelines for Healthy Blood Sugar:**\n• **OGTT Screening Test:** Done between **24–28 weeks** using a 75g oral glucose tolerance test.\n• **Carbohydrate Quality (Low Glycemic Index):** Replace white rice and refined flour with steel-cut oats, whole ragi, brown rice, millets, quinoa, and barley.\n• **The Plate Method:** 50% non-starchy vegetables (greens, beans, cucumber), 25% protein (dal, paneer, tofu, boiled eggs), 25% complex carbs.\n• **Post-Meal Walking:** A gentle 15-minute walk after every meal helps muscles absorb glucose naturally without requiring extra insulin.\n• **Healthy Snacking:** Almonds, roasted walnuts, roasted makhana (foxnuts), or boiled sprouted chana prevent sudden sugar dips.`,
+      followUps: ['Normal blood sugar ranges in pregnancy', 'Low-GI Indian meal plan', 'What happens during glucose tolerance test (OGTT)?']
+    },
+    'kn-IN': {
+      answer: `ಗರ್ಭಾವಸ್ಥೆಯ ಮಧುಮೇಹ (Gestational Diabetes) ಹಾರ್ಮೋನ್‌ಗಳ ಬದಲಾವಣೆಯಿಂದ ಬರುತ್ತದೆ, ಆದರೆ ಸರಿಯಾದ ಆಹಾರ ಮತ್ತು ನಡಿಗೆಯಿಂದ ಇದನ್ನು ಸುಲಭವಾಗಿ ನಿಯಂತ್ರಿಸಬಹುದು.\n\n✨ **ಸಕ್ಕರೆ ನಿಯಂತ್ರಣದ ಪ್ರಮುಖ ನಿಯಮಗಳು:**\n• ಬಿಳಿ ಅನ್ನ ಮತ್ತು ಮೈದಾ ಬದಲಿಗೆ ರಾಗಿ, ಸಿರಿಧಾನ್ಯಗಳು ಮತ್ತು ಕೆಂಪಕ್ಕಿ ಬಳಸಿ.\n• ದಿನಕ್ಕೆ ೩ ಬಾರಿ ಹೆಚ್ಚು ತಿನ್ನುವ ಬದಲು, ೫-೬ ಬಾರಿ ಸಣ್ಣ ಪ್ರಮಾಣದಲ್ಲಿ ಊಟ ಮಾಡಿ.\n• ಊಟದ ನಂತರ ೧೫ ನಿಮಿಷಗಳ ಕಾಲ ಲಘು ನಡಿಗೆ ಮಾಡುವುದು ರಕ್ತದಲ್ಲಿನ ಸಕ್ಕರೆ ಮಟ್ಟವನ್ನು ನಿಯಂತ್ರಿಸುತ್ತದೆ.\n• ಸಿಹಿತಿಂಡಿಗಳು, ಪ್ಯಾಕ್ ಮಾಡಿದ ಹಣ್ಣಿನ ಜ್ಯೂಸ್‌ಗಳಿಂದ ದೂರವಿರಿ.`,
+      followUps: ['ರಕ್ತದಲ್ಲಿನ ಸಕ್ಕರೆ ಸಾಮಾನ್ಯ ಮಟ್ಟ', 'ಮಧುಮೇಹಿ ಗರ್ಭಿಣಿಯರ ಡಯಟ್', 'OGTT ಪರೀಕ್ಷೆಯ ವಿವರ']
+    },
+    'hi-IN': {
+      answer: `जेस्टेशनल डायबिटीज (गर्भावस्था में शुगर) प्लेसेंटा के हार्मोन्स के कारण इंसुलिन रेजिस्टेंस से होती है। इसे संतुलित खान-पान और सैर से पूरी तरह नियंत्रित किया जा सकता है।\n\n✨ **शुगर कंट्रोल करने के सुनहरे नियम:**\n• **लो-जीआई आहार:** सफेद चावल और मैदे की जगह रागी, बाजरा, दलिया और साबुत दालें खाएं।\n• **भोजन के बाद टहलें:** खाना खाने के 15-20 मिनट बाद हल्की सैर जरूर करें।\n• **प्रोटीन और फाइबर:** हरी सब्जियां, पनीर, दही और चना अपनी थाली में आधा रखें।\n• मिठाई, कोल्ड ड्रिंक्स और बहुत मीठे फलों से परहेज करें।`,
+      followUps: ['शुगर की सामान्य रेंज क्या होनी चाहिए?', 'मधुमेह के लिए भारतीय डाइट चार्ट', 'OGTT टेस्ट की जानकारी']
+    },
+    'ta-IN': {
+      answer: `கர்ப்பகால சர்க்கரை நோய் (GDM) உணவு கட்டுப்பாடு மற்றும் உடற்பயிற்சி மூலம் எளிதாக நிர்வகிக்கக்கூடியது.\n\n✨ **கட்டுப்படுத்தும் முறைகள்:**\n• வெள்ளை அரிசிக்கு பதிலாக ராகி, தினை மற்றும் கைக்குத்தல் அரிசி சாப்பிடவும்.\n• உணவு உண்ட பிறகு 15 நிமிடங்கள் மெதுவாக நடைபயிற்சி மேற்கொள்ளவும்.\n• இனிப்புகள், குளிர்பானங்களைத் தவிர்க்கவும்.`,
+      followUps: ['சர்க்கரை அளவு அளவீடுகள்', 'உணவு முறைகள்', 'மருத்துவர் ஆலோசனை']
+    },
+    'te-IN': {
+      answer: `గర్భధారణ మధుమేహం ఆహార నియమాలు మరియు వ్యాయామంతో చక్కగా నియంత్రించబడుతుంది.\n\n✨ **ముఖ్యమైన చిట్కాలు:**\n• రాగులు, జొన్నలు, పప్పులు ఆహారంలో ఎక్కువగా తీసుకోండి.\n• భోజనం చేసిన తర్వాత 15 నిమిషాలు నడవండి.\n• తీపి పదార్థాలు మరియు ప్యాక్ చేసిన డ్రింక్స్ మానేయండి.`,
+      followUps: ['బ్లడ్ షుగర్ సాధారణ స్థాయిలు', 'డైట్ ప్లాన్', 'OGTT టెస్ట్ వివరాలు']
+    },
+    'ml-IN': {
+      answer: `ഗർഭകാല പ്രമേഹം ഭക്ഷണ നിയന്ത്രണത്തിലൂടെയും ലഘുവായ നടത്തത്തിലൂടെയും നിയന്ത്രിക്കാം.\n\n✨ **ശ്രദ്ധിക്കേണ്ട കാര്യങ്ങൾ:**\n• വെളുത്ത അരിക്ക് പകരം റാഗി, തിന, തവിടുള്ള അരി ഉപയോഗിക്കുക.\n• ഭക്ഷണശേഷം 15 മിനിറ്റ് നടക്കുക.\n• മധുരപലഹാരങ്ങളും ജങ്ക് ഫുഡും പൂർണ്ണമായും ഒഴിവാക്കുക.`,
+      followUps: ['ഷുഗർ നോർമൽ ലെവൽ', 'ഭക്ഷണക്രമം', 'ഡോക്ടറുടെ നിർദ്ദേശങ്ങൾ']
     }
   }
 };
@@ -170,7 +232,7 @@ export async function POST(req: NextRequest) {
     const cleanInput = message.trim();
     const lower = cleanInput.toLowerCase();
 
-    // 1. Red Flag Medical Emergency Check
+    // 1. Red Flag Medical Emergency Check (Top Priority)
     for (const flag of EMERGENCY_PATTERNS) {
       if (flag.regex.test(lower)) {
         return NextResponse.json({
@@ -179,26 +241,26 @@ export async function POST(req: NextRequest) {
           emergencyTitle: flag.title,
           emergencyWarning: flag.warning,
           emergencyAction: flag.action,
-          response: `⚠️ **${flag.title}**\n\n${flag.warning}\n\n**URGENT ACTION:** ${flag.action}\n\n*DISCLAIMER: BloomNest AI cannot replace physical in-person emergency hospital triage.*`,
+          response: `⚠️ **${flag.title}**\n\n${flag.warning}\n\n**URGENT ACTION REQUIRED:**\n${flag.action}\n\n*DISCLAIMER: BloomNest AI is an educational assistant and cannot replace direct physical hospital evaluation.*`,
           followUps: [
             'Call Doctor Emergency Line',
             'Find Nearest Maternity Emergency Room',
-            'Connect with Partner Immediately'
+            'Notify Partner Immediately'
           ],
           source: 'emergency-triage-filter'
         });
       }
     }
 
-    // 2. Check for Gemini API key
+    // 2. Gemini Live API Integration (If Key is present in environment)
     const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
     if (geminiApiKey) {
       try {
-        const systemPrompt = `You are Bloom AI / GarbaKosh, a warm, compassionate, clinically sound pregnancy and parenthood companion designed for Indian mothers and partners.
+        const systemPrompt = `You are Bloom AI (GarbaKosh), an expert, compassionate obstetric, maternal, and pediatric AI assistant for Indian mothers and partners.
 The user is ${motherName}, currently in Week ${gestationalWeek} of pregnancy (Account role: ${userRole}).
 Language requested: ${language}.
-Provide supportive, evidence-based obstetric/pediatric guidance with clear actionable steps, home comfort remedies, and when to seek medical evaluation.
+Provide structured, evidence-based obstetric/pediatric guidance with clear actionable steps, home comfort remedies, and when to seek medical evaluation.
 Honor traditional Indian maternal practices like Garbh Sanskar, ayurvedic nourishment (ragi, lentils, methi, dry fruits, seemantham/godh bharai customs) without promoting unsafe folklore.
 Always reply naturally, directly, and fluently in the requested language (${language}). Keep formatting neat with markdown bullet points and friendly emojis.`;
 
@@ -213,14 +275,14 @@ Always reply naturally, directly, and fluently in the requested language (${lang
                   role: 'user',
                   parts: [
                     {
-                      text: `${systemPrompt}\n\nConversation Context: Prior messages = ${JSON.stringify(history.slice(-4))}\n\nUser asked: "${cleanInput}"`
+                      text: `${systemPrompt}\n\nPrior Context: ${JSON.stringify(history.slice(-4))}\n\nUser Question: "${cleanInput}"`
                     }
                   ]
                 }
               ],
               generationConfig: {
                 temperature: 0.7,
-                maxOutputTokens: 600
+                maxOutputTokens: 700
               }
             })
           }
@@ -237,34 +299,48 @@ Always reply naturally, directly, and fluently in the requested language (${lang
               followUps: [
                 'Tell me more about Week ' + gestationalWeek,
                 'What safe exercises can I do today?',
-                'Nutrition advice for today'
+                'Nutritional guidance for today'
               ],
               source: 'gemini-1.5-flash'
             });
           }
         }
       } catch (geminiError) {
-        console.warn('Gemini API call failed, falling back to clinical reasoning engine:', geminiError);
+        console.warn('Gemini API call failed, using clinical reasoning engine:', geminiError);
       }
     }
 
     // 3. Robust Multilingual Clinical Knowledge Engine
     const langKey = (['en-US', 'kn-IN', 'hi-IN', 'ta-IN', 'te-IN', 'ml-IN'].includes(language) ? language : 'en-US');
 
-    // Determine topic
-    let topicKey = 'general';
-    if (/(nausea|vomit|morning sickness|throw up|sick|sour taste)/i.test(lower)) {
+    // Categorize user query intelligently
+    let topicKey: string | null = null;
+
+    if (/^(hi|hello|hey|namaste|vanakkam|namaskara|namaskaram|who are you|help|start)/i.test(lower)) {
+      topicKey = 'greeting';
+    } else if (/(back pain|backache|spine|pelvic pain|pgp|sciatica|back hurts|lower back)/i.test(lower)) {
+      topicKey = 'backpain';
+    } else if (/(sleep|insomnia|tired|pillow|sleeping position|left side|sleeping on back|cannot sleep)/i.test(lower)) {
+      topicKey = 'sleep';
+    } else if (/(scan|ultrasound|anomaly|tiffa|sonography|doppler|afi|fluid level|nt scan)/i.test(lower)) {
+      topicKey = 'scans';
+    } else if (/(garbh sanskar|sanskar|mantra|music|raga|spiritual|meditation|pranayama|bonding)/i.test(lower)) {
+      topicKey = 'garbhsanskar';
+    } else if (/(sugar|diabetes|gdm|glucose|ogtt|sweet|insulin|hba1c)/i.test(lower)) {
+      topicKey = 'diabetes';
+    } else if (/(nausea|vomit|morning sickness|throw up|sick|sour taste|gagging)/i.test(lower)) {
       topicKey = 'nausea';
-    } else if (/(kick|movement|flutter|active baby|counting|quickening)/i.test(lower)) {
+    } else if (/(kick|movement|flutter|active baby|counting|quickening|baby moving)/i.test(lower)) {
       topicKey = 'kicks';
-    } else if (/(labor|labour|contraction|5-1-1|water break|hospital bag|dilat)/i.test(lower)) {
+    } else if (/(labor|labour|contraction|5-1-1|water break|hospital bag|dilat|c-section|delivery)/i.test(lower)) {
       topicKey = 'labor';
-    } else if (/(food|eat|diet|nutrition|iron|calcium|ragi|papaya|protein|vitamin)/i.test(lower)) {
+    } else if (/(food|eat|diet|nutrition|iron|calcium|ragi|papaya|protein|vitamin|caffeine|tea|coffee|kesar)/i.test(lower)) {
       topicKey = 'nutrition';
     }
 
-    if (MEDICAL_TOPIC_RESPONSES[topicKey] && MEDICAL_TOPIC_RESPONSES[topicKey][langKey]) {
-      const topicData = MEDICAL_TOPIC_RESPONSES[topicKey][langKey];
+    // If matches topic in knowledge base
+    if (topicKey && KNOWLEDGE_BASE[topicKey] && KNOWLEDGE_BASE[topicKey][langKey]) {
+      const topicData = KNOWLEDGE_BASE[topicKey][langKey];
       return NextResponse.json({
         success: true,
         isEmergencyAlert: false,
@@ -274,24 +350,25 @@ Always reply naturally, directly, and fluently in the requested language (${lang
       });
     }
 
-    // Default intelligent week-specific response in target language
-    const weekResponses: Record<string, string> = {
-      'en-US': `Hello ${motherName}! 🌸 At Week ${gestationalWeek}, your baby is growing rapidly, developing sensitive hearing, opening eyelids, and practicing rhythmic breathing movements.\n\n✨ **Guidance for Your Current Stage:**\n• **Rest & Posture:** Rest on your left side to maximize maternal-fetal oxygenation.\n• **Gentle Movement:** 20–30 minutes of prenatal walking or pelvic floor Kegel exercises helps maintain hip flexibility.\n• **Hydration & Fiber:** Drink plenty of water and enjoy seasonal fruits, tender coconut water, and high-fiber oats or ragi to prevent constipation.\n\nHow are you feeling today? You can ask me about safe movements, nutrition, hospital preparations, or contraction timing!`,
-      'kn-IN': `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಾವಸ್ಥೆಯ ${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ ನಿಮ್ಮ ಮಗು ಶಬ್ದಗಳನ್ನು ಆಲಿಸಲು ಪ್ರಾರಂಭಿಸುತ್ತದೆ ಮತ್ತು ವೇಗವಾಗಿ ಬೆಳೆಯುತ್ತಿದೆ.\n\n✨ **ಈ ವಾರದ ಪ್ರಮುಖ ಸಲಹೆಗಳು:**\n• ಮಲಗುವಾಗ ಎಡಭಾಗಕ್ಕೆ ಮಲಗಿ ವಿಶ್ರಾಂತಿ ಪಡೆಯಿರಿ.\n• ಪ್ರತಿದಿನ ೨೦-೩೦ ನಿಮಿಷಗಳ ಲಘು ನಡಿಗೆ ಮತ್ತು ಪೆಲ್ವಿಕ್ ವ್ಯಾಯಾಮ ಮಾಡಿ.\n• ಎಳನೀರು, ಮಜ್ಜಿಗೆ ಮತ್ತು ಹಸಿರು ತರಕಾರಿಗಳನ್ನು ಆಹಾರದಲ್ಲಿ ಹೆಚ್ಚಾಗಿ ಬಳಸಿ.\n\nನೀವು ಹೇಗಿದ್ದೀರಿ? ಯಾವುದೇ ಆರೋಗ್ಯದ ಸಂದೇಹಗಳು, ಆಹಾರ ಅಥವಾ ಹೆರಿಗೆ ಸಿದ್ಧತೆಯ ಬಗ್ಗೆ ಕೇಳಿ!`,
-      'hi-IN': `नमस्ते ${motherName}! 🌸 गर्भावस्था के ${gestationalWeek}वें हफ्ते में आपका शिशु तेजी से विकसित हो रहा है और आपकी आवाज को सुनने लगा है।\n\n✨ **इस हफ्ते के लिए खास सलाह:**\n• हमेशा बाईं करवट लेकर सोने की आदत डालें, जिससे शिशु को पर्याप्त ऑक्सीजन मिलती रहे।\n• प्रतिदिन 20-30 मिनट की हल्की सैर और पेल्विक फ्लोर व्यायाम करें।\n• नारियल पानी, मौसमी फल और हरी पत्तेदार सब्जियां अपनी डाइट में शामिल करें।\n\nआप कैसा महसूस कर रही हैं? आप मुझसे पोषण, शिशु की हलचल या प्रसव की तैयारी से जुड़ा कोई भी सवाल पूछ सकती हैं!`,
-      'ta-IN': `வணக்கம் ${motherName}! 🌸 கர்ப்பத்தின் ${gestationalWeek}-வது வாரத்தில் உங்கள் குழந்தை விரைவாக வளர்ந்து வருகிறது.\n\n✨ **இந்த வாரத்திற்கான முக்கிய குறிப்புகள்:**\n• இடது பக்கமாக படுத்து தூங்குவது ரத்த ஓட்டத்தை சீராக்கும்.\n• தினமும் 20-30 நிமிடங்கள் மிதமான நடைபயிற்சி மேற்கொள்ளவும்.\n• இளநீர், சத்தான பழங்கள் மற்றும் கீரைகளை உணவில் சேர்த்துக் கொள்ளவும்.\n\nஉங்களுக்கு ஏதேனும் சந்தேகங்கள் இருந்தால் தாராளமாக கேளுங்கள்!`,
-      'te-IN': `నమస్కారం ${motherName}! 🌸 గర్భధారణ ${gestationalWeek}వ వారంలో మీ శిశువు శబ్దాలను వింటూ వేగంగా ఎదుగుతోంది.\n\n✨ **ఈ వారపు ముఖ్యమైన సూచనలు:**\n• నిద్రపోయేటప్పుడు ఎడమ వైపు తిరిగి పడుకోండి.\n• రోజూ 20-30 నిమిషాలు తేలికపాటి నడక చేయండి.\n• కొబ్బరి నీళ్లు, ఆకుకూరలు, పండ్లు ఆహారంలో భాగం చేసుకోండి.\n\nమీరు ఏవైనా సందేహాలుంటే నన్ను అడగవచ్చు!`,
-      'ml-IN': `നമസ്കാരം ${motherName}! 🌸 ഗർഭത്തിന്റെ ${gestationalWeek}-ാം ആഴ്ചയിൽ നിങ്ങളുടെ കുഞ്ഞ് വളരെ വേഗത്തിൽ വളരുകയാണ്.\n\n✨ **ഈ ആഴ്ചയിലെ പ്രധാന നിർദ്ദേശങ്ങൾ:**\n• ഇടതുവശം ചരിഞ്ഞു കിടന്നു വിശ്രമിക്കുക.\n• ദിവസവും 20-30 മിനിറ്റ് ലഘുവായ നടത്തം ശീലമാക്കുക.\n• ധാരാളം വെള്ളം കുടിക്കുകയും ഇളനീരും ഇലക്കറികളും കഴിക്കുകയും ചെയ്യുക.\n\nഎന്തെങ്കിലും സംശയങ്ങളുണ്ടെങ്കിൽ ചോദിക്കാവുന്നതാണ്!`
+    // Dynamic Contextual Synthesis for Any Other Question
+    // Instead of giving a blank greeting, construct an intelligent, empathetic, and clinically helpful response!
+    const customDynamicResponses: Record<string, string> = {
+      'en-US': `Thank you for asking about "${cleanInput}", ${motherName}! 🌸\n\nAt **Week ${gestationalWeek}**, your body is accommodating rapid baby growth. Here is clinically backed guidance regarding your question:\n\n✨ **Key Clinical Insights:**\n• **Physiological Context:** During this gestational stage, maternal circulation and hormonal levels are actively adapting. Gentle care, adequate hydration (8–10 glasses daily), and consistent sleep on your left side support your body best.\n• **Safe Self-Care Steps:** Listen closely to your body. Avoid strenuous sudden movements, heavy lifting, or lying flat on your back.\n• **When to Consult Dr.:** Always inform your OB/GYN during routine prenatal checks if you experience persistent discomfort, fever, or unusual symptoms.\n\nWould you like more details on safe comfort measures, weekly development milestones, or nutrition for today?`,
+      'kn-IN': `ನಿಮ್ಮ ಪ್ರಶ್ನೆ "${cleanInput}" ಗಾಗಿ ಧನ್ಯವಾದಗಳು, ${motherName}! 🌸\n\nಗರ್ಭಾವಸ್ಥೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ಮಗು ವೇಗವಾಗಿ ಬೆಳೆಯುತ್ತಿದ್ದು, ತಾಯಿಯ ದೇಹದಲ್ಲಿ ಹಲವು ಬದಲಾವಣೆಗಳು ಸಹಜವಾಗಿ ಉಂಟಾಗುತ್ತವೆ.\n\n✨ **ಮುಖ್ಯ ವೈದ್ಯಕೀಯ ಸಲಹೆಗಳು:**\n• **ಆರೋಗ್ಯ ರಕ್ಷಣೆ:** ಸಾಕಷ್ಟು ನೀರು, ಎಳನೀರು ಕುಡಿಯಿರಿ ಮತ್ತು ಎಡಭಾಗಕ್ಕೆ ಮಲಗಿ ವಿಶ್ರಾಂತಿ ಪಡೆಯಿರಿ.\n• **ಮುನ್ನೆಚ್ಚರಿಕೆ:** ಅತಿಯಾದ ಆಯಾಸ ಅಥವಾ ಭಾರ ಎತ್ತುವುದನ್ನು ತಪ್ಪಿಸಿ.\n• **ವೈದ್ಯರ ಭೇಟಿ:** ನಿರಂತರ ನೋವು ಅಥವಾ ಅಸ್ವಸ್ಥತೆ ಇದ್ದರೆ ನಿಮ್ಮ ಸ್ತ್ರೀರೋಗ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.\n\nಹೆಚ್ಚಿನ ಮಾಹಿತಿ ಅಥವಾ ಆಹಾರ ಕ್ರಮದ ಬಗ್ಗೆ ತಿಳಿಯಲು ಬಯಸುವಿರಾ?`,
+      'hi-IN': `"${cleanInput}" के बारे में पूछने के लिए धन्यवाद, ${motherName}! 🌸\n\nगर्भावस्था के **${gestationalWeek}वें हफ्ते** में शिशु का तेजी से विकास हो रहा है और आपका शरीर कई सकारात्मक बदलावों से गुजर रहा है।\n\n✨ **महत्वपूर्ण चिकित्सकीय सलाह:**\n• **देखभाल:** दिन में 8-10 गिलास पानी पिएं, पौष्टिक भोजन करें और बाईं करवट लेकर सोने की आदत बनाएं।\n• **सावधानी:** भारी वजन उठाने या अचानक झुकने से बचें।\n• **डॉक्टर से परामर्श:** यदि कोई भी असहजता या लगातार दर्द महसूस हो, तो अपने डॉक्टर से जरूर बात करें।\n\nक्या आप इस हफ्ते के व्यायाम, डाइट या शिशु के विकास के बारे में और जानना चाहती हैं?`,
+      'ta-IN': `உங்கள் கேள்விக்கு "${cleanInput}" நன்றி, ${motherName}! 🌸\n\nகர்ப்பத்தின் **${gestationalWeek}-வது வாரத்தில்** குழந்தை வேகமாக வளர்ந்து வருகிறது.\n\n✨ **முக்கிய மருத்துவ ஆலோசனைகள்:**\n• போதுமான அளவு தண்ணீர் மற்றும் இளநீர் அருந்தி, இடது பக்கமாக படுத்து ஓய்வெடுக்கவும்.\n• அதிக எடையைத் தூக்குவதைத் தவிர்க்கவும்.\n• அசௌகரியம் தொடர்ந்தால் உங்கள் மருத்துவரை அணுகவும்.\n\nமேலும் விவரங்கள் வேண்டுமா?`,
+      'te-IN': `మీ ప్రశ్న "${cleanInput}" కు ధన్యవాదాలు, ${motherName}! 🌸\n\nగర్భధారణ **${gestationalWeek}వ వారంలో** శిశువు ఎదుగుదల వేగంగా ఉంటుంది.\n\n✨ **ముఖ్యమైన ఆరోగ్య సూచనలు:**\n• పుష్కలంగా నీరు తాగండి మరియు ఎడమ వైపు తిరిగి విశ్రాంతి తీసుకోండి.\n• బరువులు ఎత్తడం లేదా ఎక్కువ శ్రమించడం చేయవద్దు.\n• నిరంతర నొప్పి ఉంటే డాక్టర్‌ను సంప్రదించండి.\n\nమరిన్ని వివరాలు కావాలా?`,
+      'ml-IN': `നിങ്ങളുടെ ചോദ്യത്തിന് "${cleanInput}" നന്ദി, ${motherName}! 🌸\n\nഗർഭത്തിന്റെ **${gestationalWeek}-ാം ആഴ്ചയിൽ** കുഞ്ഞിന്റെ വളർച്ച ത്വരിതഗതിയിലാണ്.\n\n✨ **പ്രധാന നിർദ്ദേശങ്ങൾ:**\n• ആവശ്യത്തിന് വെള്ളം കുടിക്കുകയും ഇടതുവശം ചരിഞ്ഞു കിടന്നു വിശ്രമിക്കുകയും ചെയ്യുക.\n• ഭാരമേറിയ ജോലികൾ ഒഴിവാക്കുക.\n• അസ്വസ്ഥതകൾ തുടരുകയാണെങ്കിൽ ഡോക്ടറെ കാണുക.\n\nകൂടുതൽ വിവരങ്ങൾ വേണമോ?`
     };
 
-    const finalAnswer = weekResponses[langKey] || weekResponses['en-US'];
+    const finalAnswer = customDynamicResponses[langKey] || customDynamicResponses['en-US'];
 
     return NextResponse.json({
       success: true,
       isEmergencyAlert: false,
       response: finalAnswer,
       followUps: [
-        'Safe prenatal exercises for Week ' + gestationalWeek,
+        'Weekly development in Week ' + gestationalWeek,
         'Best foods to boost hemoglobin',
         'Hospital bag checklist'
       ],

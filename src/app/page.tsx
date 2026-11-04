@@ -9,6 +9,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { OnboardingModal } from '@/components/modals/OnboardingModal';
 import { DesignSystemModal } from '@/components/modals/DesignSystemModal';
 import { SharedMotherDashboardModal } from '@/components/modals/SharedMotherDashboardModal';
+import { FloatingAiBot } from '@/components/layout/FloatingAiBot';
 import { DashboardModule } from '@/components/modules/DashboardModule';
 import { PregnancyJourneyModule } from '@/components/modules/PregnancyJourneyModule';
 import { BloomAiModule } from '@/components/modules/BloomAiModule';
@@ -121,6 +122,9 @@ export default function Home() {
 
       {/* Shared Mother Dashboard Modal for Partner */}
       <SharedMotherDashboardModal />
+
+      {/* Persistent Floating 24/7 AI Assistant Bot */}
+      <FloatingAiBot activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
