@@ -23,7 +23,11 @@ import {
   CheckCircle,
   HelpCircle,
   Radio,
-  Loader2
+  Loader2,
+  Key,
+  Settings2,
+  ExternalLink,
+  Check
 } from 'lucide-react';
 
 export const BloomAiModule: React.FC = () => {
@@ -34,6 +38,8 @@ export const BloomAiModule: React.FC = () => {
     clearChat,
     selectedLanguage,
     setSelectedLanguage,
+    geminiApiKey,
+    setGeminiApiKey,
     triggerEmergencyModal,
     t
   } = useApp();
@@ -46,6 +52,9 @@ export const BloomAiModule: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'Pregnancy' | 'Labour' | 'Newborn' | 'Postpartum'>('All');
   const [isSending, setIsSending] = useState(false);
   const [micErrorNotice, setMicErrorNotice] = useState<string | null>(null);
+  const [showApiModal, setShowApiModal] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState(geminiApiKey || '');
+  const [keySavedToast, setKeySavedToast] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -401,6 +410,25 @@ export const BloomAiModule: React.FC = () => {
               ))}
             </select>
 
+            {/* Gemini API Key Configuration Button */}
+            <button
+              onClick={() => {
+                setApiKeyInput(geminiApiKey || '');
+                setShowApiModal(true);
+              }}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
+                geminiApiKey
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+                  : 'bg-primary-soft text-primary border border-primary/30 hover:bg-primary/20'
+              }`}
+              title="Configure Google Gemini Live API Key"
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">
+                {geminiApiKey ? 'Gemini Live: Active' : 'Connect Gemini AI'}
+              </span>
+            </button>
+
             <button
               onClick={clearChat}
               className="px-3 py-2 bg-white text-gray-600 hover:text-gray-900 border border-gray-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
@@ -675,6 +703,97 @@ export const BloomAiModule: React.FC = () => {
           </button>
         </form>
       </div>
+
+      {/* Gemini Live API Key Configuration Modal */}
+      {showApiModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-blush-100 space-y-4 animate-in zoom-in-95">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white shadow-xs">
+                  <Key className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base">Google Gemini AI Engine</h3>
+                  <p className="text-xs text-gray-500">Live Generative Obstetric Intelligence</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowApiModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Connect your free Google Gemini API key to unlock completely dynamic, unscripted responses in English, Kannada, Hindi, Tamil, Telugu, and Malayalam.
+            </p>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-800">
+                Gemini API Key:
+              </label>
+              <input
+                type="password"
+                value={apiKeyInput}
+                onChange={e => setApiKeyInput(e.target.value)}
+                placeholder="AIzaSy..."
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+              />
+              <div className="flex items-center justify-between text-[11px] pt-1">
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-bold flex items-center gap-1"
+                >
+                  <span>Get 100% Free Gemini Key</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <span className="text-gray-400">Zero cost • 1,500 req/day</span>
+              </div>
+            </div>
+
+            {keySavedToast && (
+              <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span>Gemini API Key successfully saved and connected!</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+              {geminiApiKey && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGeminiApiKey('');
+                    setApiKeyInput('');
+                    alert('Gemini API Key cleared.');
+                  }}
+                  className="px-3 py-2 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition-colors"
+                >
+                  Clear Key
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setGeminiApiKey(apiKeyInput.trim());
+                  setKeySavedToast(true);
+                  setTimeout(() => {
+                    setKeySavedToast(false);
+                    setShowApiModal(false);
+                  }, 1200);
+                }}
+                className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold transition-all shadow-xs"
+              >
+                Save & Connect Live AI
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 interface ChatRequestBody {
   message: string;
+  apiKey?: string;
   history?: Array<{ sender: 'user' | 'assistant'; text: string }>;
   gestationalWeek?: number;
   userRole?: 'mother' | 'partner';
@@ -252,61 +253,70 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. Gemini Live API Integration (If Key is present in environment)
-    const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    // 2. Gemini Live API Integration (Supports Client Key, Header Key, or Env Key)
+    const clientKey = body.apiKey || req.headers.get('x-gemini-key') || req.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+    const geminiApiKey = clientKey || process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
     if (geminiApiKey) {
       try {
-        const systemPrompt = `You are Bloom AI (GarbaKosh), an expert, compassionate obstetric, maternal, and pediatric AI assistant for Indian mothers and partners.
+        const systemPrompt = `You are Bloom AI (GarbaKosh), an expert, compassionate obstetric, maternal, and pediatric AI companion for Indian mothers and partners.
 The user is ${motherName}, currently in Week ${gestationalWeek} of pregnancy (Account role: ${userRole}).
 Language requested: ${language}.
-Provide structured, evidence-based obstetric/pediatric guidance with clear actionable steps, home comfort remedies, and when to seek medical evaluation.
+Provide supportive, evidence-based obstetric/pediatric guidance with clear actionable steps, home comfort remedies, and when to seek medical evaluation.
 Honor traditional Indian maternal practices like Garbh Sanskar, ayurvedic nourishment (ragi, lentils, methi, dry fruits, seemantham/godh bharai customs) without promoting unsafe folklore.
 Always reply naturally, directly, and fluently in the requested language (${language}). Keep formatting neat with markdown bullet points and friendly emojis.`;
 
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [
-                {
-                  role: 'user',
-                  parts: [
+        // Try gemini-1.5-flash first, fallback to gemini-2.0-flash or gemini-1.5-pro
+        const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+        for (const model of models) {
+          try {
+            const geminiRes = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [
                     {
-                      text: `${systemPrompt}\n\nPrior Context: ${JSON.stringify(history.slice(-4))}\n\nUser Question: "${cleanInput}"`
+                      role: 'user',
+                      parts: [
+                        {
+                          text: `${systemPrompt}\n\nConversation Context: Prior messages = ${JSON.stringify(history.slice(-4))}\n\nUser Question: "${cleanInput}"`
+                        }
+                      ]
                     }
-                  ]
-                }
-              ],
-              generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 700
+                  ],
+                  generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 800
+                  }
+                })
               }
-            })
-          }
-        );
+            );
 
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          const candidateText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (candidateText) {
-            return NextResponse.json({
-              success: true,
-              isEmergencyAlert: false,
-              response: candidateText,
-              followUps: [
-                'Tell me more about Week ' + gestationalWeek,
-                'What safe exercises can I do today?',
-                'Nutritional guidance for today'
-              ],
-              source: 'gemini-1.5-flash'
-            });
+            if (geminiRes.ok) {
+              const geminiData = await geminiRes.json();
+              const candidateText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (candidateText) {
+                return NextResponse.json({
+                  success: true,
+                  isEmergencyAlert: false,
+                  response: candidateText,
+                  followUps: [
+                    'Tell me more about Week ' + gestationalWeek,
+                    'What safe exercises can I do today?',
+                    'Nutritional guidance for today'
+                  ],
+                  source: model
+                });
+              }
+            }
+          } catch (modelErr) {
+            console.warn(`Model ${model} attempt failed:`, modelErr);
           }
         }
       } catch (geminiError) {
-        console.warn('Gemini API call failed, using clinical reasoning engine:', geminiError);
+        console.warn('Gemini API call failed, falling back to clinical reasoning engine:', geminiError);
       }
     }
 

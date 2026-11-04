@@ -158,6 +158,8 @@ interface AppContextType {
   clearChat: () => void;
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
+  geminiApiKey: string;
+  setGeminiApiKey: (key: string) => void;
   t: (key: string, fallback?: string) => string;
   
   // Utility
@@ -794,6 +796,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     return 'en-US';
   });
+
+  const [geminiApiKey, setGeminiApiKeyState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('bloomnest_gemini_api_key') || '';
+    }
+    return '';
+  });
+
+  const setGeminiApiKey = (key: string) => {
+    setGeminiApiKeyState(key);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_gemini_api_key', key);
+    }
+  };
 
   const [activeEmergencyModal, setActiveEmergencyModal] = useState<string | null>(null);
 
@@ -1626,9 +1642,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Call dedicated AI Chat API Route
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(geminiApiKey ? { 'x-gemini-key': geminiApiKey } : {})
+        },
         body: JSON.stringify({
           message: userText,
+          apiKey: geminiApiKey,
           history: chatMessages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
           gestationalWeek: profile.currentGestationalWeek || 24,
           userRole: currentUser?.role || profile.role || 'mother',
@@ -1889,6 +1909,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         clearChat,
         selectedLanguage,
         setSelectedLanguage,
+        geminiApiKey,
+        setGeminiApiKey,
         t,
         resetToDemoData,
         exportAllDataJson,
