@@ -45,7 +45,8 @@ export const NutritionModule: React.FC = () => {
     incrementWater,
     decrementWater,
     cravings,
-    logCraving
+    logCraving,
+    t
   } = useApp();
 
   // Dynamic Clinical RDA calculation
@@ -193,23 +194,21 @@ export const NutritionModule: React.FC = () => {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">
               <Apple className="w-3.5 h-3.5" />
-              <span>Evidence-Based Maternal Clinical Nutrition</span>
+              <span>{t('Evidence-Based Maternal Clinical Nutrition', 'Evidence-Based Maternal Clinical Nutrition')}</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-serif font-bold text-gray-900">
-              Smart Nutrition & Craving Management
+              {t('nutritionTitle', 'Smart Nutrition & Craving Management')}
             </h1>
             <p className="text-xs md:text-sm text-gray-600 mt-1 max-w-2xl">
-              Authentic nutritional composition compiled from{' '}
-              <span className="font-semibold text-gray-800">USDA FoodData Central</span> &{' '}
-              <span className="font-semibold text-gray-800">ICMR-NIN Indian Food Composition Tables</span>. Tailored dynamically to your week of pregnancy and clinical profile.
+              {t('nutritionSubtitle', 'Authentic nutritional composition compiled from USDA FoodData Central & ICMR-NIN Indian Food Composition Tables. Tailored dynamically to your week of pregnancy and clinical profile.')}
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 bg-white/90 backdrop-blur p-3.5 rounded-2xl border border-emerald-200/60 shadow-xs">
             <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <div className="text-[11px] text-gray-600">
-              <span className="font-bold text-gray-900 block">Personalized Clinical Targets Active</span>
-              Gestational Week {profile.currentGestationalWeek} · Trimester {profile.currentGestationalWeek <= 13 ? 1 : profile.currentGestationalWeek <= 27 ? 2 : 3}
+              <span className="font-bold text-gray-900 block">{t('Personalized Clinical Targets Active', 'Personalized Clinical Targets Active')}</span>
+              {t('Gestational Week', 'Gestational Week')} {profile.currentGestationalWeek} · {t('Trimester', 'Trimester')} {profile.currentGestationalWeek <= 13 ? 1 : profile.currentGestationalWeek <= 27 ? 2 : 3}
             </div>
           </div>
         </div>
@@ -721,10 +720,10 @@ export const NutritionModule: React.FC = () => {
               <Heart className="w-5 h-5 text-rose-500" />
               <div>
                 <h3 className="text-base font-serif font-bold text-gray-900">
-                  Pregnancy Craving & PICA Analyzer
+                  {t('cravingTrackerTitle', 'Pregnancy Craving & PICA Analyzer')}
                 </h3>
                 <p className="text-[11px] text-gray-500">
-                  Physiological correlates based on blood volume and micronutrient status
+                  {t('Physiological correlates based on blood volume and micronutrient status', 'Physiological correlates based on blood volume and micronutrient status')}
                 </p>
               </div>
             </div>
@@ -732,40 +731,40 @@ export const NutritionModule: React.FC = () => {
             {cravingAlert && (
               <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-900 flex items-start gap-2.5 animate-pulse">
                 <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                <p className="leading-relaxed font-semibold">{cravingAlert}</p>
+                <p className="leading-relaxed font-semibold">{t('picaWarningBody', cravingAlert)}</p>
               </div>
             )}
 
             <form onSubmit={handleLogCraving} className="space-y-3 text-xs">
               <div>
-                <label className="block text-gray-700 font-bold mb-1">Craving Type</label>
+                <label className="block text-gray-700 font-bold mb-1">{t('Craving Type', 'Craving Type')}</label>
                 <select
                   value={cravingType}
                   onChange={e => setCravingType(e.target.value as any)}
                   className="w-full px-3 py-2 bg-[#FAF6EE] border border-stone-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-xs font-medium"
                 >
-                  <option value="sweet">Sweet (Pastries, Chocolates, Fruit juices)</option>
-                  <option value="sour">Sour & Tangy (Lemon, Pickles, Raw Mango)</option>
-                  <option value="salty">Salty & Savory (Chips, Salted nuts, Chaat)</option>
-                  <option value="spicy">Spicy & Pungent (Curries, Chili peppers)</option>
-                  <option value="unusual">Unusual Food Combinations (e.g. Ice cream + pickles)</option>
-                  <option value="non-food">Non-Food Substance (PICA: Soil, Clay, Chalk, Ice)</option>
+                  <option value="sweet">{t('sweetCraving', 'Sweet (Pastries, Chocolates, Fruit juices)')}</option>
+                  <option value="sour">{t('sourCraving', 'Sour & Tangy (Lemon, Pickles, Raw Mango)')}</option>
+                  <option value="salty">{t('saltyCraving', 'Salty & Savory (Chips, Salted nuts, Chaat)')}</option>
+                  <option value="spicy">{t('spicyCraving', 'Spicy & Pungent (Curries, Chili peppers)')}</option>
+                  <option value="unusual">{t('Unusual Food Combinations', 'Unusual Food Combinations (e.g. Ice cream + pickles)')}</option>
+                  <option value="non-food">{t('Non-Food Substance (PICA)', 'Non-Food Substance (PICA: Soil, Clay, Chalk, Ice)')}</option>
                 </select>
               </div>
 
               {/* Real physiological insight box */}
               {activeCravingInsight && (
                 <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/80 text-[11px] space-y-1">
-                  <span className="font-bold text-amber-950 block">Physiological Explanation:</span>
+                  <span className="font-bold text-amber-950 block">{t('Physiological Explanation', 'Physiological Explanation')}:</span>
                   <p className="text-amber-900">{activeCravingInsight.physiologicalTrigger}</p>
                   <p className="text-amber-800 font-medium pt-0.5">
-                    💡 <span className="font-bold">Recommendation:</span> {activeCravingInsight.recommendedAction}
+                    💡 <span className="font-bold">{t('Recommendation', 'Recommendation')}:</span> {activeCravingInsight.recommendedAction}
                   </p>
                 </div>
               )}
 
               <div>
-                <label className="block text-gray-700 font-bold mb-1">Specific craving description</label>
+                <label className="block text-gray-700 font-bold mb-1">{t('Specific craving description', 'Specific craving description')}</label>
                 <input
                   type="text"
                   value={cravingDesc}
@@ -778,9 +777,9 @@ export const NutritionModule: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md transition-all text-xs"
+                className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md transition-all text-xs cursor-pointer"
               >
-                Log Craving Pattern
+                {t('logCravingBtn', 'Log Craving Pattern')}
               </button>
             </form>
 

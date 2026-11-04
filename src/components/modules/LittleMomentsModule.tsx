@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const LittleMomentsModule: React.FC = () => {
-  const { memories, addMemoryItem, deleteMemoryItem, profile } = useApp();
+  const { memories, addMemoryItem, deleteMemoryItem, profile, t } = useApp();
 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
@@ -78,44 +78,44 @@ export const LittleMomentsModule: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-peach-100 text-peach-800 text-xs font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Secure Ultrasound & Milestone Vault</span>
+            <span>{t('Secure Ultrasound & Milestone Vault', 'Secure Ultrasound & Milestone Vault')}</span>
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900">
-            Little Moments
+            {t('vaultTitle', 'Little Moments')}
           </h1>
           <p className="text-sm text-gray-600">
-            A private keepsake album for ultrasound scans, bump photos, fetal test reports, and cherished milestones.
+            {t('vaultSubtitle', 'A private keepsake album for ultrasound scans, bump photos, fetal test reports, and cherished milestones.')}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCompareMode(!compareMode)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border cursor-pointer ${
               compareMode
                 ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
                 : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
             }`}
           >
             <Columns className="w-4 h-4" />
-            <span>{compareMode ? 'Exit Compare' : 'Compare Scans'}</span>
+            <span>{compareMode ? t('Exit Compare', 'Exit Compare') : t('Compare Scans', 'Compare Scans')}</span>
           </button>
 
           <button
             onClick={handleExportScrapbook}
-            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors flex items-center gap-1.5"
-            title="Download Scrapbook Export"
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors flex items-center gap-1.5 cursor-pointer"
+            title={t('Download Scrapbook Export', 'Download Scrapbook Export')}
           >
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export Scrapbook</span>
+            <span className="hidden sm:inline">{t('Export Scrapbook', 'Export Scrapbook')}</span>
           </button>
 
           <button
             onClick={() => setShowUploadModal(true)}
-            className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 transition-all flex items-center gap-1.5"
+            className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Scan / Memory</span>
+            <span>{t('uploadScan', 'Add Scan / Memory')}</span>
           </button>
         </div>
       </div>
@@ -124,9 +124,9 @@ export const LittleMomentsModule: React.FC = () => {
       <div className="p-4 bg-amber-50 rounded-3xl border border-amber-200 text-xs text-amber-900 space-y-1 flex items-start gap-3">
         <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
         <div>
-          <h4 className="font-bold text-amber-950 uppercase text-[11px]">Diagnostic Imagery Disclaimer:</h4>
+          <h4 className="font-bold text-amber-950 uppercase text-[11px]">{t('Diagnostic Imagery Disclaimer', 'Diagnostic Imagery Disclaimer')}:</h4>
           <p className="text-amber-800 leading-relaxed">
-            Ultrasound scans stored in Little Moments are for emotional bonding, personal organization, and parental memory keeping. Do not attempt diagnostic comparisons or growth evaluations through visual inspection. Official clinical interpretation must always remain with your certified radiologist or OB/GYN.
+            {t('vaultDisclaimer', 'Ultrasound scans stored in Little Moments are for emotional bonding, personal organization, and parental memory keeping. Do not attempt diagnostic comparisons or growth evaluations through visual inspection. Official clinical interpretation must always remain with your certified radiologist or OB/GYN.')}
           </p>
         </div>
       </div>
@@ -303,21 +303,21 @@ export const LittleMomentsModule: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-1">Type</label>
+                  <label className="block text-gray-700 font-semibold mb-1">{t('Type', 'Type')}</label>
                   <select
                     value={type}
                     onChange={e => setType(e.target.value as any)}
                     className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl"
                   >
-                    <option value="ultrasound">Ultrasound Scan</option>
-                    <option value="belly-bump">Belly Bump Photo</option>
-                    <option value="milestone">Cherished Milestone</option>
-                    <option value="lab-report">Lab / Medical Report</option>
+                    <option value="ultrasound">{t('Ultrasound Scan', 'Ultrasound Scan')}</option>
+                    <option value="belly-bump">{t('Belly Bump Photo', 'Belly Bump Photo')}</option>
+                    <option value="milestone">{t('Cherished Milestone', 'Cherished Milestone')}</option>
+                    <option value="lab-report">{t('Lab / Medical Report', 'Lab / Medical Report')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-1">Gestational Week</label>
+                  <label className="block text-gray-700 font-semibold mb-1">{t('scanWeek', 'Gestational Week')}</label>
                   <input
                     type="number"
                     value={week}
@@ -328,7 +328,7 @@ export const LittleMomentsModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Scan / Event Date</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('scanDate', 'Scan / Event Date')}</label>
                 <input
                   type="date"
                   value={date}
@@ -338,7 +338,7 @@ export const LittleMomentsModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Image URL (or mock placeholder)</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Image URL', 'Image URL')}</label>
                 <input
                   type="text"
                   value={imageUrl}
@@ -349,7 +349,7 @@ export const LittleMomentsModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Personal Caption</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('scanCaption', 'Personal Caption')}</label>
                 <input
                   type="text"
                   value={caption}
@@ -360,7 +360,7 @@ export const LittleMomentsModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Doctor’s Clinical Observation</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Doctor’s Clinical Observation', 'Doctor’s Clinical Observation')}</label>
                 <input
                   type="text"
                   value={doctorComments}
@@ -374,15 +374,15 @@ export const LittleMomentsModule: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowUploadModal(false)}
-                  className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-bold"
+                  className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-bold cursor-pointer"
                 >
-                  Cancel
+                  {t('Cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-blush-500 hover:bg-blush-600 text-white font-bold shadow-md shadow-blush-200"
+                  className="px-5 py-2 rounded-xl bg-blush-500 hover:bg-blush-600 text-white font-bold shadow-md shadow-blush-200 cursor-pointer"
                 >
-                  Upload to Vault
+                  {t('saveMoment', 'Upload to Vault')}
                 </button>
               </div>
             </form>

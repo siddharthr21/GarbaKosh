@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useApp } from '@/context/AppContext';
 import { BABY_SHOPPING_PRODUCTS, BabyProduct } from '@/data/shoppingData';
 import {
   ShoppingBag,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export const BabyShoppingModule: React.FC = () => {
+  const { t } = useApp();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [wishlist, setWishlist] = useState<string[]>(['p1', 'p4']);
   const [onlyOrganic, setOnlyOrganic] = useState(false);
@@ -37,13 +39,13 @@ export const BabyShoppingModule: React.FC = () => {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold mb-2">
           <ShoppingBag className="w-3.5 h-3.5" />
-          <span>Curated Nursery & Newborn Gear</span>
+          <span>{t('Curated Nursery & Newborn Gear', 'Curated Nursery & Newborn Gear')}</span>
         </div>
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Baby Shopping & Product Safety
+          {t('Baby Shopping & Product Safety', 'Baby Shopping & Product Safety')}
         </h1>
         <p className="text-sm text-gray-600">
-          Independent, pediatrician-reviewed newborn recommendations. Free of sponsored bias with non-toxic certifications.
+          {t('Independent, pediatrician-reviewed newborn recommendations. Free of sponsored bias with non-toxic certifications.', 'Independent, pediatrician-reviewed newborn recommendations. Free of sponsored bias with non-toxic certifications.')}
         </p>
       </div>
 
@@ -51,9 +53,9 @@ export const BabyShoppingModule: React.FC = () => {
       <div className="p-4 bg-emerald-50 rounded-3xl border border-emerald-200 text-xs text-emerald-950 flex items-start gap-3">
         <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
         <div>
-          <h4 className="font-bold text-emerald-900 uppercase text-[11px]">Independent Editorial Policy:</h4>
+          <h4 className="font-bold text-emerald-900 uppercase text-[11px]">{t('Independent Editorial Policy', 'Independent Editorial Policy')}:</h4>
           <p className="text-emerald-900/90 leading-relaxed">
-            BloomNest does not accept paid placements or algorithmic affiliate prioritization. All listed products adhere to Consumer Product Safety Commission (CPSC), Greenguard Gold, or GOTS organic standards.
+            {t('BloomNest does not accept paid placements or algorithmic affiliate prioritization. All listed products adhere to Consumer Product Safety Commission (CPSC), Greenguard Gold, or GOTS organic standards.', 'BloomNest does not accept paid placements or algorithmic affiliate prioritization. All listed products adhere to Consumer Product Safety Commission (CPSC), Greenguard Gold, or GOTS organic standards.')}
           </p>
         </div>
       </div>

@@ -34,7 +34,8 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
     currentUser,
     pairPartnerWithMotherCode,
     unlinkPartner,
-    allAccounts
+    allAccounts,
+    t
   } = useApp();
 
   const [copiedCode, setCopiedCode] = useState(false);
@@ -132,34 +133,34 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-soft text-accent text-xs font-bold mb-2">
             <HeartHandshake className="w-3.5 h-3.5" />
-            <span>The Partner Sanctuary · Garbkosh Caregiver Suite</span>
+            <span>{t('Caregiver Suite', 'The Partner Sanctuary · GarbaKosh Caregiver Suite')}</span>
           </div>
           <h1 className="text-2xl font-serif font-extrabold text-foreground">
-            Partner Sanctuary & Collaboration
+            {t('partnerSanctuaryTitle', 'Partner Sanctuary & Collaboration')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Caregiver tools for labor surge timing, kick monitoring, and supportive trimester missions.
+            {t('partnerSanctuarySubtitle', 'Caregiver tools for labor surge timing, kick monitoring, and supportive trimester missions.')}
           </p>
         </div>
 
         {/* View Switcher Pill */}
         <div className="flex items-center gap-2 bg-card p-1 rounded-2xl border border-border shadow-soft text-xs font-semibold">
-          <span className="text-muted-foreground pl-2">Current Mode:</span>
+          <span className="text-muted-foreground pl-2">{t('Current Mode', 'Current Mode')}:</span>
           <button
             onClick={() => setActiveRole('mother')}
-            className={`px-3 py-1.5 rounded-xl transition-all ${
+            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
               activeRole === 'mother' ? 'bg-primary text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {profile.name.split(' ')[0]} (Mother)
+            {profile.name.split(' ')[0]} ({t('Mother', 'Mother')})
           </button>
           <button
             onClick={() => setActiveRole('partner')}
-            className={`px-3 py-1.5 rounded-xl transition-all ${
+            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
               activeRole === 'partner' ? 'bg-accent text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {profile.partnerProfile?.name?.split(' ')[0] || 'Rohan'} (Partner)
+            {profile.partnerProfile?.name?.split(' ')[0] || 'Rohan'} ({t('Partner', 'Partner')})
           </button>
         </div>
       </div>
@@ -171,18 +172,18 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-xs uppercase tracking-wider">
                 <Lock className="w-4 h-4" />
-                <span>Zero Data Leakage Security Active · Unpaired Partner Account</span>
+                <span>{t('unpairedNoticeTitle', 'Zero Data Leakage Security Active · Unpaired Partner Account')}</span>
               </div>
               <h2 className="text-lg font-serif font-bold text-foreground">
-                Welcome, {currentUser?.name || 'Partner'}! Connect with your partner's pregnancy journey.
+                {t('Welcome', 'Welcome')}, {currentUser?.name || 'Partner'}!
               </h2>
               <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-                Your personal partner code is <strong className="font-mono text-accent">{currentUser?.uniqueCode || 'PAPA-9921'}</strong>. Maternal clinical records, ultrasound images, and vitals logs are protected by cryptographic account isolation. Enter the mother's unique code to request synchronized caregiver access.
+                {t('unpairedNoticeBody', 'Maternal clinical records, ultrasound images, and vitals logs are protected by cryptographic account isolation. Enter the mother\'s unique code to request synchronized caregiver access.')}
               </p>
             </div>
 
             <div className="p-3 bg-card rounded-2xl border border-border text-center shrink-0 min-w-[170px]">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Your Partner Code</span>
+              <span className="text-[10px] uppercase font-bold text-muted-foreground block">{t('partnerCode', 'Your Partner Code')}</span>
               <span className="text-lg font-mono font-black text-foreground">{currentUser?.uniqueCode || 'PAPA-9921'}</span>
             </div>
           </div>
@@ -193,15 +194,15 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
                 type="text"
                 value={motherCodeInput}
                 onChange={e => setMotherCodeInput(e.target.value.toUpperCase())}
-                placeholder="Enter Mother's Unique Code (e.g. MAMA-2026)"
+                placeholder={t('enterMotherCode', "Enter Mother's Unique Code (e.g. MAMA-2026)")}
                 className="w-full px-4 py-2.5 rounded-xl bg-card border border-input text-xs font-mono font-bold tracking-wider placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             <button
               type="submit"
-              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs shrink-0"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
             >
-              Connect Sanctuary
+              {t('connectSanctuaryBtn', 'Connect Sanctuary')}
             </button>
             <button
               type="button"
@@ -209,10 +210,10 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
                 setMotherCodeInput('MAMA-2026');
                 pairPartnerWithMotherCode('MAMA-2026');
               }}
-              className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-xs font-bold text-foreground transition-all shrink-0"
+              className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-xs font-bold text-foreground transition-all shrink-0 cursor-pointer"
               title="Test connection with Siri Rao"
             >
-              Quick Test: MAMA-2026
+              {t('Quick Test', 'Quick Test')}: MAMA-2026
             </button>
           </form>
 
@@ -233,14 +234,14 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
-                Couples Synchronized & Connected
+                {t('partnerConnected', 'Couples Synchronized & Connected')}
               </span>
             </div>
             <h2 className="text-xl font-serif font-bold text-foreground">
-              Connected: {profile.name} & {profile.partnerProfile?.name || 'Rohan Sharma'}
+              {t('Connected', 'Connected')}: {profile.name} & {profile.partnerProfile?.name || 'Rohan Sharma'}
             </h2>
             <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
-              Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders. The mother retains granular permission control over personal clinical notes.
+              {t('Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders.', 'Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders. The mother retains granular permission control over personal clinical notes.')}
             </p>
 
             {currentUser?.role === 'partner' && (
@@ -314,69 +315,69 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
               <Timer className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-serif font-bold text-foreground">Rapid Caregiver Tools</h3>
-              <p className="text-xs text-muted-foreground">Direct actions for birth readiness</p>
+              <h3 className="text-base font-serif font-bold text-foreground">{t('caregiverTools', 'Rapid Caregiver Tools')}</h3>
+              <p className="text-xs text-muted-foreground">{t('Direct actions for birth readiness', 'Direct actions for birth readiness')}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <button
               onClick={() => onNavigateTab && onNavigateTab('contractions')}
-              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group cursor-pointer"
             >
               <div className="flex items-center justify-between text-accent font-bold">
                 <span className="flex items-center gap-1.5">
-                  <Timer className="w-4 h-4" /> Labor Surge Timer
+                  <Timer className="w-4 h-4" /> {t('Labor Surge Timer', 'Labor Surge Timer')}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Time contractions with automated 5-1-1 hospital departure guidance.
+                {t('Time contractions with automated 5-1-1 hospital departure guidance.', 'Time contractions with automated 5-1-1 hospital departure guidance.')}
               </p>
             </button>
 
             <button
               onClick={() => onNavigateTab && onNavigateTab('birth-plan')}
-              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group cursor-pointer"
             >
               <div className="flex items-center justify-between text-primary font-bold">
                 <span className="flex items-center gap-1.5">
-                  <ScrollText className="w-4 h-4" /> Birth Plan Review
+                  <ScrollText className="w-4 h-4" /> {t('Birth Plan Review', 'Birth Plan Review')}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Review her pain relief choices, lighting, and your partner cord-cutting role.
+                {t('Review her pain relief choices, lighting, and your partner cord-cutting role.', 'Review her pain relief choices, lighting, and your partner cord-cutting role.')}
               </p>
             </button>
 
             <button
               onClick={() => onNavigateTab && onNavigateTab('health-tracker')}
-              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group cursor-pointer"
             >
               <div className="flex items-center justify-between text-foreground font-bold">
                 <span className="flex items-center gap-1.5">
-                  <Footprints className="w-4 h-4 text-emerald-600" /> Evening Kick Counter
+                  <Footprints className="w-4 h-4 text-emerald-600" /> {t('Evening Kick Counter', 'Evening Kick Counter')}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Bond with baby during quiet evening movement sessions.
+                {t('Bond with baby during quiet evening movement sessions.', 'Bond with baby during quiet evening movement sessions.')}
               </p>
             </button>
 
             <button
               onClick={() => onNavigateTab && onNavigateTab('bloom-ai')}
-              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group"
+              className="p-4 rounded-2xl border border-border bg-card hover:bg-muted/30 text-left transition-all space-y-1.5 shadow-2xs group cursor-pointer"
             >
               <div className="flex items-center justify-between text-accent font-bold">
                 <span className="flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4" /> Partner AI Assistant
+                  <Sparkles className="w-4 h-4" /> {t('Partner AI Assistant', 'Partner AI Assistant')}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Ask clinical questions on comfort measures, back labor, and red flags.
+                {t('Ask clinical questions on comfort measures, back labor, and red flags.', 'Ask clinical questions on comfort measures, back labor, and red flags.')}
               </p>
             </button>
           </div>
@@ -390,23 +391,23 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
                 <ListTodo className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-serif font-bold text-foreground">Partner Readiness Checklist</h3>
-                <p className="text-xs text-muted-foreground">Physical tasks to relieve maternal anxiety</p>
+                <h3 className="text-base font-serif font-bold text-foreground">{t('partnerReadinessChecklist', 'Partner Readiness Checklist')}</h3>
+                <p className="text-xs text-muted-foreground">{t('Physical tasks to relieve maternal anxiety', 'Physical tasks to relieve maternal anxiety')}</p>
               </div>
             </div>
             <span className="text-xs font-bold text-primary">
-              {Object.values(partnerChecklist).filter(Boolean).length} of {Object.keys(partnerChecklist).length} Ready
+              {Object.values(partnerChecklist).filter(Boolean).length} of {Object.keys(partnerChecklist).length} {t('Ready', 'Ready')}
             </span>
           </div>
 
           <div className="space-y-2 text-xs">
             {[
-              { key: 'car_seat', label: 'Infant car seat securely installed & inspected in vehicle' },
-              { key: 'bag_packed', label: 'Partner overnight hospital bag & 10ft phone chargers packed' },
-              { key: 'birth_plan', label: 'Birth preferences and cord-cutting wishes memorized' },
-              { key: 'contacts_saved', label: 'Pediatric triage & labor ward emergency contacts in speed dial' },
-              { key: 'five_one_one', label: '5-1-1 contraction rule understood for hospital departure' },
-              { key: 'station_ready', label: 'Home recovery & newborn bassinet station sanitized and ready' }
+              { key: 'car_seat', label: t('Infant car seat securely installed & inspected in vehicle', 'Infant car seat securely installed & inspected in vehicle') },
+              { key: 'bag_packed', label: t('Partner overnight hospital bag & 10ft phone chargers packed', 'Partner overnight hospital bag & 10ft phone chargers packed') },
+              { key: 'birth_plan', label: t('Birth preferences and cord-cutting wishes memorized', 'Birth preferences and cord-cutting wishes memorized') },
+              { key: 'contacts_saved', label: t('Pediatric triage & labor ward emergency contacts in speed dial', 'Pediatric triage & labor ward emergency contacts in speed dial') },
+              { key: 'five_one_one', label: t('5-1-1 contraction rule understood for hospital departure', '5-1-1 contraction rule understood for hospital departure') },
+              { key: 'station_ready', label: t('Home recovery & newborn bassinet station sanitized and ready', 'Home recovery & newborn bassinet station sanitized and ready') }
             ].map(item => {
               const isDone = partnerChecklist[item.key];
               return (
@@ -424,7 +425,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
                     type="checkbox"
                     checked={isDone}
                     onChange={() => {}}
-                    className="rounded text-primary focus:ring-primary"
+                    className="rounded text-primary focus:ring-primary cursor-pointer"
                   />
                 </div>
               );
@@ -440,8 +441,8 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
             <Lock className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-serif font-bold text-foreground">User-Controlled Sharing Permissions</h3>
-            <p className="text-xs text-muted-foreground">The mother controls exactly what personal data is synchronized</p>
+            <h3 className="text-base font-serif font-bold text-foreground">{t('sharingPermissionsTitle', 'User-Controlled Sharing Permissions')}</h3>
+            <p className="text-xs text-muted-foreground">{t('The mother controls exactly what personal data is synchronized', 'The mother controls exactly what personal data is synchronized')}</p>
           </div>
         </div>
 

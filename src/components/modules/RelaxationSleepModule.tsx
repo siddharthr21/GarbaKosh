@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useApp } from '@/context/AppContext';
 import { SOUNDSCAPE_TRACKS, SLEEP_STORIES, SoundscapeTrack } from '@/data/soundscapes';
 import { audioSynth } from '@/utils/audioSynth';
 import {
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export const RelaxationSleepModule: React.FC = () => {
+  const { t } = useApp();
   const [activeTrack, setActiveTrack] = useState<SoundscapeTrack>(SOUNDSCAPE_TRACKS[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.6);
@@ -74,13 +76,13 @@ export const RelaxationSleepModule: React.FC = () => {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold mb-2">
           <Moon className="w-3.5 h-3.5" />
-          <span>Acoustic Sanctuary & Restorative Sleep</span>
+          <span>{t('Acoustic Sanctuary & Restorative Sleep', 'Acoustic Sanctuary & Restorative Sleep')}</span>
         </div>
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Relaxation and Sleep Center
+          {t('sleepTitle', 'Relaxation and Sleep Center')}
         </h1>
         <p className="text-sm text-gray-600">
-          Scientifically crafted audio frequencies to soothe maternal anxiety, promote melatonin synthesis, and calm fetal heart rate.
+          {t('sleepSubtitle', 'Scientifically crafted audio frequencies to soothe maternal anxiety, promote melatonin synthesis, and calm fetal heart rate.')}
         </p>
       </div>
 
@@ -89,12 +91,12 @@ export const RelaxationSleepModule: React.FC = () => {
         <div className="space-y-3 max-w-xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold backdrop-blur-md">
             <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-emerald-400 animate-ping' : 'bg-gray-400'}`} />
-            <span>{isPlaying ? 'Now Synthesizing Soundscape' : 'Select Soundscape'}</span>
+            <span>{isPlaying ? t('Now Synthesizing Soundscape', 'Now Synthesizing Soundscape') : t('Select Soundscape', 'Select Soundscape')}</span>
           </div>
 
-          <h2 className="text-2xl md:text-3xl font-black tracking-tight">{activeTrack.title}</h2>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight">{t(activeTrack.title, activeTrack.title)}</h2>
           <p className="text-xs md:text-sm text-white/80 leading-relaxed">
-            {activeTrack.description}
+            {t(activeTrack.description, activeTrack.description)}
           </p>
 
           {/* Volume Control & Sleep Timer */}
@@ -115,12 +117,12 @@ export const RelaxationSleepModule: React.FC = () => {
 
             <div className="flex items-center gap-1.5 text-xs">
               <Clock className="w-3.5 h-3.5 text-white/60" />
-              <span className="text-[11px] text-white/70">Timer:</span>
+              <span className="text-[11px] text-white/70">{t('Timer', 'Timer')}:</span>
               {[15, 30, 60].map(mins => (
                 <button
                   key={mins}
                   onClick={() => setSleepTimerMinutes(sleepTimerMinutes === mins ? null : mins)}
-                  className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
+                  className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
                     sleepTimerMinutes === mins
                       ? 'bg-purple-500 text-white shadow-xs'
                       : 'bg-white/10 text-white/70 hover:bg-white/20'
@@ -137,20 +139,20 @@ export const RelaxationSleepModule: React.FC = () => {
         <div className="shrink-0 flex flex-col items-center">
           <button
             onClick={() => handleTogglePlay(activeTrack)}
-            className="w-24 h-24 rounded-full bg-gradient-to-tr from-purple-500 to-rose-400 text-white flex items-center justify-center shadow-xl shadow-purple-500/40 hover:scale-105 active:scale-95 transition-all"
+            className="w-24 h-24 rounded-full bg-gradient-to-tr from-purple-500 to-rose-400 text-white flex items-center justify-center shadow-xl shadow-purple-500/40 hover:scale-105 active:scale-95 transition-all cursor-pointer"
             aria-label="Play or Pause"
           >
             {isPlaying ? <Pause className="w-10 h-10" /> : <Play className="w-10 h-10 ml-1" />}
           </button>
           <span className="text-[11px] text-white/70 mt-2 font-medium">
-            {isPlaying ? 'Pause Loop' : 'Play Ambient'}
+            {isPlaying ? t('stopAll', 'Pause Loop') : t('playAll', 'Play Ambient')}
           </span>
         </div>
       </div>
 
       {/* Soundscape Tracks Grid */}
       <div className="space-y-3">
-        <h3 className="text-base font-bold text-gray-900">Curated Organic Soundscapes</h3>
+        <h3 className="text-base font-bold text-gray-900">{t('Curated Organic Soundscapes', 'Curated Organic Soundscapes')}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {SOUNDSCAPE_TRACKS.map(track => {
             const isThisPlaying = isPlaying && activeTrack.id === track.id;
@@ -178,12 +180,12 @@ export const RelaxationSleepModule: React.FC = () => {
                 <div className="flex-1 space-y-1 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="capitalize text-[10px] font-bold text-purple-700 bg-purple-100/60 px-2 py-0.5 rounded-md">
-                      {track.category}
+                      {t(track.category, track.category)}
                     </span>
-                    <span className="text-gray-400 text-[10px]">{track.durationDesc}</span>
+                    <span className="text-gray-400 text-[10px]">{t(track.durationDesc, track.durationDesc)}</span>
                   </div>
-                  <h4 className="font-bold text-gray-900 text-sm mt-0.5">{track.title}</h4>
-                  <p className="text-gray-500 line-clamp-2 leading-relaxed">{track.description}</p>
+                  <h4 className="font-bold text-gray-900 text-sm mt-0.5">{t(track.title, track.title)}</h4>
+                  <p className="text-gray-500 line-clamp-2 leading-relaxed">{t(track.description, track.description)}</p>
                 </div>
               </div>
             );

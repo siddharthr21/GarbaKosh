@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export const PostpartumModule: React.FC = () => {
-  const { profile, updateProfile, postpartumLogs, addPostpartumLog, triggerEmergencyModal } = useApp();
+  const { profile, updateProfile, postpartumLogs, addPostpartumLog, triggerEmergencyModal, t } = useApp();
 
   const [deliveryType, setDeliveryType] = useState<'vaginal' | 'c-section' | 'assisted'>('vaginal');
   const [painScale, setPainScale] = useState(3);
@@ -67,26 +67,26 @@ export const PostpartumModule: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold mb-2">
             <CalendarHeart className="w-3.5 h-3.5" />
-            <span>The Fourth Trimester Maternal Recovery</span>
+            <span>{t('The Fourth Trimester Maternal Recovery', 'The Fourth Trimester Maternal Recovery')}</span>
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900">
-            Postpartum Recovery Dashboard
+            {t('postpartumTitle', 'Postpartum Recovery Dashboard')}
           </h1>
           <p className="text-sm text-gray-600">
-            Nurturing the mother after birth: lochia flow, perineal/incision healing, breastfeeding, sleep, and emotional health.
+            {t('postpartumSubtitle', 'Nurturing the mother after birth: lochia flow, perineal/incision healing, breastfeeding, sleep, and emotional health.')}
           </p>
         </div>
 
         <button
           onClick={handleTogglePostpartumMode}
-          className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer ${
             profile.isPostpartum
               ? 'bg-emerald-600 text-white'
               : 'bg-cream-100 text-gray-700 hover:bg-cream-200 border border-cream-200'
           }`}
         >
           <Baby className="w-4 h-4" />
-          <span>Status: {profile.isPostpartum ? 'Baby Born (Postpartum Active)' : 'Pregnancy Stage (Previewing Postpartum)'}</span>
+          <span>{t('Status', 'Status')}: {profile.isPostpartum ? t('Baby Born (Postpartum Active)', 'Baby Born (Postpartum Active)') : t('Pregnancy Stage (Previewing Postpartum)', 'Pregnancy Stage (Previewing Postpartum)')}</span>
         </button>
       </div>
 
@@ -94,9 +94,9 @@ export const PostpartumModule: React.FC = () => {
       <div className="p-4 bg-red-50 rounded-3xl border-2 border-red-300 text-xs text-red-950 space-y-1.5 flex items-start gap-3">
         <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
         <div>
-          <h4 className="font-bold text-red-900 uppercase text-[11px]">Emergency Postpartum Red Flags:</h4>
+          <h4 className="font-bold text-red-900 uppercase text-[11px]">{t('Emergency Postpartum Red Flags', 'Emergency Postpartum Red Flags')}:</h4>
           <p className="text-red-900/90 leading-relaxed">
-            Seek immediate emergency care (112 / 911 / 108) if you experience: <strong>Heavy vaginal bleeding</strong> (soaking a pad in 1 hour), <strong>severe chest pain or shortness of breath</strong>, <strong>persistent severe headache with visual disturbances</strong>, <strong>fever over 38°C</strong>, or <strong>thoughts of harming yourself or baby</strong>.
+            {t('Seek immediate emergency care (112 / 911 / 108) if you experience: Heavy vaginal bleeding, severe chest pain or shortness of breath, persistent severe headache, or fever.', 'Seek immediate emergency care (112 / 911 / 108) if you experience: Heavy vaginal bleeding (soaking a pad in 1 hour), severe chest pain or shortness of breath, persistent severe headache with visual disturbances, fever over 38°C, or thoughts of harming yourself or baby.')}
           </p>
         </div>
       </div>
@@ -106,33 +106,33 @@ export const PostpartumModule: React.FC = () => {
         <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
           <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
             <Heart className="w-4 h-4 text-rose-500" />
-            Daily Maternal Recovery Log
+            {t('Daily Maternal Recovery Log', 'Daily Maternal Recovery Log')}
           </h3>
 
           <form onSubmit={handlePostpartumCheckin} className="space-y-3.5 text-xs">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Delivery Type</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Delivery Type', 'Delivery Type')}</label>
                 <select
                   value={deliveryType}
                   onChange={e => setDeliveryType(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer"
                 >
-                  <option value="vaginal">Vaginal Birth</option>
-                  <option value="c-section">Cesarean (C-Section)</option>
-                  <option value="assisted">Assisted (Vacuum / Forceps)</option>
+                  <option value="vaginal">{t('Vaginal Birth', 'Vaginal Birth')}</option>
+                  <option value="c-section">{t('Cesarean (C-Section)', 'Cesarean (C-Section)')}</option>
+                  <option value="assisted">{t('Assisted (Vacuum / Forceps)', 'Assisted (Vacuum / Forceps)')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Pain / Discomfort (1-10)</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Pain / Discomfort', 'Pain / Discomfort')} (1-10)</label>
                 <input
                   type="range"
                   min="0"
                   max="10"
                   value={painScale}
                   onChange={e => setPainScale(Number(e.target.value))}
-                  className="w-full accent-rose-500"
+                  className="w-full accent-rose-500 cursor-pointer"
                 />
                 <div className="text-right text-[10px] text-gray-400 font-bold">{painScale} / 10</div>
               </div>

@@ -26,7 +26,10 @@ export const AuthScreen: React.FC = () => {
   const {
     login,
     register,
-    allAccounts
+    allAccounts,
+    selectedLanguage,
+    setSelectedLanguage,
+    t
   } = useApp();
 
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -172,15 +175,45 @@ export const AuthScreen: React.FC = () => {
         {/* Right Col: Interactive Auth Form (7 cols) */}
         <div className="lg:col-span-7 p-6 md:p-10 flex flex-col justify-between bg-card">
           <div className="space-y-6">
+            {/* Language Quick Selector Bar */}
+            <div className="flex items-center justify-between pb-3 border-b border-border/50">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                🌐 {t('lang')}:
+              </span>
+              <div className="flex flex-wrap items-center gap-1">
+                {[
+                  { code: 'en-US', label: 'EN' },
+                  { code: 'kn-IN', label: 'ಕನ್ನಡ' },
+                  { code: 'hi-IN', label: 'हिंदी' },
+                  { code: 'ta-IN', label: 'தமிழ்' },
+                  { code: 'te-IN', label: 'తెలుగు' },
+                  { code: 'ml-IN', label: 'മലയാളം' }
+                ].map(l => (
+                  <button
+                    key={l.code}
+                    type="button"
+                    onClick={() => setSelectedLanguage(l.code)}
+                    className={`px-2 py-0.5 rounded-lg text-xs font-semibold transition-all ${
+                      selectedLanguage === l.code
+                        ? 'bg-primary text-white font-bold shadow-xs'
+                        : 'bg-muted/40 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Top Switcher: Sign In vs Create Account */}
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
                 <h2 className="text-xl font-serif font-bold text-foreground">
-                  {authMode === 'login' ? 'Welcome Back' : 'Create Secure Family Account'}
+                  {authMode === 'login' ? t('authWelcome') : t('createAccountTab')}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {authMode === 'login'
-                    ? 'Sign in to access your personalized maternal sanctuary'
+                    ? t('authSubtitle')
                     : 'Select your role to generate your unique security code'}
                 </p>
               </div>
@@ -194,7 +227,7 @@ export const AuthScreen: React.FC = () => {
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  Sign In
+                  {t('signInTab')}
                 </button>
                 <button
                   onClick={() => { setAuthMode('signup'); setErrorMessage(null); }}
@@ -204,7 +237,7 @@ export const AuthScreen: React.FC = () => {
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  Register
+                  {t('createAccountTab')}
                 </button>
               </div>
             </div>
@@ -230,7 +263,7 @@ export const AuthScreen: React.FC = () => {
               <div className="space-y-5">
                 <form onSubmit={handleLogin} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="block text-foreground font-bold mb-1">Email Address</label>
+                    <label className="block text-foreground font-bold mb-1">{t('emailLabel')}</label>
                     <div className="relative">
                       <Mail className="w-4 h-4 absolute left-3.5 top-3 text-muted-foreground" />
                       <input
@@ -246,7 +279,7 @@ export const AuthScreen: React.FC = () => {
 
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-foreground font-bold">Password</label>
+                      <label className="text-foreground font-bold">{t('passwordLabel')}</label>
                       <button
                         type="button"
                         onClick={() => setShowForgotPassword(true)}
@@ -279,7 +312,7 @@ export const AuthScreen: React.FC = () => {
                     type="submit"
                     className="w-full py-3 bg-primary hover:bg-primary-hover text-white rounded-2xl font-bold shadow-soft transition-all text-xs flex items-center justify-center gap-2"
                   >
-                    <span>Sign In to Sanctuary</span>
+                    <span>{t('signInBtn')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </form>
@@ -288,7 +321,7 @@ export const AuthScreen: React.FC = () => {
                 <div className="pt-3 border-t border-border space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                      Instant 1-Click Evaluation Profiles:
+                      {t('demoProfilesTitle')}
                     </span>
                     <span className="text-[10px] text-primary font-bold">No password required</span>
                   </div>

@@ -25,7 +25,7 @@ const DAILY_AFFIRMATIONS = [
 ];
 
 export const MoodWellnessModule: React.FC = () => {
-  const { profile, moodLogs, logMood } = useApp();
+  const { profile, moodLogs, logMood, t } = useApp();
 
   const [selectedMood, setSelectedMood] = useState<'joyful' | 'calm' | 'anxious' | 'exhausted' | 'tearful' | 'nauseated'>('calm');
   const [stressLevel, setStressLevel] = useState(3);
@@ -66,13 +66,13 @@ export const MoodWellnessModule: React.FC = () => {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-bold mb-2">
           <Smile className="w-3.5 h-3.5" />
-          <span>Maternal Mental & Emotional Sanctuary</span>
+          <span>{t('wellnessTitle', 'Maternal Mental & Emotional Sanctuary')}</span>
         </div>
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Mood & Emotional Wellness
+          {t('Mood & Emotional Wellness', 'Mood & Emotional Wellness')}
         </h1>
         <p className="text-sm text-gray-600">
-          A gentle, non-judgmental space to validate your emotional experience, release anxiety, and center yourself.
+          {t('wellnessSubtitle', 'A gentle, non-judgmental space to validate your emotional experience, release anxiety, and center yourself.')}
         </p>
       </div>
 
@@ -81,18 +81,18 @@ export const MoodWellnessModule: React.FC = () => {
         <div className="space-y-2">
           <span className="text-[10px] uppercase font-bold text-purple-700 tracking-wider flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
-            Today’s Sacred Maternal Affirmation
+            {t('affirmationsTitle', 'Today’s Sacred Maternal Affirmation')}
           </span>
           <p className="text-lg md:text-xl font-serif italic text-purple-950 font-medium max-w-xl">
-            "{DAILY_AFFIRMATIONS[activeAffirmationIdx]}"
+            "{t(DAILY_AFFIRMATIONS[activeAffirmationIdx], DAILY_AFFIRMATIONS[activeAffirmationIdx])}"
           </p>
         </div>
 
         <button
           onClick={() => setActiveAffirmationIdx((prev) => (prev + 1) % DAILY_AFFIRMATIONS.length)}
-          className="shrink-0 px-4 py-2 bg-white hover:bg-purple-50 text-purple-800 rounded-xl text-xs font-bold shadow-xs border border-purple-200 transition-colors"
+          className="shrink-0 px-4 py-2 bg-white hover:bg-purple-50 text-purple-800 rounded-xl text-xs font-bold shadow-xs border border-purple-200 transition-colors cursor-pointer"
         >
-          New Affirmation ✨
+          {t('New Affirmation', 'New Affirmation')} ✨
         </button>
       </div>
 
@@ -102,7 +102,7 @@ export const MoodWellnessModule: React.FC = () => {
         <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
           <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
             <Heart className="w-4 h-4 text-rose-500" />
-            How are you feeling right now, {profile.name.split(' ')[0]}?
+            {t('howAreYouFeeling', 'How are you feeling right now')}?
           </h3>
 
           <form onSubmit={handleSubmitMood} className="space-y-4 text-xs">
@@ -113,14 +113,21 @@ export const MoodWellnessModule: React.FC = () => {
                   key={opt.type}
                   type="button"
                   onClick={() => setSelectedMood(opt.type as any)}
-                  className={`p-3 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+                  className={`p-3 rounded-2xl border flex flex-col items-center justify-center transition-all cursor-pointer ${
                     selectedMood === opt.type
                       ? 'bg-purple-50 border-purple-400 text-purple-900 font-bold shadow-xs scale-102'
                       : 'bg-gray-50/60 border-gray-200 text-gray-600 hover:bg-white'
                   }`}
                 >
                   <span className="text-2xl mb-1">{opt.emoji}</span>
-                  <span className="text-[11px] text-center leading-tight">{opt.label}</span>
+                  <span className="text-[11px] text-center leading-tight">
+                    {opt.type === 'joyful' ? t('moodJoyful', 'Joyful') :
+                     opt.type === 'calm' ? t('moodCalm', 'Calm') :
+                     opt.type === 'anxious' ? t('moodAnxious', 'Anxious') :
+                     opt.type === 'exhausted' ? t('moodFatigued', 'Fatigued') :
+                     opt.type === 'tearful' ? t('moodSensitive', 'Sensitive') :
+                     t('Nauseated', 'Nauseated')}
+                  </span>
                 </button>
               ))}
             </div>
@@ -128,7 +135,7 @@ export const MoodWellnessModule: React.FC = () => {
             {/* Stress level slider */}
             <div>
               <div className="flex justify-between font-semibold text-gray-700 mb-1">
-                <span>Stress Level:</span>
+                <span>{t('stressScale', 'Stress Level')}:</span>
                 <span className="font-bold text-purple-700">{stressLevel} / 10</span>
               </div>
               <input
@@ -137,19 +144,19 @@ export const MoodWellnessModule: React.FC = () => {
                 max="10"
                 value={stressLevel}
                 onChange={e => setStressLevel(Number(e.target.value))}
-                className="w-full accent-purple-600"
+                className="w-full accent-purple-600 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-gray-400">
-                <span>Completely Zen (1)</span>
-                <span>Moderate (5)</span>
-                <span>Overwhelmed (10)</span>
+                <span>{t('Completely Zen', 'Completely Zen')} (1)</span>
+                <span>{t('Moderate', 'Moderate')} (5)</span>
+                <span>{t('Overwhelmed', 'Overwhelmed')} (10)</span>
               </div>
             </div>
 
             {/* Anxiety level slider */}
             <div>
               <div className="flex justify-between font-semibold text-gray-700 mb-1">
-                <span>Anxiety / Restlessness:</span>
+                <span>{t('Anxiety / Restlessness', 'Anxiety / Restlessness')}:</span>
                 <span className="font-bold text-rose-600">{anxietyLevel} / 10</span>
               </div>
               <input
@@ -158,34 +165,33 @@ export const MoodWellnessModule: React.FC = () => {
                 max="10"
                 value={anxietyLevel}
                 onChange={e => setAnxietyLevel(Number(e.target.value))}
-                className="w-full accent-rose-500"
+                className="w-full accent-rose-500 cursor-pointer"
               />
               <div className="flex justify-between text-[10px] text-gray-400">
-                <span>Tranquil (1)</span>
-                <span>Mild worry (5)</span>
-                <span>High anxiety (10)</span>
+                <span>{t('Tranquil', 'Tranquil')} (1)</span>
+                <span>{t('Mild worry', 'Mild worry')} (5)</span>
+                <span>{t('High anxiety', 'High anxiety')} (10)</span>
               </div>
             </div>
 
-            {/* Journal prompt */}
             <div>
               <label className="block text-gray-700 font-semibold mb-1">
-                Emotional Journal (Thoughts, worries, or joyful moments today):
+                {t('journalPlaceholder', 'Emotional Journal (Thoughts, worries, or joyful moments today)')}:
               </label>
               <textarea
                 rows={3}
                 value={journalNotes}
                 onChange={e => setJournalNotes(e.target.value)}
-                placeholder="Write freely. Your notes are 100% private to you unless explicitly shared with your partner in privacy settings..."
+                placeholder={t('Write freely. Your notes are 100% private to you...', 'Write freely. Your notes are 100% private to you unless explicitly shared with your partner in privacy settings...')}
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md transition-all text-xs"
+              className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md transition-all text-xs cursor-pointer"
             >
-              Save Emotional Check-In
+              {t('saveMoodLog', 'Save Emotional Check-in')}
             </button>
           </form>
         </div>
@@ -197,26 +203,26 @@ export const MoodWellnessModule: React.FC = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-teal-950 flex items-center gap-2">
                 <Wind className="w-5 h-5 text-teal-600" />
-                Vagus Nerve De-Stress Breathing
+                {t('Vagus Nerve De-Stress Breathing', 'Vagus Nerve De-Stress Breathing')}
               </h3>
-              <span className="text-xs text-teal-700 font-semibold">4-7-8 Relaxation</span>
+              <span className="text-xs text-teal-700 font-semibold">{t('4-7-8 Relaxation', '4-7-8 Relaxation')}</span>
             </div>
 
             <p className="text-xs text-teal-900/80 leading-relaxed">
-              Gentle coherent diaphragmatic breathing instantly drops maternal heart rate and releases soothing oxytocin to baby.
+              {t('Gentle coherent diaphragmatic breathing instantly drops maternal heart rate and releases soothing oxytocin to baby.', 'Gentle coherent diaphragmatic breathing instantly drops maternal heart rate and releases soothing oxytocin to baby.')}
             </p>
 
             <div className="py-4 flex flex-col items-center justify-center">
               <div className="w-32 h-32 rounded-full bg-teal-500/20 border-4 border-teal-500 flex flex-col items-center justify-center text-teal-950 transition-all duration-1000 animate-pulse">
-                <span className="text-2xl font-black">Breathe</span>
-                <span className="text-xs font-bold text-teal-700 uppercase">Slowly</span>
+                <span className="text-2xl font-black">{t('Breathe', 'Breathe')}</span>
+                <span className="text-xs font-bold text-teal-700 uppercase">{t('Slowly', 'Slowly')}</span>
               </div>
             </div>
 
             <div className="p-3 bg-white/80 rounded-2xl border border-teal-100 text-xs text-teal-900">
-              <p className="font-semibold mb-1">Gentle instructions:</p>
+              <p className="font-semibold mb-1">{t('Gentle instructions', 'Gentle instructions')}:</p>
               <p className="text-teal-800">
-                Inhale quietly through your nose for 4 seconds, soft pause for 4 seconds, exhale through soft lips for 6 seconds.
+                {t('Inhale quietly through your nose for 4 seconds, soft pause for 4 seconds, exhale through soft lips for 6 seconds.', 'Inhale quietly through your nose for 4 seconds, soft pause for 4 seconds, exhale through soft lips for 6 seconds.')}
               </p>
             </div>
           </div>
@@ -225,14 +231,14 @@ export const MoodWellnessModule: React.FC = () => {
           <div className="bg-rose-50 rounded-3xl p-5 border border-rose-200 text-xs space-y-2">
             <h4 className="font-bold text-rose-950 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-rose-600" />
-              Perinatal Mental Health Support Hotline
+              {t('Perinatal Mental Health Support Hotline', 'Perinatal Mental Health Support Hotline')}
             </h4>
             <p className="text-rose-900 leading-relaxed">
-              If you ever feel persistent sadness, detachment, or overwhelming anxiety, please know that you are deeply worthy of care. Specialized perinatal counselors are available 24/7 free of charge.
+              {t('If you ever feel persistent sadness, detachment, or overwhelming anxiety, please know that you are deeply worthy of care. Specialized perinatal counselors are available 24/7 free of charge.', 'If you ever feel persistent sadness, detachment, or overwhelming anxiety, please know that you are deeply worthy of care. Specialized perinatal counselors are available 24/7 free of charge.')}
             </p>
             <div className="flex flex-wrap gap-2 pt-1 font-bold text-rose-800">
-              <span className="px-2.5 py-1 bg-white rounded-lg border border-rose-200">📞 National Maternal Hotline: 1-833-852-6262</span>
-              <span className="px-2.5 py-1 bg-white rounded-lg border border-rose-200">📞 India Vandrevala Mental Health: 9999 666 555</span>
+              <span className="px-2.5 py-1 bg-white rounded-lg border border-rose-200">📞 {t('National Maternal Hotline', 'National Maternal Hotline')}: 1-833-852-6262</span>
+              <span className="px-2.5 py-1 bg-white rounded-lg border border-rose-200">📞 {t('India Vandrevala Mental Health', 'India Vandrevala Mental Health')}: 9999 666 555</span>
             </div>
           </div>
         </div>
@@ -242,7 +248,7 @@ export const MoodWellnessModule: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-purple-600" />
-          Recent Emotional Journal History
+          {t('Recent Emotional Journal History', 'Recent Emotional Journal History')}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

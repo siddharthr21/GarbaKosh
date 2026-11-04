@@ -34,7 +34,8 @@ export const SettingsModule: React.FC = () => {
     logout,
     switchAccount,
     allAccounts,
-    unlinkPartner
+    unlinkPartner,
+    t
   } = useApp();
 
   const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'pregnancy' | 'health' | 'privacy' | 'account'>('privacy');
@@ -119,30 +120,57 @@ export const SettingsModule: React.FC = () => {
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300 max-w-4xl mx-auto">
       {/* Header matching user photo */}
-      <div className="space-y-1">
-        <h1 className="text-2xl md:text-3xl font-serif font-extrabold text-foreground">
-          Settings & Preferences
-        </h1>
-        <p className="text-xs md:text-sm text-muted-foreground">
-          Manage your profile, pregnancy timeline, health preferences, and account security.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-3xl font-serif font-extrabold text-foreground">
+            {t('settingsTitle', 'Settings & Preferences')}
+          </h1>
+          <p className="text-xs md:text-sm text-muted-foreground">
+            {t('Manage your profile, pregnancy timeline, health preferences, and account security.', 'Manage your profile, pregnancy timeline, health preferences, and account security.')}
+          </p>
+        </div>
+
+        {/* Global Language Selector Bar in Settings */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-card border border-border shadow-soft text-xs font-bold self-start sm:self-auto">
+          {[
+            { code: 'en-US', label: 'English' },
+            { code: 'kn-IN', label: 'ಕನ್ನಡ' },
+            { code: 'hi-IN', label: 'हिंदी' },
+            { code: 'ta-IN', label: 'தமிழ்' },
+            { code: 'te-IN', label: 'తెలుగు' },
+            { code: 'ml-IN', label: 'മലയാളം' }
+          ].map(lang => (
+            <button
+              key={lang.code}
+              type="button"
+              onClick={() => setSelectedLanguage(lang.code as any)}
+              className={`px-2.5 py-1 rounded-xl transition-all cursor-pointer ${
+                selectedLanguage === lang.code
+                  ? 'bg-primary text-white shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {lang.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Settings Navigation Tabs matching screenshot */}
       <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-muted/50 border border-border w-fit max-w-full overflow-x-auto text-xs font-semibold">
         {[
-          { id: 'profile', label: 'Profile' },
-          { id: 'pregnancy', label: 'Pregnancy' },
-          { id: 'health', label: 'Health Preferences' },
-          { id: 'privacy', label: 'Privacy & Sharing' },
-          { id: 'account', label: 'Account' },
+          { id: 'profile', label: t('tabProfile', 'Profile') },
+          { id: 'pregnancy', label: t('tabPregnancy', 'Pregnancy') },
+          { id: 'health', label: t('tabHealth', 'Health Preferences') },
+          { id: 'privacy', label: t('tabPrivacy', 'Privacy & Sharing') },
+          { id: 'account', label: t('tabAccount', 'Account') },
         ].map((tab) => {
           const isActive = activeSettingsTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveSettingsTab(tab.id as any)}
-              className={`px-4 py-2 rounded-xl transition-all shrink-0 ${
+              className={`px-4 py-2 rounded-xl transition-all shrink-0 cursor-pointer ${
                 isActive
                   ? 'bg-card text-foreground font-bold shadow-soft'
                   : 'text-muted-foreground hover:text-foreground'
@@ -567,23 +595,23 @@ export const SettingsModule: React.FC = () => {
           </div>
 
           <div className="p-4 bg-muted/20 rounded-2xl border border-border space-y-2">
-            <span className="font-bold text-foreground block">Data Sovereignty & Medical Export</span>
+            <span className="font-bold text-foreground block">{t('exportData', 'Data Sovereignty & Medical Export')}</span>
             <p className="text-muted-foreground">
-              Download your complete maternal record, vitals logs, and memories as a clean JSON backup.
+              {t('Download your complete maternal record, vitals logs, and memories as a clean JSON backup.', 'Download your complete maternal record, vitals logs, and memories as a clean JSON backup.')}
             </p>
             <button
               onClick={exportAllDataJson}
-              className="px-4 py-2 bg-card border border-border hover:bg-muted text-foreground rounded-xl font-bold flex items-center gap-1.5 transition-all shadow-xs"
+              className="px-4 py-2 bg-card border border-border hover:bg-muted text-foreground rounded-xl font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>Export Medical JSON</span>
+              <span>{t('exportData', 'Export Medical JSON')}</span>
             </button>
           </div>
 
           <div className="p-4 bg-accent-soft/30 rounded-2xl border border-accent/20 space-y-2">
-            <span className="font-bold text-accent block">Reset to Baseline Demo State</span>
+            <span className="font-bold text-accent block">{t('resetDemo', 'Reset to Baseline Demo State')}</span>
             <p className="text-muted-foreground">
-              Reset all local states, milestones, and sample records back to initial values.
+              {t('Reset all local states, milestones, and sample records back to initial values.', 'Reset all local states, milestones, and sample records back to initial values.')}
             </p>
             <button
               onClick={() => {
@@ -592,10 +620,10 @@ export const SettingsModule: React.FC = () => {
                   alert('Reset complete!');
                 }
               }}
-              className="px-4 py-2 bg-card border border-border hover:bg-accent-soft text-accent rounded-xl font-bold flex items-center gap-1.5 transition-all shadow-xs"
+              className="px-4 py-2 bg-card border border-border hover:bg-accent-soft text-accent rounded-xl font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
-              <span>Reset Demo State</span>
+              <span>{t('resetDemo', 'Reset Demo State')}</span>
             </button>
           </div>
         </div>

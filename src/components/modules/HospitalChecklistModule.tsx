@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const HospitalChecklistModule: React.FC = () => {
-  const { hospitalChecklist, toggleHospitalItem, addHospitalItem, profile } = useApp();
+  const { hospitalChecklist, toggleHospitalItem, addHospitalItem, profile, t } = useApp();
 
   const [activeCategory, setActiveCategory] = useState<'all' | 'mother' | 'baby' | 'partner'>('all');
   const [newItemTitle, setNewItemTitle] = useState('');
@@ -52,22 +52,22 @@ export const HospitalChecklistModule: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-bold mb-2">
             <Briefcase className="w-3.5 h-3.5" />
-            <span>Labor & Delivery Preparation</span>
+            <span>{t('Labor & Delivery Preparation', 'Labor & Delivery Preparation')}</span>
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900">
-            Hospital Bag & Childbirth Checklist
+            {t('hospitalBagTitle', 'Hospital Bag & Childbirth Checklist')}
           </h1>
           <p className="text-sm text-gray-600">
-            Smart tripartite packing list for Mother, Baby, and Partner plus your personal birth plan preferences.
+            {t('hospitalBagSubtitle', 'Smart tripartite packing list for Mother, Baby, and Partner plus your personal birth plan preferences.')}
           </p>
         </div>
 
         <button
           onClick={handlePrint}
-          className="px-4 py-2 bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 shrink-0"
+          className="px-4 py-2 bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
         >
           <Printer className="w-4 h-4" />
-          <span>Print / Export PDF</span>
+          <span>{t('Print / Export PDF', 'Print / Export PDF')}</span>
         </button>
       </div>
 
@@ -75,8 +75,8 @@ export const HospitalChecklistModule: React.FC = () => {
       <div className="bg-gradient-to-r from-cream-100 via-blush-50 to-teal-50 rounded-3xl p-6 border border-blush-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2 flex-1">
           <div className="flex items-center justify-between text-xs font-bold text-gray-800">
-            <span>Overall Hospital Bag Readiness:</span>
-            <span className="text-teal-700 font-extrabold">{packedPercent}% Ready ({packedItems}/{totalItems} Packed)</span>
+            <span>{t('Overall Hospital Bag Readiness', 'Overall Hospital Bag Readiness')}:</span>
+            <span className="text-teal-700 font-extrabold">{packedPercent}% {t('Ready', 'Ready')} ({packedItems}/{totalItems} {t('Packed', 'Packed')})</span>
           </div>
           <div className="w-full bg-white h-3 rounded-full overflow-hidden border border-blush-100">
             <div
@@ -85,17 +85,17 @@ export const HospitalChecklistModule: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-gray-500">
-            Aim to have both hospital bags zipped and stored near the front door by Week 35-36.
+            {t('Aim to have both hospital bags zipped and stored near the front door by Week 35-36.', 'Aim to have both hospital bags zipped and stored near the front door by Week 35-36.')}
           </p>
         </div>
 
         {/* Quick Emergency Call Pill */}
         <div className="shrink-0 p-4 bg-white rounded-2xl border border-rose-200 shadow-xs text-xs space-y-1">
           <span className="font-bold text-gray-900 block flex items-center gap-1">
-            <Phone className="w-3.5 h-3.5 text-rose-500" /> Hospital Labor Triage
+            <Phone className="w-3.5 h-3.5 text-rose-500" /> {t('Hospital Labor Triage', 'Hospital Labor Triage')}
           </span>
           <p className="text-rose-700 font-bold">{profile.doctorInfo.emergencyContact}</p>
-          <p className="text-[10px] text-gray-400">Call when contractions are 5-1-1</p>
+          <p className="text-[10px] text-gray-400">{t('Call when contractions are 5-1-1', 'Call when contractions are 5-1-1')}</p>
         </div>
       </div>
 
@@ -108,19 +108,22 @@ export const HospitalChecklistModule: React.FC = () => {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-xl capitalize font-bold transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl capitalize font-bold transition-all cursor-pointer ${
                   activeCategory === cat
                     ? 'bg-teal-600 text-white shadow-xs'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {cat === 'all' ? 'All Essentials' : `${cat}’s Bag`}
+                {cat === 'all' ? t('All Essentials', 'All Essentials') :
+                 cat === 'mother' ? t('bagForMother', 'Mother’s Bag') :
+                 cat === 'baby' ? t('bagForBaby', 'Baby’s Bag') :
+                 t('bagForPartner', 'Partner’s Bag')}
               </button>
             ))}
           </div>
 
           <span className="text-xs text-gray-400 hidden sm:inline">
-            Tap item to mark as packed
+            {t('Tap item to mark as packed', 'Tap item to mark as packed')}
           </span>
         </div>
 
@@ -136,7 +139,7 @@ export const HospitalChecklistModule: React.FC = () => {
                   : 'bg-white border-gray-200 hover:border-teal-300 text-gray-800'
               }`}
             >
-              <button className="mt-0.5 text-teal-600 shrink-0">
+              <button className="mt-0.5 text-teal-600 shrink-0 cursor-pointer">
                 {item.packed ? (
                   <CheckCircle2 className="w-5 h-5 fill-teal-600 text-white" />
                 ) : (
@@ -149,10 +152,10 @@ export const HospitalChecklistModule: React.FC = () => {
                   item.category === 'mother' ? 'bg-pink-100 text-pink-700' :
                   item.category === 'baby' ? 'bg-cyan-100 text-cyan-700' : 'bg-purple-100 text-purple-700'
                 }`}>
-                  {item.category}
+                  {t(item.category, item.category)}
                 </span>
                 <span className={`font-semibold ${item.packed ? 'line-through' : ''}`}>
-                  {item.title}
+                  {t(item.title, item.title)}
                 </span>
               </div>
             </div>
@@ -165,25 +168,26 @@ export const HospitalChecklistModule: React.FC = () => {
             type="text"
             value={newItemTitle}
             onChange={e => setNewItemTitle(e.target.value)}
-            placeholder="Add custom packing item (e.g. Favorite fluffy pillow, portable diffuser)..."
+            placeholder={t('Add custom packing item...', 'Add custom packing item (e.g. Favorite fluffy pillow, portable diffuser)...')}
             className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
 
           <select
             value={newItemCat}
             onChange={e => setNewItemCat(e.target.value as any)}
-            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold"
+            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold cursor-pointer"
           >
-            <option value="mother">Mother’s Bag</option>
-            <option value="baby">Baby’s Bag</option>
-            <option value="partner">Partner’s Bag</option>
+            <option value="mother">{t('bagForMother', 'Mother’s Bag')}</option>
+            <option value="baby">{t('bagForBaby', 'Baby’s Bag')}</option>
+            <option value="partner">{t('bagForPartner', 'Partner’s Bag')}</option>
           </select>
 
           <button
             type="submit"
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shrink-0 transition-colors"
+            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors shrink-0 cursor-pointer"
           >
-            + Add Item
+            <Plus className="w-4 h-4" />
+            <span>{t('addItem', 'Add Item')}</span>
           </button>
         </form>
       </div>

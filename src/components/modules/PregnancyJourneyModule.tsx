@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 export const PregnancyJourneyModule: React.FC = () => {
-  const { profile } = useApp();
+  const { profile, t } = useApp();
   const currentMotherMonth = Math.min(9, Math.ceil(profile.currentGestationalWeek / 4.44));
   
   // View mode switcher: 40-week biometric timeline vs 9-month in-depth guide
@@ -46,10 +46,10 @@ export const PregnancyJourneyModule: React.FC = () => {
             <span>WHO & Hadlock Fetal Biometric Progression</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-gray-900">
-            My Pregnancy Journey
+            {t('journeyTitle')}
           </h1>
           <p className="text-xs md:text-sm text-gray-600 max-w-2xl mt-0.5">
-            Follow your baby’s anatomical and physiological development alongside maternal adaptations across all 40 weeks and 9 monthly stages.
+            {t('journeySubtitle')}
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export const PregnancyJourneyModule: React.FC = () => {
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
-            <span>40-Week Timeline</span>
+            <span>{t('timeline40Weeks')}</span>
           </button>
           <button
             onClick={() => setViewMode('months')}
@@ -75,7 +75,7 @@ export const PregnancyJourneyModule: React.FC = () => {
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>9 Monthly Chapters</span>
+            <span>{t('chapters9Months')}</span>
           </button>
         </div>
       </div>
@@ -89,7 +89,7 @@ export const PregnancyJourneyModule: React.FC = () => {
           <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-card space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase tracking-wider font-bold text-stone-500">
-                Select Gestational Week (1 - 40):
+                {t('selectWeek')}
               </span>
               <div className="flex items-center gap-2">
                 <button
@@ -100,7 +100,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                  Week {selectedWeekNum} of 40
+                  {t('week')} {selectedWeekNum} / 40
                 </span>
                 <button
                   onClick={() => setSelectedWeekNum(prev => Math.min(40, prev + 1))}
@@ -154,11 +154,11 @@ export const PregnancyJourneyModule: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    Week {activeWeek.week} · Month {activeWeek.month} · Trimester {activeWeek.trimester}
+                    {t('week')} {activeWeek.week} · {t('month')} {activeWeek.month} · {t('trimester')} {activeWeek.trimester}
                   </span>
                   {activeWeek.week === profile.currentGestationalWeek && (
                     <span className="text-xs font-bold text-rose-700 bg-rose-100 px-2.5 py-0.5 rounded-full">
-                      Your Current Gestational Age
+                      {t('active')}
                     </span>
                   )}
                 </div>
@@ -168,7 +168,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                 </h2>
 
                 <p className="text-sm text-stone-700 max-w-xl">
-                  Baby is approximately the size of a{' '}
+                  {t('babySizeOf')}{' '}
                   <span className="font-bold text-emerald-900">
                     {activeWeek.babySizeFruit} {activeWeek.fruitEmoji}
                   </span>
@@ -180,7 +180,7 @@ export const PregnancyJourneyModule: React.FC = () => {
               <div className="grid grid-cols-2 gap-3 shrink-0">
                 <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs text-center min-w-[130px]">
                   <Ruler className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
-                  <span className="text-[10px] uppercase font-bold text-stone-400 block">Length</span>
+                  <span className="text-[10px] uppercase font-bold text-stone-400 block">{t('length')}</span>
                   <div className="text-xl font-serif font-bold text-emerald-900 mt-0.5">
                     {activeWeek.babyLengthCm} cm
                   </div>
@@ -191,7 +191,7 @@ export const PregnancyJourneyModule: React.FC = () => {
 
                 <div className="p-4 bg-white rounded-2xl border border-stone-200 shadow-xs text-center min-w-[130px]">
                   <Scale className="w-4 h-4 text-[#C47A5A] mx-auto mb-1" />
-                  <span className="text-[10px] uppercase font-bold text-stone-400 block">Weight</span>
+                  <span className="text-[10px] uppercase font-bold text-stone-400 block">{t('weightMetric')}</span>
                   <div className="text-xl font-serif font-bold text-[#C47A5A] mt-0.5">
                     {activeWeek.babyWeightG >= 1000
                       ? `${(activeWeek.babyWeightG / 1000).toFixed(2)} kg`
@@ -212,8 +212,8 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <Baby className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">Baby’s Development</h3>
-                  <p className="text-xs text-stone-500">Anatomical & neurological milestones</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">{t('babyDevelopment')}</h3>
+                  <p className="text-xs text-stone-500">{t('babyDevelopmentSub')}</p>
                 </div>
               </div>
               <p className="text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
@@ -228,8 +228,8 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <HeartPulse className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">Mother’s Changes & Symptoms</h3>
-                  <p className="text-xs text-stone-500">Physiological adaptations this week</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">{t('motherBodySymptoms')}</h3>
+                  <p className="text-xs text-stone-500">{t('motherBodySymptomsSub')}</p>
                 </div>
               </div>
               <p className="text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
@@ -254,8 +254,8 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <Dumbbell className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">Safe Movement Guidance</h3>
-                  <p className="text-xs text-stone-500">ACOG-approved prenatal activity</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">{t('activityPrecautions')}</h3>
+                  <p className="text-xs text-stone-500">{t('activityPrecautionsSub')}</p>
                 </div>
               </div>
               <p className="text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
@@ -270,8 +270,8 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <Apple className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">Nutrition & Clinical Advice</h3>
-                  <p className="text-xs text-stone-500">Targeted nutrients and appointment alerts</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">{t('nutritionGuidance')}</h3>
+                  <p className="text-xs text-stone-500">{t('nutritionGuidanceSub')}</p>
                 </div>
               </div>
               <div className="space-y-2 text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
@@ -394,8 +394,8 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <Baby className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">1. Baby’s Development & Milestones</h3>
-                  <p className="text-xs text-stone-500">Cellular differentiation & anatomical maturation</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">1. {t('majorMilestones')}</h3>
+                  <p className="text-xs text-stone-500">{t('babyDevelopmentSub')}</p>
                 </div>
               </div>
 
@@ -410,7 +410,7 @@ export const PregnancyJourneyModule: React.FC = () => {
 
               <div className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100 text-xs space-y-1.5">
                 <span className="font-bold text-emerald-900 uppercase text-[10px]">
-                  Key Month {activeMonth.month} Milestones:
+                  {t('month')} {activeMonth.month} {t('majorMilestones')}:
                 </span>
                 {activeMonth.milestones.map((ms, i) => (
                   <div key={i} className="flex items-center gap-2 text-stone-800 font-medium">
@@ -428,13 +428,13 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <HeartPulse className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">2. Mother’s Body & Symptoms</h3>
-                  <p className="text-xs text-stone-500">Hormonal adaptations & physiological shifts</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">2. {t('motherBodySymptoms')}</h3>
+                  <p className="text-xs text-stone-500">{t('motherBodySymptomsSub')}</p>
                 </div>
               </div>
 
               <div className="space-y-2 text-xs">
-                <span className="font-bold text-stone-800 block text-[11px] uppercase">Physical Transformations:</span>
+                <span className="font-bold text-stone-800 block text-[11px] uppercase">{t('maternalChanges')}:</span>
                 {activeMonth.motherPhysicalChanges.map((chg, i) => (
                   <div key={i} className="flex items-start gap-2 text-stone-700">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
@@ -444,7 +444,7 @@ export const PregnancyJourneyModule: React.FC = () => {
               </div>
 
               <div className="space-y-1.5 pt-2 border-t border-stone-100">
-                <span className="font-bold text-stone-800 text-[11px] block uppercase">Common Symptoms:</span>
+                <span className="font-bold text-stone-800 text-[11px] block uppercase">{t('motherBodySymptoms')}:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {activeMonth.commonSymptoms.map((sym, i) => (
                     <span key={i} className="px-2.5 py-1 rounded-lg bg-[#FAF6EE] text-stone-800 text-xs font-semibold border border-stone-200">
@@ -462,8 +462,8 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <Heart className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">3. Emotional & Hormonal Wellbeing</h3>
-                  <p className="text-xs text-stone-500">Maternal psychological adjustments</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">3. {t('emotionalWellness')}</h3>
+                  <p className="text-xs text-stone-500">{t('maternalChanges')}</p>
                 </div>
               </div>
 
@@ -483,13 +483,13 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <Apple className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">4. Nutrition & Safe Movement</h3>
-                  <p className="text-xs text-stone-500">Evidence-based nourishment & exercise</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">4. {t('nutritionAdvice')}</h3>
+                  <p className="text-xs text-stone-500">{t('nutritionGuidance')}</p>
                 </div>
               </div>
 
               <div className="space-y-2 text-xs">
-                <span className="font-bold text-emerald-900 text-[11px] block uppercase">Recommended Nutrition:</span>
+                <span className="font-bold text-emerald-900 text-[11px] block uppercase">{t('nutrition')}:</span>
                 {activeMonth.recommendedNutrition.map((nutr, i) => (
                   <div key={i} className="flex items-center gap-2 text-stone-700">
                     <Apple className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -499,7 +499,7 @@ export const PregnancyJourneyModule: React.FC = () => {
               </div>
 
               <div className="space-y-2 text-xs pt-2 border-t border-stone-100">
-                <span className="font-bold text-blue-900 text-[11px] block uppercase">Safe Exercise & Activity:</span>
+                <span className="font-bold text-blue-900 text-[11px] block uppercase">{t('safeExercises')}:</span>
                 {activeMonth.safeActivityAndExercise.map((ex, i) => (
                   <div key={i} className="flex items-center gap-2 text-stone-700">
                     <Dumbbell className="w-3.5 h-3.5 text-blue-600 shrink-0" />
@@ -516,8 +516,8 @@ export const PregnancyJourneyModule: React.FC = () => {
                   <Calendar className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-serif font-bold text-gray-900">5. Medical Checkups & Precautions</h3>
-                  <p className="text-xs text-stone-500">Clinical scans, screenings, and safety alerts</p>
+                  <h3 className="text-base font-serif font-bold text-gray-900">5. {t('precautionsHeading')}</h3>
+                  <p className="text-xs text-stone-500">{t('emergencyProtocol')}</p>
                 </div>
               </div>
 

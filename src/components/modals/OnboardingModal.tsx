@@ -18,7 +18,15 @@ import {
 } from 'lucide-react';
 
 export const OnboardingModal: React.FC = () => {
-  const { isOnboardingOpen, setIsOnboardingOpen, completeOnboarding, profile } = useApp();
+  const {
+    isOnboardingOpen,
+    setIsOnboardingOpen,
+    completeOnboarding,
+    profile,
+    selectedLanguage,
+    setSelectedLanguage,
+    t
+  } = useApp();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [role, setRole] = useState<'mother' | 'partner'>(profile.role || 'mother');
@@ -92,17 +100,45 @@ export const OnboardingModal: React.FC = () => {
               <Baby className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-serif font-bold text-foreground">Welcome to BloomNest</h2>
-              <p className="text-xs text-muted-foreground">Step {currentStep} of 4: Personalized Setup</p>
+              <h2 className="text-lg font-serif font-bold text-foreground">{t('authWelcome', 'Welcome to BloomNest')}</h2>
+              <p className="text-xs text-muted-foreground">{t('Personalized Setup', 'Step')} {currentStep} / 4: {t('Personalized Setup', 'Personalized Setup')}</p>
             </div>
           </div>
 
           <button
             onClick={() => setIsOnboardingOpen(false)}
-            className="p-1.5 rounded-full hover:bg-muted text-muted-foreground"
+            className="p-1.5 rounded-full hover:bg-muted text-muted-foreground cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Quick Language Bar for Onboarding */}
+        <div className="pt-2 flex items-center justify-between gap-1 overflow-x-auto text-[11px] font-semibold border-b border-border/50 pb-2">
+          <span className="text-muted-foreground text-[10px] uppercase font-bold shrink-0">{t('Language', 'Language')}:</span>
+          <div className="flex items-center gap-1">
+            {[
+              { code: 'en-US', label: 'EN' },
+              { code: 'kn-IN', label: 'ಕನ್ನಡ' },
+              { code: 'hi-IN', label: 'हिंदी' },
+              { code: 'ta-IN', label: 'தமிழ்' },
+              { code: 'te-IN', label: 'తెలుగు' },
+              { code: 'ml-IN', label: 'മലയാളം' }
+            ].map(l => (
+              <button
+                key={l.code}
+                type="button"
+                onClick={() => setSelectedLanguage(l.code as any)}
+                className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer ${
+                  selectedLanguage === l.code
+                    ? 'bg-primary text-white font-bold shadow-2xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Step Progress Bar */}
@@ -117,44 +153,39 @@ export const OnboardingModal: React.FC = () => {
         <div className="flex-1 overflow-y-auto pr-1 space-y-4 text-xs">
           {currentStep === 1 && (
             <div className="space-y-4 animate-in fade-in">
-              <h3 className="text-sm font-bold text-foreground">1. Tell us about yourself</h3>
+              <h3 className="text-sm font-bold text-foreground">1. {t('Tell us about yourself', 'Tell us about yourself')}</h3>
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-foreground font-semibold mb-1">Your Role</label>
+                  <label className="block text-foreground font-semibold mb-1">{t('Your Role', 'Your Role')}</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setRole('mother')}
-                      className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                        role === 'mother' ? 'bg-primary-soft border-primary text-primary font-bold' : 'bg-card border-border'
+                      className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                        role === 'mother'
+                          ? 'bg-primary-soft/50 border-primary text-foreground font-bold'
+                          : 'bg-muted/10 border-border text-muted-foreground'
                       }`}
                     >
-                      <User className="w-4 h-4" />
-                      <div>
-                        <div className="text-xs">Expecting Mother</div>
-                        <div className="text-[10px] text-muted-foreground font-normal">Personalized gestational care</div>
-                      </div>
+                      🌸 {t('iAmExpectingMother', 'Expecting Mother')}
                     </button>
-
                     <button
                       type="button"
                       onClick={() => setRole('partner')}
-                      className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                        role === 'partner' ? 'bg-accent-soft border-accent text-accent font-bold' : 'bg-card border-border'
+                      className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                        role === 'partner'
+                          ? 'bg-accent-soft/50 border-accent text-foreground font-bold'
+                          : 'bg-muted/10 border-border text-muted-foreground'
                       }`}
                     >
-                      <Users className="w-4 h-4" />
-                      <div>
-                        <div className="text-xs">Supportive Partner</div>
-                        <div className="text-[10px] text-muted-foreground font-normal">Shared maternal companion</div>
-                      </div>
+                      🤝 {t('iAmSupportivePartner', 'Supportive Partner')}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-foreground font-semibold mb-1">Full Name</label>
+                  <label className="block text-foreground font-semibold mb-1">{t('fullNameLabel', 'Full Name')}</label>
                   <input
                     type="text"
                     value={name}

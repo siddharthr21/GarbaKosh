@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export const BirthPlanModule: React.FC = () => {
-  const { birthPlan, updateBirthPlan, updateBirthPlanNotes, profile } = useApp();
+  const { birthPlan, updateBirthPlan, updateBirthPlanNotes, profile, t } = useApp();
   const [savedToast, setSavedToast] = useState(false);
 
   const handleToggle = (section: keyof typeof birthPlan, key: string, currentVal: boolean) => {
@@ -39,38 +39,38 @@ export const BirthPlanModule: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-soft text-primary text-xs font-bold mb-2">
             <ScrollText className="w-3.5 h-3.5" />
-            <span>Labor & Delivery Preferences</span>
+            <span>{t('Labor & Delivery Preferences', 'Labor & Delivery Preferences')}</span>
           </div>
           <h1 className="text-2xl font-serif font-extrabold text-foreground">
-            Interactive Birth Plan Builder
+            {t('birthPlanTitle', 'Interactive Birth Plan Builder')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Clarify and document your personal wishes for labor environment, pain relief, delivery positions, and newborn immediate care.
+            {t('birthPlanSubtitle', 'Clarify and document your personal wishes for labor environment, pain relief, delivery positions, and newborn immediate care.')}
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={handlePrint}
-            className="px-3.5 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-xs font-bold transition-colors flex items-center gap-1.5 shadow-soft"
+            className="px-3.5 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-xs font-bold transition-colors flex items-center gap-1.5 shadow-soft cursor-pointer"
           >
             <Printer className="w-4 h-4" />
-            <span>Print Birth Plan</span>
+            <span>{t('printBirthPlan', 'Print Birth Plan')}</span>
           </button>
 
           <button
             onClick={handleSave}
-            className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            <span>Save Preferences</span>
+            <span>{t('saveBirthPlan', 'Save Preferences')}</span>
           </button>
         </div>
       </div>
 
       {savedToast && (
         <div className="p-3 bg-primary-soft text-primary font-bold text-xs rounded-2xl border border-primary/20 text-center animate-in fade-in">
-          ✓ Your birth preferences have been safely synchronized!
+          ✓ {t('Your birth preferences have been safely synchronized!', 'Your birth preferences have been safely synchronized!')}
         </div>
       )}
 
@@ -78,9 +78,9 @@ export const BirthPlanModule: React.FC = () => {
       <div className="p-4 bg-muted/40 rounded-3xl border border-border text-xs text-muted-foreground space-y-1 flex items-start gap-3">
         <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
         <div>
-          <h4 className="font-bold text-foreground uppercase text-[11px]">Collaborative Clinical Partnership:</h4>
+          <h4 className="font-bold text-foreground uppercase text-[11px]">{t('Collaborative Clinical Partnership', 'Collaborative Clinical Partnership')}:</h4>
           <p className="leading-relaxed">
-            A birth plan communicates your ideal preferences to your obstetrician and labor nurses. Remember that labor is dynamic; maintaining flexibility for unexpected medical shifts ensures the ultimate safety of mother and baby.
+            {t('A birth plan communicates your ideal preferences to your obstetrician and labor nurses. Remember that labor is dynamic; maintaining flexibility for unexpected medical shifts ensures the ultimate safety of mother and baby.', 'A birth plan communicates your ideal preferences to your obstetrician and labor nurses. Remember that labor is dynamic; maintaining flexibility for unexpected medical shifts ensures the ultimate safety of mother and baby.')}
           </p>
         </div>
       </div>
@@ -91,16 +91,16 @@ export const BirthPlanModule: React.FC = () => {
         <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-4">
           <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-accent" />
-            1. Atmosphere & Labor Environment
+            {t('environmentSection', '1. Atmosphere & Labor Environment')}
           </h3>
 
           <div className="space-y-2 text-xs">
             {[
-              { key: 'dimLighting', label: 'Dim and soft warm lighting in labor suite' },
-              { key: 'calmMusic', label: 'Play soothing birth playlist / relaxation soundscapes' },
-              { key: 'aromatherapy', label: 'Use natural lavender or citrus aromatherapy diffuser' },
-              { key: 'minimalInterruption', label: 'Minimize unnecessary chatter and room traffic' },
-              { key: 'bringOwnPillow', label: 'Use my own maternity pillows and cozy blankets' }
+              { key: 'dimLighting', label: t('Dim and soft warm lighting in labor suite', 'Dim and soft warm lighting in labor suite') },
+              { key: 'calmMusic', label: t('Play soothing birth playlist / relaxation soundscapes', 'Play soothing birth playlist / relaxation soundscapes') },
+              { key: 'aromatherapy', label: t('Use natural lavender or citrus aromatherapy diffuser', 'Use natural lavender or citrus aromatherapy diffuser') },
+              { key: 'minimalInterruption', label: t('Minimize unnecessary chatter and room traffic', 'Minimize unnecessary chatter and room traffic') },
+              { key: 'bringOwnPillow', label: t('Use my own maternity pillows and cozy blankets', 'Use my own maternity pillows and cozy blankets') }
             ].map(item => {
               const isChecked = birthPlan.environment[item.key as keyof typeof birthPlan.environment];
               return (
@@ -123,14 +123,14 @@ export const BirthPlanModule: React.FC = () => {
         <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-4">
           <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
             <Heart className="w-4 h-4 text-rose-500" />
-            2. Birth Companions & Labor Support
+            {t('companionsSection', '2. Birth Companions & Labor Support')}
           </h3>
 
           <div className="space-y-2 text-xs">
             {[
-              { key: 'partnerPresent', label: `My partner (${profile.partnerProfile?.name || 'Rohan'}) by my side at all times` },
-              { key: 'doulaPresent', label: 'Continuous support from our certified doula' },
-              { key: 'familyVisitorsRestricted', label: 'No family visitors in labor room until after golden hour' }
+              { key: 'partnerPresent', label: `${t('My partner by my side at all times', 'My partner by my side at all times')} (${profile.partnerProfile?.name || 'Rohan'})` },
+              { key: 'doulaPresent', label: t('Continuous support from our certified doula', 'Continuous support from our certified doula') },
+              { key: 'familyVisitorsRestricted', label: t('No family visitors in labor room until after golden hour', 'No family visitors in labor room until after golden hour') }
             ].map(item => {
               const isChecked = birthPlan.companions[item.key as keyof typeof birthPlan.companions];
               return (
@@ -153,16 +153,16 @@ export const BirthPlanModule: React.FC = () => {
         <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-4">
           <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-accent" />
-            3. Comfort Measures & Pain Relief
+            {t('painReliefSection', '3. Comfort Measures & Pain Relief')}
           </h3>
 
           <div className="space-y-2 text-xs">
             {[
-              { key: 'breathingAndMovement', label: 'Non-pharmacological breathing, rocking, and massage first' },
-              { key: 'birthingBall', label: 'Access to birthing ball and peanut ball for pelvic opening' },
-              { key: 'warmShowerOrTub', label: 'Hydrotherapy: warm shower or tub for pain reduction' },
-              { key: 'openToEpidural', label: 'Open to epidural analgesia if labor becomes prolonged' },
-              { key: 'nitrousOxideGas', label: 'Nitrous oxide (laughing gas) for contraction surges' }
+              { key: 'breathingAndMovement', label: t('Non-pharmacological breathing, rocking, and massage first', 'Non-pharmacological breathing, rocking, and massage first') },
+              { key: 'birthingBall', label: t('Access to birthing ball and peanut ball for pelvic opening', 'Access to birthing ball and peanut ball for pelvic opening') },
+              { key: 'warmShowerOrTub', label: t('Hydrotherapy: warm shower or tub for pain reduction', 'Hydrotherapy: warm shower or tub for pain reduction') },
+              { key: 'openToEpidural', label: t('Open to epidural analgesia if labor becomes prolonged', 'Open to epidural analgesia if labor becomes prolonged') },
+              { key: 'nitrousOxideGas', label: t('Nitrous oxide (laughing gas) for contraction surges', 'Nitrous oxide (laughing gas) for contraction surges') }
             ].map(item => {
               const isChecked = birthPlan.painManagement[item.key as keyof typeof birthPlan.painManagement];
               return (
@@ -185,15 +185,15 @@ export const BirthPlanModule: React.FC = () => {
         <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-4">
           <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
             <Baby className="w-4 h-4 text-primary" />
-            4. Delivery & Immediate Golden Hour
+            {t('deliverySection', '4. Delivery & Immediate Golden Hour')}
           </h3>
 
           <div className="space-y-2 text-xs">
             {[
-              { key: 'freedomOfPosition', label: 'Freedom to push in upright, side-lying, or squatting position' },
-              { key: 'delayedCordClamping', label: 'Delayed umbilical cord clamping (until pulsation ceases)' },
-              { key: 'partnerCutCord', label: `Allow my partner (${profile.partnerProfile?.name || 'Rohan'}) to cut the cord` },
-              { key: 'immediateSkinToSkin', label: 'Immediate uninterrupted skin-to-skin contact (at least 60 mins)' }
+              { key: 'freedomOfPosition', label: t('Freedom to push in upright, side-lying, or squatting position', 'Freedom to push in upright, side-lying, or squatting position') },
+              { key: 'delayedCordClamping', label: t('Delayed umbilical cord clamping (until pulsation ceases)', 'Delayed umbilical cord clamping (until pulsation ceases)') },
+              { key: 'partnerCutCord', label: `${t('Allow my partner to cut the cord', 'Allow my partner to cut the cord')} (${profile.partnerProfile?.name || 'Rohan'})` },
+              { key: 'immediateSkinToSkin', label: t('Immediate uninterrupted skin-to-skin contact (at least 60 mins)', 'Immediate uninterrupted skin-to-skin contact (at least 60 mins)') }
             ].map(item => {
               const isChecked = birthPlan.delivery[item.key as keyof typeof birthPlan.delivery];
               return (
@@ -215,12 +215,12 @@ export const BirthPlanModule: React.FC = () => {
 
       {/* Special Notes & Medical Preferences */}
       <div className="bg-card rounded-3xl p-6 border border-border shadow-soft space-y-3">
-        <h3 className="text-sm font-serif font-bold text-foreground">Special Instructions for Delivery Team</h3>
+        <h3 className="text-sm font-serif font-bold text-foreground">{t('specialInstructions', 'Special Instructions for Delivery Team')}</h3>
         <textarea
           rows={4}
           value={birthPlan.specialNotes}
           onChange={e => updateBirthPlanNotes(e.target.value)}
-          placeholder="Any personal requests, cultural ceremonies (e.g. whispering blessings in baby's ear), or medical allergies..."
+          placeholder={t("Any personal requests, cultural ceremonies, or medical allergies...", "Any personal requests, cultural ceremonies (e.g. whispering blessings in baby's ear), or medical allergies...")}
           className="w-full p-3 bg-muted/20 border border-input rounded-2xl text-xs text-foreground leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </div>

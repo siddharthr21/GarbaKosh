@@ -25,7 +25,8 @@ export const BabyShowerModule: React.FC = () => {
     addShowerTask,
     addShowerGuest,
     updateGuestRsvp,
-    profile
+    profile,
+    t
   } = useApp();
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -70,13 +71,13 @@ export const BabyShowerModule: React.FC = () => {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold mb-2">
           <PartyPopper className="w-3.5 h-3.5" />
-          <span>Celebration & Blessing Planning</span>
+          <span>{t('Celebration & Blessing Planning', 'Celebration & Blessing Planning')}</span>
         </div>
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Baby Shower & Ceremony Planner
+          {t('Baby Shower & Ceremony Planner', 'Baby Shower & Ceremony Planner')}
         </h1>
         <p className="text-sm text-gray-600">
-          Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.
+          {t('Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.', 'Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.')}
         </p>
       </div>
 
@@ -84,34 +85,34 @@ export const BabyShowerModule: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-            <Calendar className="w-3 h-3" /> Event Date
+            <Calendar className="w-3 h-3" /> {t('Event Date', 'Event Date')}
           </span>
           <div className="text-lg font-black text-gray-900">{babyShower.eventDate}</div>
-          <span className="text-[10px] text-blush-600 font-semibold">Around Week 30</span>
+          <span className="text-[10px] text-blush-600 font-semibold">{t('Around Week 30', 'Around Week 30')}</span>
         </div>
 
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-            <DollarSign className="w-3 h-3" /> Budget Tracker
+            <DollarSign className="w-3 h-3" /> {t('Budget Tracker', 'Budget Tracker')}
           </span>
           <div className="text-lg font-black text-emerald-700">${babyShower.budgetSpent} / ${babyShower.budgetTotal}</div>
-          <span className="text-[10px] text-emerald-600 font-semibold">${budgetRemaining} Remaining</span>
+          <span className="text-[10px] text-emerald-600 font-semibold">${budgetRemaining} {t('Remaining', 'Remaining')}</span>
         </div>
 
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-            <Users className="w-3 h-3" /> Guests Confirmed
+            <Users className="w-3 h-3" /> {t('Guests Confirmed', 'Guests Confirmed')}
           </span>
-          <div className="text-lg font-black text-purple-700">{attendingCount} Confirmed</div>
-          <span className="text-[10px] text-gray-500">{babyShower.guestCount} Invited</span>
+          <div className="text-lg font-black text-purple-700">{attendingCount} {t('Confirmed', 'Confirmed')}</div>
+          <span className="text-[10px] text-gray-500">{babyShower.guestCount} {t('Invited', 'Invited')}</span>
         </div>
 
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-            <MapPin className="w-3 h-3" /> Celebration Venue
+            <MapPin className="w-3 h-3" /> {t('Celebration Venue', 'Celebration Venue')}
           </span>
           <div className="text-xs font-bold text-gray-800 truncate mt-1">{babyShower.venue}</div>
-          <span className="text-[10px] text-gray-400">Indoor & Garden</span>
+          <span className="text-[10px] text-gray-400">{t('Indoor & Garden', 'Indoor & Garden')}</span>
         </div>
       </div>
 
@@ -119,7 +120,7 @@ export const BabyShowerModule: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-amber-500" />
-          Choose Celebration Theme & Aesthetic
+          {t('Choose Celebration Theme & Aesthetic', 'Choose Celebration Theme & Aesthetic')}
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

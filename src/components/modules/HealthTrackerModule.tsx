@@ -27,7 +27,8 @@ export const HealthTrackerModule: React.FC = () => {
     reminders,
     addReminder,
     toggleReminder,
-    deleteReminder
+    deleteReminder,
+    t
   } = useApp();
 
   // Vitals form state
@@ -131,13 +132,13 @@ export const HealthTrackerModule: React.FC = () => {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold mb-2">
           <Activity className="w-3.5 h-3.5" />
-          <span>Maternal & Fetal Vitals Engine</span>
+          <span>{t('vitalsTitle', 'Maternal & Fetal Vitals Engine')}</span>
         </div>
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Health Tracker & Smart Reminders
+          {t('Health Tracker & Smart Reminders', 'Health Tracker & Smart Reminders')}
         </h1>
         <p className="text-sm text-gray-600">
-          Record blood pressure, maternal weight gain, fetal kicks, glucose screenings, and doctor visits.
+          {t('vitalsSubtitle', 'Record blood pressure, maternal weight gain, fetal kicks, glucose screenings, and doctor visits.')}
         </p>
       </div>
 
@@ -151,8 +152,8 @@ export const HealthTrackerModule: React.FC = () => {
                 <Footprints className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-gray-900">Interactive Kick Counter</h3>
-                <p className="text-xs text-gray-500">Goal: 10 kicks in under 2 hours</p>
+                <h3 className="text-base font-bold text-gray-900">{t('kickCounterTitle', 'Interactive Kick Counter')}</h3>
+                <p className="text-xs text-gray-500">{t('Goal: 10 kicks in under 2 hours', 'Goal: 10 kicks in under 2 hours')}</p>
               </div>
             </div>
 
@@ -166,32 +167,32 @@ export const HealthTrackerModule: React.FC = () => {
           <div className="py-6 flex flex-col items-center justify-center">
             <button
               onClick={handleRegisterKick}
-              className="w-36 h-36 rounded-full bg-gradient-to-tr from-blush-500 via-rose-400 to-peach-400 text-white flex flex-col items-center justify-center shadow-xl shadow-blush-200 hover:scale-105 active:scale-95 transition-all group"
+              className="w-36 h-36 rounded-full bg-gradient-to-tr from-blush-500 via-rose-400 to-peach-400 text-white flex flex-col items-center justify-center shadow-xl shadow-blush-200 hover:scale-105 active:scale-95 transition-all group cursor-pointer"
             >
               <Footprints className="w-8 h-8 group-hover:animate-bounce mb-1" />
               <span className="text-3xl font-black">{kickCount}</span>
-              <span className="text-[11px] uppercase font-bold tracking-wider opacity-90">Tap on Kick</span>
+              <span className="text-[11px] uppercase font-bold tracking-wider opacity-90">{t('Tap on Kick', 'Tap on Kick')}</span>
             </button>
             <p className="text-xs text-gray-500 mt-4 text-center max-w-xs">
-              Relax on your left side in a calm room. Tap each time you feel a distinct kick, swish, or flutter.
+              {t('kickCounterDesc', 'Relax on your left side in a calm room. Tap each time you feel a distinct kick, swish, or flutter.')}
             </p>
           </div>
 
           <div className="flex items-center justify-between pt-2 border-t border-blush-200/60">
             <button
               onClick={resetKickSession}
-              className="px-3 py-1.5 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 text-xs font-semibold text-gray-600 flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 text-xs font-semibold text-gray-600 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset</span>
+              <span>{t('Reset', 'Reset')}</span>
             </button>
 
             <button
               onClick={saveKickSession}
               disabled={kickCount === 0}
-              className="px-4 py-2 rounded-xl bg-blush-500 hover:bg-blush-600 text-white text-xs font-bold shadow-md shadow-blush-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-xl bg-blush-500 hover:bg-blush-600 text-white text-xs font-bold shadow-md shadow-blush-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              Log {kickCount} Kicks to Records
+              {t('Log Kick Count', 'Log Kick Count')} ({kickCount})
             </button>
           </div>
         </div>
@@ -203,15 +204,15 @@ export const HealthTrackerModule: React.FC = () => {
               <HeartPulse className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-gray-900">Record Today’s Vitals</h3>
-              <p className="text-xs text-gray-500">Track cardiovascular & metabolic markers</p>
+              <h3 className="text-base font-bold text-gray-900">{t('Record Today’s Vitals', 'Record Today’s Vitals')}</h3>
+              <p className="text-xs text-gray-500">{t('Track cardiovascular & metabolic markers', 'Track cardiovascular & metabolic markers')}</p>
             </div>
           </div>
 
           <form onSubmit={handleSaveVital} className="space-y-3.5 text-xs">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-gray-600 font-semibold mb-1">Blood Pressure (Systolic)</label>
+                <label className="block text-gray-600 font-semibold mb-1">{t('Blood Pressure (Systolic)', 'Blood Pressure (Systolic)')}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -225,7 +226,7 @@ export const HealthTrackerModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-600 font-semibold mb-1">Blood Pressure (Diastolic)</label>
+                <label className="block text-gray-600 font-semibold mb-1">{t('Blood Pressure (Diastolic)', 'Blood Pressure (Diastolic)')}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -241,7 +242,7 @@ export const HealthTrackerModule: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-gray-600 font-semibold mb-1">Current Weight (kg)</label>
+                <label className="block text-gray-600 font-semibold mb-1">{t('Current Weight', 'Current Weight')} (kg)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -252,7 +253,7 @@ export const HealthTrackerModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-600 font-semibold mb-1">Heart Pulse (BPM)</label>
+                <label className="block text-gray-600 font-semibold mb-1">{t('Heart Pulse', 'Heart Pulse')} (BPM)</label>
                 <input
                   type="number"
                   value={pulse}
@@ -263,7 +264,7 @@ export const HealthTrackerModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-600 font-semibold mb-1">Fasting / Post-Meal Blood Glucose (optional mg/dL)</label>
+              <label className="block text-gray-600 font-semibold mb-1">{t('Blood Glucose', 'Blood Glucose')} (mg/dL)</label>
               <input
                 type="number"
                 value={glucose}
@@ -274,7 +275,7 @@ export const HealthTrackerModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-600 font-semibold mb-1">Clinical Notes or Observations</label>
+              <label className="block text-gray-600 font-semibold mb-1">{t('Clinical Notes or Observations', 'Clinical Notes or Observations')}</label>
               <input
                 type="text"
                 value={vitalNotes}
@@ -286,9 +287,9 @@ export const HealthTrackerModule: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold shadow-md transition-all text-xs"
+              className="w-full py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold shadow-md transition-all text-xs cursor-pointer"
             >
-              Save Vital Update
+              {t('Save Vital Update', 'Save Vital Update')}
             </button>
           </form>
         </div>
@@ -298,20 +299,20 @@ export const HealthTrackerModule: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
         <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-emerald-600" />
-          Recent Vitals History
+          {t('vitalHistory', 'Recent Vitals History')}
         </h3>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-gray-200 text-gray-400 uppercase font-bold text-[10px]">
-                <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Blood Pressure</th>
-                <th className="py-2.5 px-3">Weight</th>
-                <th className="py-2.5 px-3">Pulse</th>
-                <th className="py-2.5 px-3">Glucose</th>
-                <th className="py-2.5 px-3">Kicks</th>
-                <th className="py-2.5 px-3">Notes</th>
+                <th className="py-2.5 px-3">{t('Date', 'Date')}</th>
+                <th className="py-2.5 px-3">{t('Blood Pressure', 'Blood Pressure')}</th>
+                <th className="py-2.5 px-3">{t('Weight', 'Weight')}</th>
+                <th className="py-2.5 px-3">{t('Pulse', 'Pulse')}</th>
+                <th className="py-2.5 px-3">{t('Glucose', 'Glucose')}</th>
+                <th className="py-2.5 px-3">{t('Kicks', 'Kicks')}</th>
+                <th className="py-2.5 px-3">{t('Notes', 'Notes')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -328,7 +329,7 @@ export const HealthTrackerModule: React.FC = () => {
                   <td className="py-3 px-3">
                     {v.kickCount ? (
                       <span className="px-2 py-0.5 rounded-full bg-blush-100 text-blush-700 font-bold text-[10px]">
-                        {v.kickCount} kicks
+                        {v.kickCount} {t('kicks', 'kicks')}
                       </span>
                     ) : '—'}
                   </td>
@@ -346,29 +347,29 @@ export const HealthTrackerModule: React.FC = () => {
           <div>
             <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-lavender-600" />
-              Smart Reminders & Clinical Calendar
+              {t('Smart Reminders & Clinical Calendar', 'Smart Reminders & Clinical Calendar')}
             </h3>
             <p className="text-xs text-gray-500">
-              Prenatal checkups, blood tests, ultrasound scans, and daily prescriptions
+              {t('Prenatal checkups, blood tests, ultrasound scans, and daily prescriptions', 'Prenatal checkups, blood tests, ultrasound scans, and daily prescriptions')}
             </p>
           </div>
 
           <button
             onClick={() => setShowAddReminder(!showAddReminder)}
-            className="px-3.5 py-2 bg-lavender-600 hover:bg-lavender-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm"
+            className="px-3.5 py-2 bg-lavender-600 hover:bg-lavender-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Reminder</span>
+            <span>{t('Add Reminder', 'Add Reminder')}</span>
           </button>
         </div>
 
         {/* Add Reminder Form */}
         {showAddReminder && (
           <form onSubmit={handleCreateReminder} className="p-4 bg-lavender-50/60 rounded-2xl border border-lavender-200 text-xs space-y-3">
-            <h4 className="font-bold text-lavender-900">Schedule New Reminder</h4>
+            <h4 className="font-bold text-lavender-900">{t('Schedule New Reminder', 'Schedule New Reminder')}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Title</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Title', 'Title')}</label>
                 <input
                   type="text"
                   value={remTitle}
@@ -380,22 +381,22 @@ export const HealthTrackerModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Category</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Category', 'Category')}</label>
                 <select
                   value={remCategory}
                   onChange={e => setRemCategory(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
                 >
-                  <option value="doctor">Doctor Visit</option>
-                  <option value="scan">Ultrasound Scan</option>
-                  <option value="medication">Medication</option>
-                  <option value="vaccination">Vaccination</option>
-                  <option value="hospital">Hospital Preparation</option>
+                  <option value="doctor">{t('Doctor Visit', 'Doctor Visit')}</option>
+                  <option value="scan">{t('Ultrasound Scan', 'Ultrasound Scan')}</option>
+                  <option value="medication">{t('Medication', 'Medication')}</option>
+                  <option value="vaccination">{t('Vaccination', 'Vaccination')}</option>
+                  <option value="hospital">{t('Hospital Preparation', 'Hospital Preparation')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Date</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Date', 'Date')}</label>
                 <input
                   type="date"
                   value={remDate}
@@ -405,7 +406,7 @@ export const HealthTrackerModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Time</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Time', 'Time')}</label>
                 <input
                   type="text"
                   value={remTime}
@@ -417,7 +418,7 @@ export const HealthTrackerModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1">Doctor or Location</label>
+              <label className="block text-gray-700 font-semibold mb-1">{t('Doctor or Location', 'Doctor or Location')}</label>
               <input
                 type="text"
                 value={remDoctor}
@@ -431,15 +432,15 @@ export const HealthTrackerModule: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAddReminder(false)}
-                className="px-3 py-1.5 rounded-xl bg-gray-200 text-gray-700 font-bold"
+                className="px-3 py-1.5 rounded-xl bg-gray-200 text-gray-700 font-bold cursor-pointer"
               >
-                Cancel
+                {t('Cancel', 'Cancel')}
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 rounded-xl bg-lavender-600 hover:bg-lavender-700 text-white font-bold"
+                className="px-4 py-1.5 rounded-xl bg-lavender-600 hover:bg-lavender-700 text-white font-bold cursor-pointer"
               >
-                Save Schedule
+                {t('Save Schedule', 'Save Schedule')}
               </button>
             </div>
           </form>

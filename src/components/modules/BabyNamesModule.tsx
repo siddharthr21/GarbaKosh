@@ -21,7 +21,8 @@ export const BabyNamesModule: React.FC = () => {
     toggleFavoriteName,
     voteName,
     addCustomBabyName,
-    activeRole
+    activeRole,
+    t
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,22 +74,22 @@ export const BabyNamesModule: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-bold mb-2">
             <BookHeart className="w-3.5 h-3.5" />
-            <span>AI Baby Name Explorer & Couple Voting</span>
+            <span>{t('AI Baby Name Explorer & Couple Voting', 'AI Baby Name Explorer & Couple Voting')}</span>
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900">
-            Baby Names & Shortlist
+            {t('babyNamesTitle', 'Baby Names & Shortlist')}
           </h1>
           <p className="text-sm text-gray-600">
-            Curated names across Sanskrit, Tamil, Hindi, Kannada, Telugu, Malayalam, and global origins. Both parents can vote together!
+            {t('babyNamesSubtitle', 'Curated names across Sanskrit, Tamil, Hindi, Kannada, Telugu, Malayalam, and global origins. Both parents can vote together!')}
           </p>
         </div>
 
         <button
           onClick={() => setShowAddCustom(!showAddCustom)}
-          className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 transition-all flex items-center gap-1.5 shrink-0"
+          className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Custom Name</span>
+          <span>{t('Add Custom Name', 'Add Custom Name')}</span>
         </button>
       </div>
 
@@ -170,24 +171,24 @@ export const BabyNamesModule: React.FC = () => {
           <div className="flex items-center gap-2 text-xs">
             <button
               onClick={() => setActiveTab('explore')}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
                 activeTab === 'explore'
                   ? 'bg-blush-500 text-white shadow-xs'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              Explore All Names ({babyNames.length})
+              {t('Explore All Names', 'Explore All Names')} ({babyNames.length})
             </button>
 
             <button
               onClick={() => setActiveTab('shortlist')}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'shortlist'
                   ? 'bg-blush-500 text-white shadow-xs'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <span>Shared Couple Shortlist</span>
+              <span>{t('shortlist', 'Shared Couple Shortlist')}</span>
               <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">
                 {babyNames.filter(n => n.isShortlisted).length}
               </span>
@@ -195,19 +196,19 @@ export const BabyNamesModule: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('favorites')}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'favorites'
                   ? 'bg-blush-500 text-white shadow-xs'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               <Heart className="w-3.5 h-3.5 fill-current" />
-              <span>Favorites</span>
+              <span>{t('Favorites', 'Favorites')}</span>
             </button>
           </div>
 
           <span className="text-[11px] text-gray-500 hidden sm:inline">
-            Voting as: <strong className="capitalize">{activeRole}</strong>
+            {t('Voting as', 'Voting as')}: <strong className="capitalize">{activeRole}</strong>
           </span>
         </div>
 
@@ -219,7 +220,7 @@ export const BabyNamesModule: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search by name, meaning, or keyword..."
+              placeholder={t('searchNames', 'Search by name, meaning, or keyword...')}
               className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blush-400 focus:outline-none"
             />
           </div>
@@ -228,12 +229,12 @@ export const BabyNamesModule: React.FC = () => {
             <select
               value={selectedGender}
               onChange={e => setSelectedGender(e.target.value as any)}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none cursor-pointer"
             >
-              <option value="all">All Genders</option>
-              <option value="girl">Girl Names 🌸</option>
-              <option value="boy">Boy Names 💙</option>
-              <option value="neutral">Gender Neutral ✨</option>
+              <option value="all">{t('All Genders', 'All Genders')}</option>
+              <option value="girl">🌸 {t('filterGirls', 'Girl Names')}</option>
+              <option value="boy">💙 {t('filterBoys', 'Boy Names')}</option>
+              <option value="neutral">✨ {t('filterNeutral', 'Gender Neutral')}</option>
             </select>
           </div>
 

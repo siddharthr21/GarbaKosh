@@ -27,7 +27,7 @@ const VACCINATION_ROADMAP = [
 ];
 
 export const BabyCareModule: React.FC = () => {
-  const { babyActivities, addBabyActivity } = useApp();
+  const { babyActivities, addBabyActivity, t } = useApp();
 
   const [activeType, setActiveType] = useState<'breastfeeding' | 'bottle' | 'sleep' | 'diaper-wet' | 'diaper-dirty'>('breastfeeding');
   const [durationMins, setDurationMins] = useState('20');
@@ -53,40 +53,40 @@ export const BabyCareModule: React.FC = () => {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-bold mb-2">
           <Baby className="w-3.5 h-3.5" />
-          <span>Newborn Care & Milestone Engine</span>
+          <span>{t('Newborn Care & Milestone Engine', 'Newborn Care & Milestone Engine')}</span>
         </div>
         <h1 className="text-2xl font-extrabold text-gray-900">
-          My Little One: Baby Care & Development
+          {t('newbornCareTitle', 'My Little One: Baby Care & Development')}
         </h1>
         <p className="text-sm text-gray-600">
-          Log daily feedings, sleep sessions, wet/dirty diapers, and monitor WHO pediatric growth milestones.
+          {t('newbornCareSubtitle', 'Log daily feedings, sleep sessions, wet/dirty diapers, and monitor WHO pediatric growth milestones.')}
         </p>
       </div>
 
       {/* Quick Stats Banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase">Estimated Birth Weight</span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase">{t('Estimated Birth Weight', 'Estimated Birth Weight')}</span>
           <div className="text-xl font-black text-gray-900">3.2 kg</div>
-          <span className="text-[10px] text-emerald-600 font-semibold">50th WHO Percentile</span>
+          <span className="text-[10px] text-emerald-600 font-semibold">{t('50th WHO Percentile', '50th WHO Percentile')}</span>
         </div>
 
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase">Today’s Feedings</span>
-          <div className="text-xl font-black text-gray-900">6 Sessions</div>
-          <span className="text-[10px] text-gray-500">Every 2.5 - 3 hours</span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase">{t('Today’s Feedings', 'Today’s Feedings')}</span>
+          <div className="text-xl font-black text-gray-900">6 {t('Sessions', 'Sessions')}</div>
+          <span className="text-[10px] text-gray-500">{t('Every 2.5 - 3 hours', 'Every 2.5 - 3 hours')}</span>
         </div>
 
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase">Wet Diapers (24h)</span>
-          <div className="text-xl font-black text-cyan-600">5 Diapers</div>
-          <span className="text-[10px] text-emerald-600 font-semibold">Good hydration (&gt;4)</span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase">{t('Wet Diapers (24h)', 'Wet Diapers (24h)')}</span>
+          <div className="text-xl font-black text-cyan-600">5 {t('Diapers', 'Diapers')}</div>
+          <span className="text-[10px] text-emerald-600 font-semibold">{t('Good hydration', 'Good hydration')} (&gt;4)</span>
         </div>
 
         <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase">Total Sleep</span>
-          <div className="text-xl font-black text-purple-600">14.5 hrs</div>
-          <span className="text-[10px] text-gray-500">Normal range 14-17 hrs</span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase">{t('Total Sleep', 'Total Sleep')}</span>
+          <div className="text-xl font-black text-purple-600">14.5 {t('hrs', 'hrs')}</div>
+          <span className="text-[10px] text-gray-500">{t('Normal range 14-17 hrs', 'Normal range 14-17 hrs')}</span>
         </div>
       </div>
 
@@ -96,23 +96,23 @@ export const BabyCareModule: React.FC = () => {
         <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
           <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
             <Plus className="w-4 h-4 text-cyan-600" />
-            Quick Activity Logger
+            {t('Quick Activity Logger', 'Quick Activity Logger')}
           </h3>
 
           {/* Activity Category Tabs */}
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs">
             {[
-              { type: 'breastfeeding', label: 'Nursing', emoji: '🤱' },
-              { type: 'bottle', label: 'Bottle', emoji: '🍼' },
-              { type: 'sleep', label: 'Sleep', emoji: '💤' },
-              { type: 'diaper-wet', label: 'Wet Diaper', emoji: '💧' },
-              { type: 'diaper-dirty', label: 'Dirty Diaper', emoji: '💩' }
+              { type: 'breastfeeding', label: t('Nursing', 'Nursing'), emoji: '🤱' },
+              { type: 'bottle', label: t('Bottle', 'Bottle'), emoji: '🍼' },
+              { type: 'sleep', label: t('Sleep', 'Sleep'), emoji: '💤' },
+              { type: 'diaper-wet', label: t('Wet Diaper', 'Wet Diaper'), emoji: '💧' },
+              { type: 'diaper-dirty', label: t('Dirty Diaper', 'Dirty Diaper'), emoji: '💩' }
             ].map(tab => (
               <button
                 key={tab.type}
                 type="button"
                 onClick={() => setActiveType(tab.type as any)}
-                className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+                className={`p-2.5 rounded-2xl border flex flex-col items-center justify-center transition-all cursor-pointer ${
                   activeType === tab.type
                     ? 'bg-cyan-50 border-cyan-400 text-cyan-900 font-bold shadow-2xs'
                     : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-white'
@@ -127,7 +127,7 @@ export const BabyCareModule: React.FC = () => {
           <form onSubmit={handleLogActivity} className="space-y-3 text-xs pt-1">
             {(activeType === 'breastfeeding' || activeType === 'sleep') && (
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Duration (Minutes)</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('durationMin', 'Duration (Minutes)')}</label>
                 <input
                   type="number"
                   value={durationMins}
@@ -140,7 +140,7 @@ export const BabyCareModule: React.FC = () => {
 
             {activeType === 'bottle' && (
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Formula or Breastmilk (ml)</label>
+                <label className="block text-gray-700 font-semibold mb-1">{t('Formula or Breastmilk', 'Formula or Breastmilk')} (ml)</label>
                 <input
                   type="number"
                   value={amountMl}
@@ -152,21 +152,21 @@ export const BabyCareModule: React.FC = () => {
             )}
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1">Notes (e.g. Left/Right breast, burped well)</label>
+              <label className="block text-gray-700 font-semibold mb-1">{t('Notes', 'Notes')}</label>
               <input
                 type="text"
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
-                placeholder="Optional notes..."
+                placeholder={t('Optional notes...', 'Optional notes (e.g. Left/Right breast, burped well)...')}
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold shadow-md transition-all text-xs"
+              className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold shadow-md transition-all text-xs cursor-pointer"
             >
-              Log Newborn Activity
+              {t('Log Newborn Activity', 'Log Newborn Activity')}
             </button>
           </form>
         </div>
