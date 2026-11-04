@@ -35,6 +35,8 @@ export const SettingsModule: React.FC = () => {
     switchAccount,
     allAccounts,
     unlinkPartner,
+    updateSharingPermissions,
+    activeRelationship,
     t
   } = useApp();
 
@@ -58,10 +60,37 @@ export const SettingsModule: React.FC = () => {
   const [allergies, setAllergies] = useState(profile.allergies.join(', '));
   const [doctorNotes, setDoctorNotes] = useState(profile.doctorInfo.adviceNotes || '');
 
-  // Partner Pairing State
+  // Partner Pairing State & Granular Permissions
   const isMother = (currentUser?.role || profile.role) === 'mother';
   const mySecurityCode = currentUser?.uniqueCode || profile.partnerProfile?.pairingCode || (isMother ? 'MAMA-2026' : 'PAPA-7140');
-  const isPaired = isMother ? (profile.partnerProfile?.isConnected ?? true) : (currentUser?.isPaired ?? false);
+  const isPaired = currentUser?.isPaired ?? (profile.partnerProfile?.isConnected ?? false);
+  const connectedPartnerName = profile.partnerProfile?.name || (isMother ? 'Rohan Rao' : 'Siri Rao');
+
+  const currentPermissions = activeRelationship?.permissions || {
+    viewPregnancyProgress: true,
+    viewAppointments: true,
+    viewSharedMilestones: true,
+    viewHealthSummaries: true,
+    viewBirthPlan: true,
+    viewHospitalChecklist: true,
+    editSharedTasks: true,
+    receiveReminders: true,
+    viewUltrasounds: false,
+  };
+
+  const handleToggleGranularPermission = (key: keyof typeof currentPermissions) => {
+    if (!isMother) return;
+    updateSharingPermissions({
+      [key]: !currentPermissions[key]
+    });
+  };
+
+  const handleDisconnectPartner = () => {
+    if (confirm('Are you sure you want to disconnect your partner? All sharing access will be revoked immediately and both accounts will be freed for new pairing.')) {
+      const res = unlinkPartner();
+      alert(res.message);
+    }
+  };
 
   // Account deletion confirmation
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -260,74 +289,138 @@ export const SettingsModule: React.FC = () => {
               </button>
             </div>
 
-            {/* Shared Caregiver Permissions List */}
-            <div className="space-y-2.5 pt-1">
-              <span className="text-xs font-semibold text-foreground block">
-                Shared Caregiver Permissions:
-              </span>
-
-              <div className="space-y-2 text-xs">
-                {/* Permission 1 */}
-                <div
-                  onClick={() => handleTogglePermission('shareAppointments')}
-                  className="flex items-start gap-2.5 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <div className="mt-0.5 text-primary shrink-0">
-                    <CheckCircle2 className="w-4 h-4 fill-primary text-white" />
-                  </div>
-                  <span className="leading-snug">
-                    View 40-week gestational progression & baby growth milestones
+            {/* Granular Caregiver Permissions (Mother Controls Data Sovereignty) */}
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-foreground block">
+                  {isMother ? 'Granular Sharing Permissions Granted to Partner:' : 'Sharing Permissions Granted by Expecting Mother:'}
+                </span>
+                {isMother && (
+                  <span className="text-[10px] text-primary font-bold uppercase tracking-wider">
+                    Controlled by You
                   </span>
-                </div>
+                )}
+              </div>
 
-                {/* Permission 2 */}
-                <div
-                  onClick={() => handleTogglePermission('shareVitals')}
-                  className="flex items-start gap-2.5 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <div className="mt-0.5 text-primary shrink-0">
-                    <CheckCircle2 className="w-4 h-4 fill-primary text-white" />
-                  </div>
-                  <span className="leading-snug">
-                    Access labor contraction timer & evening kick counter
-                  </span>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                {[
+                  {
+                    key: 'viewPregnancyProgress' as const,
+                    title: 'Gestational Progression',
+                    desc: 'Weekly milestone progression & baby dimensions'
+                  },
+                  {
+                    key: 'viewAppointments' as const,
+                    title: 'Appointments Schedule',
+                    desc: 'Prenatal visits, scans, and clinical tests'
+                  },
+                  {
+                    key: 'viewSharedMilestones' as const,
+                    title: 'Shared Milestones',
+                    desc: 'Baby shower, movements, and shared moments'
+                  },
+                  {
+                    key: 'viewHealthSummaries' as const,
+                    title: 'Selected Health Summaries',
+                    desc: 'Approved vitals, BP trends, and rest summaries'
+                  },
+                  {
+                    key: 'viewBirthPlan' as const,
+                    title: 'Birth Delivery Plan',
+                    desc: 'Labor preferences and hospital delivery wishes'
+                  },
+                  {
+                    key: 'viewHospitalChecklist' as const,
+                    title: 'Hospital & Nursery Checklist',
+                    desc: 'Delivery bags and shared newborn checklist'
+                  },
+                  {
+                    key: 'editSharedTasks' as const,
+                    title: 'Collaborative Tasks',
+                    desc: 'Partner can add or complete shared preparation tasks'
+                  },
+                  {
+                    key: 'receiveReminders' as const,
+                    title: 'Pregnancy Reminders',
+                    desc: 'Receive alerts for upcoming appointments & milestones'
+                  },
+                  {
+                    key: 'viewUltrasounds' as const,
+                    title: 'Ultrasound Documents',
+                    desc: 'High-resolution scan images in memory vault'
+                  }
+                ].map((item) => {
+                  const isGranted = currentPermissions[item.key];
+                  return (
+                    <div
+                      key={item.key}
+                      onClick={() => isMother && handleToggleGranularPermission(item.key)}
+                      className={`p-2.5 rounded-2xl border transition-all flex items-start gap-2.5 ${
+                        isMother ? 'cursor-pointer hover:border-primary/50' : 'cursor-default'
+                      } ${
+                        isGranted
+                          ? 'bg-primary-soft/40 border-primary/40 text-foreground'
+                          : 'bg-muted/20 border-border text-muted-foreground'
+                      }`}
+                    >
+                      <div className="mt-0.5 shrink-0">
+                        {isGranted ? (
+                          <CheckCircle2 className="w-4 h-4 fill-primary text-white" />
+                        ) : (
+                          <Circle className="w-4 h-4 text-muted-foreground/40" />
+                        )}
+                      </div>
+                      <div className="space-y-0.5 flex-1 min-w-0">
+                        <div className="font-semibold text-xs flex items-center justify-between">
+                          <span className="truncate">{item.title}</span>
+                          <span className={`text-[10px] font-bold ${isGranted ? 'text-primary' : 'text-muted-foreground'}`}>
+                            {isGranted ? 'Enabled' : 'Disabled'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-tight">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                {/* Permission 3 */}
-                <div
-                  onClick={() => handleTogglePermission('shareBirthPlan')}
-                  className="flex items-start gap-2.5 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <div className="mt-0.5 text-primary shrink-0">
-                    <CheckCircle2 className="w-4 h-4 fill-primary text-white" />
-                  </div>
-                  <span className="leading-snug">
-                    View birth plan hospital preferences & comfort measures
-                  </span>
+              {/* Private Data Sovereignty Guarantee */}
+              <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2 mt-2">
+                <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="font-bold block">Strict Maternal Privacy Guarantee</span>
+                  <p className="text-[11px] leading-relaxed opacity-90">
+                    Private journal entries, personal Bloom AI chat consultations, and unshared clinical records are <strong>never accessible</strong> to your partner or any third party.
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Partner Connection Status Bar */}
-            <div className="pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+            <div className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                <span>Connected partner: <strong>{profile.partnerProfile?.name || 'Rohan Sharma'}</strong></span>
+                <span className={`w-2 h-2 rounded-full ${isPaired ? 'bg-primary' : 'bg-muted-foreground'}`} />
+                <span>
+                  {isPaired ? (
+                    <>Connected partner: <strong>{connectedPartnerName}</strong></>
+                  ) : (
+                    <>No active partner connected.</>
+                  )}
+                </span>
               </div>
 
-              <button
-                onClick={() => {
-                  updateProfile({
-                    partnerProfile: {
-                      ...profile.partnerProfile!,
-                      isConnected: !isPaired
-                    }
-                  });
-                }}
-                className="text-[11px] text-accent hover:underline font-semibold"
-              >
-                {isPaired ? 'Disconnect Partner' : 'Reconnect Partner'}
-              </button>
+              {isPaired && isMother && (
+                <button
+                  type="button"
+                  onClick={handleDisconnectPartner}
+                  className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold border border-rose-500/20 text-[11px] flex items-center gap-1.5 transition-all self-start sm:self-auto cursor-pointer"
+                >
+                  <Unlink className="w-3.5 h-3.5" />
+                  <span>Disconnect Partner</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -561,11 +654,13 @@ export const SettingsModule: React.FC = () => {
           {/* 1-Click Evaluation Profile Switcher */}
           <div className="p-4 bg-card rounded-3xl border border-border space-y-3 shadow-soft">
             <div className="space-y-0.5">
-              <span className="font-bold text-foreground block text-sm">1-Click Test Profile Switcher</span>
-              <p className="text-muted-foreground">Test how different maternal and partner roles access or isolate health records:</p>
+              <span className="font-bold text-foreground block text-sm">Evaluation Profile Switcher</span>
+              <p className="text-muted-foreground">
+                Authenticate as different registered accounts to verify role isolation and 1-to-1 pairing constraints. <em>(Account roles are permanent and cannot be modified)</em>:
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {allAccounts.map(acc => {
                 const isCurrent = currentUser?.id === acc.id;
                 return (

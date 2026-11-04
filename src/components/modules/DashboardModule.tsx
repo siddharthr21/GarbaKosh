@@ -26,7 +26,8 @@ import {
   Baby,
   Footprints,
   ShieldAlert,
-  ArrowLeft
+  ArrowLeft,
+  Users
 } from 'lucide-react';
 
 interface DashboardModuleProps {
@@ -48,11 +49,17 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
     decrementWater,
     reminders,
     activeRole,
-    setActiveRole,
     is511RuleAlertActive,
     contractions,
+    unlinkPartner,
+    pairPartnerWithMotherCode,
+    availableMothers,
+    setIsMotherSharedDashboardOpen,
     t
   } = useApp();
+
+  const [connectingMotherId, setConnectingMotherId] = useState<string | null>(null);
+  const [pairingNotice, setPairingNotice] = useState<{ success: boolean; message: string } | null>(null);
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [selectedTrackerWeek, setSelectedTrackerWeek] = useState(profile.currentGestationalWeek);
@@ -114,7 +121,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
 
     return (
       <div className="space-y-6 pb-12 animate-in fade-in duration-300">
-        {/* Switcher Banner */}
+        {/* Partner Connection Status Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-3xl bg-muted/40 border border-border shadow-soft">
           <div className="flex items-center gap-2.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-accent text-white font-bold text-sm shadow-soft">
@@ -122,40 +129,158 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             </span>
             <div>
               <p className="text-xs font-bold text-foreground">
-                You are viewing the Partner Sanctuary
+                {currentUser?.isPaired
+                  ? `Caregiver Suite: Synchronized with ${profile.name}'s Pregnancy Sanctuary`
+                  : 'Caregiver Suite: Unpaired Partner Sanctuary (Zero Data Leakage Active)'}
               </p>
               <p className="text-[11px] text-muted-foreground">
-                Synchronized tools for labor surge timing, kick counting, and weekly caregiver missions.
+                {currentUser?.isPaired
+                  ? 'Labor surge timing, kick counting, and weekly caregiver missions are synchronized.'
+                  : 'Maternal records remain isolated until authorized by an eligible expecting mother.'}
               </p>
             </div>
           </div>
 
-          <button
-            onClick={() => setActiveRole('mother')}
-            className="px-3.5 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 self-start sm:self-auto"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Switch to Mother Account ({profile.name.split(' ')[0]})</span>
-          </button>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {currentUser?.isPaired ? (
+              <>
+                <button
+                  onClick={() => setIsMotherSharedDashboardOpen(true)}
+                  className="px-3.5 py-1.5 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>🌸</span>
+                  <span>View Mother's Shared Dashboard</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm(`Disconnect from ${profile.name}'s maternal sanctuary? Sharing access will be revoked immediately.`)) {
+                      unlinkPartner();
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-rose-50 text-rose-600 text-xs font-bold transition-all cursor-pointer"
+                >
+                  Disconnect
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => onNavigateTab('partner-space')}
+                className="px-3.5 py-1.5 rounded-xl bg-accent text-white text-xs font-bold transition-all shadow-xs"
+              >
+                Go to Partner Space →
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Unpaired Partner Privacy Alert */}
-        {currentUser?.role === 'partner' && !currentUser?.isPaired && (
-          <div className="p-5 rounded-3xl bg-amber-500/10 border-2 border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in">
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
-                <ShieldAlert className="w-4 h-4" /> Data Sequestered · Unpaired Partner Account ({currentUser.uniqueCode})
-              </span>
-              <p className="text-xs text-muted-foreground max-w-xl">
-                You are not yet linked to an expecting mother’s account. Maternal ultrasound scans and vitals are kept strictly confidential until connected.
-              </p>
-            </div>
-            <button
-              onClick={() => onNavigateTab('partner-space')}
-              className="px-4 py-2 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs shrink-0 self-start sm:self-auto"
-            >
-              Enter Mother Code in Partner Space →
+        {/* Pairing Notification Feedback */}
+        {pairingNotice && (
+          <div className={`p-4 rounded-2xl text-xs font-semibold flex items-center justify-between ${
+            pairingNotice.success
+              ? 'bg-emerald-500/10 text-emerald-800 border border-emerald-500/30'
+              : 'bg-rose-500/10 text-rose-700 border border-rose-500/30'
+          }`}>
+            <span>{pairingNotice.message}</span>
+            <button onClick={() => setPairingNotice(null)} className="text-xs font-bold ml-2 cursor-pointer">
+              ✕
             </button>
+          </div>
+        )}
+
+        {/* Unpaired Partner Privacy Alert & Registered Available Mothers Section */}
+        {currentUser?.role === 'partner' && !currentUser?.isPaired && (
+          <div className="space-y-4">
+            <div className="p-5 rounded-3xl bg-amber-500/10 border-2 border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in">
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
+                  <ShieldAlert className="w-4 h-4" /> Data Sequestered · Unpaired Partner Account ({currentUser.uniqueCode})
+                </span>
+                <p className="text-xs text-muted-foreground max-w-xl">
+                  You are not yet linked to an expecting mother’s account. Maternal clinical records, ultrasounds, and vitals are protected by cryptographic account isolation.
+                </p>
+              </div>
+              <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-card border border-border text-foreground">
+                Your Code: {currentUser.uniqueCode}
+              </span>
+            </div>
+
+            {/* Registered Available Mothers Directory (Requirement 3) */}
+            <div className="p-6 bg-card rounded-3xl border border-border shadow-soft space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="font-serif font-bold text-foreground text-sm flex items-center gap-2">
+                    <Users className="w-4 h-4 text-accent" />
+                    <span>Registered Available Mothers (Eligible for 1-to-1 Pairing)</span>
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Connect with your partner using her invitation code or directly from this authorized directory. Paired mothers are automatically excluded.
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-primary-soft text-primary text-[11px] font-bold shrink-0">
+                  {availableMothers.filter(m => m.isAvailable).length} Available
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {availableMothers.map(mother => {
+                  const isAvailable = mother.isAvailable;
+                  return (
+                    <div
+                      key={mother.id}
+                      className={`p-4 rounded-2xl border transition-all text-xs flex flex-col justify-between gap-3 ${
+                        isAvailable
+                          ? 'bg-card border-border hover:border-accent shadow-2xs'
+                          : 'bg-muted/30 border-dashed border-border opacity-70'
+                      }`}
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-foreground text-sm">{mother.name}</span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            isAvailable
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-stone-200 text-stone-700'
+                          }`}>
+                            {isAvailable ? 'Available' : 'Already Connected'}
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground text-[11px]">
+                          Week {mother.gestationalWeek} · Due {mother.estimatedDueDate}
+                        </p>
+                        <span className="font-mono text-[10px] text-muted-foreground block">
+                          Code: {mother.code}
+                        </span>
+                        {!isAvailable && mother.pairedPartnerName && (
+                          <span className="text-[10px] text-stone-500 italic block">
+                            Paired with {mother.pairedPartnerName}
+                          </span>
+                        )}
+                      </div>
+
+                      {isAvailable ? (
+                        <button
+                          onClick={() => {
+                            setConnectingMotherId(mother.id);
+                            const res = pairPartnerWithMotherCode(mother.id);
+                            setPairingNotice(res);
+                            setConnectingMotherId(null);
+                          }}
+                          disabled={connectingMotherId === mother.id}
+                          className="w-full py-2 bg-accent hover:bg-accent-hover text-white rounded-xl font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-1"
+                        >
+                          <span>Connect with {mother.name.split(' ')[0]}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      ) : (
+                        <div className="py-1.5 text-center text-[11px] font-semibold text-muted-foreground bg-muted/40 rounded-xl">
+                          Not available for pairing
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
 
@@ -255,20 +380,62 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
   // ==========================================
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
-      {/* Switcher to Partner View */}
-      <div className="flex items-center justify-between p-3 px-4 rounded-2xl bg-muted/40 border border-border shadow-xs text-xs">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="font-semibold text-foreground">
-            {t('Active View', 'Active View')}: <strong>{profile.name.split(' ')[0]} ({t('Mother', 'Mother')})</strong>
-          </span>
+      {/* Partner Collaboration Status Card (Mother View) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-3xl bg-card border border-border shadow-xs text-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-accent-soft text-accent flex items-center justify-center font-bold">
+            🤝
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-foreground">
+                {currentUser?.isPaired
+                  ? `Caregiver Partner: ${profile.partnerProfile?.name || 'Rohan Rao'}`
+                  : 'Partner Collaboration: Not Connected'}
+              </span>
+              <span className={`text-[10px] px-2 py-0.2 rounded-full font-bold ${
+                currentUser?.isPaired ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+              }`}>
+                {currentUser?.isPaired ? 'Connected & Synced' : 'Awaiting Connection'}
+              </span>
+            </div>
+            <p className="text-muted-foreground text-[11px]">
+              {currentUser?.isPaired
+                ? 'Your partner receives approved pregnancy milestones, reminders, and birth prep tasks.'
+                : `Share your private invitation code with your partner: ${currentUser?.uniqueCode || 'MAMA-2026'}`}
+            </p>
+          </div>
         </div>
-        <button
-          onClick={() => setActiveRole('partner')}
-          className="px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-muted text-accent font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-        >
-          <span>{t('Switch to Father / Partner View', 'Switch to Father / Partner View')} →</span>
-        </button>
+
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+          {currentUser?.isPaired ? (
+            <>
+              <button
+                onClick={() => onNavigateTab('settings')}
+                className="px-3 py-1.5 rounded-xl bg-muted/60 hover:bg-muted text-foreground font-bold transition-all shadow-2xs cursor-pointer"
+              >
+                Manage Permissions
+              </button>
+              <button
+                onClick={() => {
+                  if (confirm(`Are you sure you want to disconnect partner ${profile.partnerProfile?.name}? Their access to shared records will be revoked immediately.`)) {
+                    unlinkPartner();
+                  }
+                }}
+                className="px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-rose-50 text-rose-600 font-bold transition-all cursor-pointer"
+              >
+                Disconnect
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => onNavigateTab('settings')}
+              className="px-3 py-1.5 rounded-xl bg-primary text-white font-bold transition-all shadow-xs cursor-pointer"
+            >
+              Share Pairing Code →
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Welcome Hero Banner (Garbkosh Hero Gradient & Luminous Card) */}

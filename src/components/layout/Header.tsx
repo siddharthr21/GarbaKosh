@@ -28,14 +28,17 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
     currentUser,
     logout,
     activeRole,
-    setActiveRole,
     selectedLanguage,
     setSelectedLanguage,
     triggerEmergencyModal,
     setIsOnboardingOpen,
     setIsDesignSystemOpen,
+    setIsMotherSharedDashboardOpen,
     t
   } = useApp();
+
+  const isMother = currentUser?.role === 'mother';
+  const isPaired = currentUser?.isPaired;
 
   const getDaysRemaining = () => {
     const today = new Date();
@@ -109,30 +112,35 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
             ))}
           </select>
 
-          {/* Role Switcher Pill */}
-          <div className="flex items-center bg-muted/50 p-0.5 rounded-xl text-xs font-semibold">
-            <button
-              onClick={() => setActiveRole('mother')}
-              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
-                activeRole === 'mother'
-                  ? 'bg-card text-primary shadow-xs font-bold'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t('mother', 'Mother')}</span>
-            </button>
-            <button
-              onClick={() => setActiveRole('partner')}
-              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer ${
-                activeRole === 'partner'
-                  ? 'bg-card text-accent shadow-xs font-bold'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t('partnerFather', 'Father / Partner')}</span>
-            </button>
+          {/* Permanent Role & Pairing Status Badge */}
+          <div className="flex items-center gap-1.5">
+            <div className={`px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 border shadow-2xs ${
+              isMother
+                ? 'bg-primary-soft text-primary border-primary/30'
+                : 'bg-accent-soft text-accent border-accent/30'
+            }`}>
+              {isMother ? <UserCheck className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">
+                {isMother ? 'Mother Account' : 'Partner Account'}
+              </span>
+              <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold uppercase ${
+                isPaired ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-700'
+              }`}>
+                {isPaired ? 'Paired' : 'Unpaired'}
+              </span>
+            </div>
+
+            {/* If Paired Partner: Quick shortcut to View Mother's Shared Dashboard */}
+            {!isMother && isPaired && (
+              <button
+                onClick={() => setIsMotherSharedDashboardOpen(true)}
+                className="hidden lg:flex items-center gap-1 px-2.5 py-1 rounded-xl bg-card hover:bg-muted border border-border text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs"
+                title="View Mother's Shared Dashboard"
+              >
+                <span>🌸</span>
+                <span className="text-[11px]">View Shared Dashboard</span>
+              </button>
+            )}
           </div>
 
           {/* Emergency SOS Button */}

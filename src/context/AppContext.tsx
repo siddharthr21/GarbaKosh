@@ -19,8 +19,12 @@ import {
   BabyShowerPlan,
   HospitalChecklistItem,
   ContractionRecord,
-  BirthPlanState
+  BirthPlanState,
+  MotherPartnerRelationship,
+  GranularSharingPermissions,
+  AvailableMotherSummary
 } from '@/types';
+import { pairingService, DEFAULT_SHARING_PERMISSIONS } from '@/services/pairingService';
 import { FOOD_PRESETS, NON_FOOD_PICA_SUBSTANCES } from '@/data/nutritionData';
 import { EXERCISE_ROUTINES } from '@/data/exerciseData';
 import { BABY_NAMES_DATABASE } from '@/data/babyNamesData';
@@ -49,8 +53,13 @@ interface AppContextType {
   logout: () => void;
   register: (data: RegisterAccountData) => { success: boolean; message?: string };
   pairPartnerWithMotherCode: (motherCode: string) => { success: boolean; message: string };
-  unlinkPartner: () => void;
+  unlinkPartner: () => { success: boolean; message: string };
   switchAccount: (userId: string) => void;
+  activeRelationship: MotherPartnerRelationship | null;
+  availableMothers: AvailableMotherSummary[];
+  updateSharingPermissions: (perms: Partial<GranularSharingPermissions>) => void;
+  isMotherSharedDashboardOpen: boolean;
+  setIsMotherSharedDashboardOpen: (open: boolean) => void;
 
   profile: UserProfile;
   updateProfile: (updated: Partial<UserProfile>) => void;
@@ -204,12 +213,14 @@ const INITIAL_PROFILE: UserProfile = {
     pairedAt: '2026-06-18T10:00:00Z'
   },
   sharingPermissions: {
+    ...DEFAULT_SHARING_PERMISSIONS,
     shareVitals: true,
     shareMood: true,
     shareUltrasounds: true,
     shareAppointments: true,
     shareHospitalChecklist: true,
-    shareBirthPlan: true
+    shareBirthPlan: true,
+    viewHealthSummaries: true
   },
   isPostpartum: false,
   babyName: 'Aarav / Aadhya',
@@ -272,9 +283,63 @@ const DEFAULT_UNPAIRED_PARTNER_ACCOUNT: UserAccount = {
   }
 };
 
+const DEFAULT_UNPAIRED_MOTHER_PRIYA: UserAccount = {
+  id: 'usr_mother_priya',
+  name: 'Priya Nair',
+  email: 'priya@bloomnest.com',
+  role: 'mother',
+  uniqueCode: 'MAMA-4819',
+  isPaired: false,
+  profile: {
+    ...INITIAL_PROFILE,
+    id: 'usr_mother_priya',
+    name: 'Priya Nair',
+    email: 'priya@bloomnest.com',
+    role: 'mother',
+    currentGestationalWeek: 20,
+    estimatedDueDate: '2027-03-28',
+    partnerProfile: {
+      name: '',
+      email: '',
+      relationship: 'Partner',
+      phone: '',
+      pairingCode: 'MAMA-4819',
+      isConnected: false
+    }
+  }
+};
+
+const DEFAULT_UNPAIRED_MOTHER_DIYA: UserAccount = {
+  id: 'usr_mother_diya',
+  name: 'Diya Patel',
+  email: 'diya@bloomnest.com',
+  role: 'mother',
+  uniqueCode: 'MAMA-6314',
+  isPaired: false,
+  profile: {
+    ...INITIAL_PROFILE,
+    id: 'usr_mother_diya',
+    name: 'Diya Patel',
+    email: 'diya@bloomnest.com',
+    role: 'mother',
+    currentGestationalWeek: 16,
+    estimatedDueDate: '2027-04-25',
+    partnerProfile: {
+      name: '',
+      email: '',
+      relationship: 'Partner',
+      phone: '',
+      pairingCode: 'MAMA-6314',
+      isConnected: false
+    }
+  }
+};
+
 const INITIAL_ACCOUNTS: UserAccount[] = [
   DEFAULT_MOTHER_ACCOUNT,
   DEFAULT_PARTNER_ACCOUNT,
+  DEFAULT_UNPAIRED_MOTHER_PRIYA,
+  DEFAULT_UNPAIRED_MOTHER_DIYA,
   DEFAULT_UNPAIRED_PARTNER_ACCOUNT
 ];
 
@@ -551,18 +616,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return INITIAL_PROFILE;
   });
 
-  const [activeRole, setActiveRole] = useState<'mother' | 'partner'>(() => {
-    if (typeof window !== 'undefined') {
-      const session = localStorage.getItem('bloomnest_auth_session');
-      if (session) {
-        try {
-          const parsed = JSON.parse(session);
-          if (parsed && parsed.role) return parsed.role;
-        } catch (e) {}
-      }
-    }
-    return 'mother';
-  });
+  // Permanent Account Role: assigned during registration, strictly immutable
+  const activeRole: 'mother' | 'partner' = currentUser ? currentUser.role : 'mother';
+  const setActiveRole = (role: 'mother' | 'partner') => {
+    console.warn(`Role immutability policy: User account '${currentUser?.name}' is registered as '${currentUser?.role}'. Account role cannot be converted.`);
+  };
+
+  const [isMotherSharedDashboardOpen, setIsMotherSharedDashboardOpen] = useState(false);
+
+  const availableMothers: AvailableMotherSummary[] = pairingService.getAvailableMothers(
+    allAccounts,
+    currentUser?.id
+  );
+
+  const activeRelationship: MotherPartnerRelationship | null = currentUser
+    ? pairingService.getActiveRelationshipForUser(currentUser.id)
+    : null;
 
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isDesignSystemOpen, setIsDesignSystemOpen] = useState(false);
@@ -801,7 +870,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           phone: '',
           pairingCode: uniqueCode,
           isConnected: false
-        }
+        },
+        sharingPermissions: { ...DEFAULT_SHARING_PERMISSIONS }
       };
 
       const newAccount: UserAccount = {
@@ -818,11 +888,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setAllAccounts(updated);
       if (typeof window !== 'undefined') {
         localStorage.setItem('bloomnest_accounts', JSON.stringify(updated));
+        localStorage.setItem('bloomnest_auth_session', JSON.stringify(newAccount));
       }
 
       setCurrentUser(newAccount);
       setIsAuthenticated(true);
-      setActiveRole('mother');
       setProfile(newMotherProfile);
       return { success: true };
     } else {
@@ -830,154 +900,339 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const uniqueCode = `PAPA-${Math.floor(1000 + Math.random() * 9000)}`;
       let isPaired = false;
       let partnerLinkedCode: string | undefined = undefined;
-      let linkedMotherProfile: UserProfile = {
-        ...INITIAL_PROFILE,
+      let targetMother: UserAccount | undefined = undefined;
+
+      if (data.motherPairingCode) {
+        const cleanInput = data.motherPairingCode.trim().toUpperCase();
+        targetMother = allAccounts.find(
+          a => a.role === 'mother' && a.uniqueCode.toUpperCase() === cleanInput
+        );
+
+        if (!targetMother) {
+          return {
+            success: false,
+            message: `Mother pairing code "${cleanInput}" not found in registered accounts.`
+          };
+        }
+
+        // 1-to-1 Pairing Check: Is target mother already paired?
+        if (targetMother.isPaired || pairingService.isMotherPaired(targetMother.id)) {
+          return {
+            success: false,
+            message: `${targetMother.name} is already paired with an active partner. 1-to-1 pairing rules forbid duplicate connections.`
+          };
+        }
+
+        isPaired = true;
+        partnerLinkedCode = targetMother.uniqueCode;
+      }
+
+      const initialPartnerProfile: UserProfile = {
+        ...(targetMother ? targetMother.profile : INITIAL_PROFILE),
         id: `usr_partner_${Date.now()}`,
         name: data.name,
         email: data.email,
         role: 'partner',
-        currentGestationalWeek: 0,
-        estimatedDueDate: 'Not Connected',
+        currentGestationalWeek: targetMother ? targetMother.profile.currentGestationalWeek : 0,
+        estimatedDueDate: targetMother ? targetMother.profile.estimatedDueDate : 'Not Connected',
         partnerProfile: {
-          name: '',
-          email: '',
+          name: targetMother ? targetMother.name : '',
+          email: targetMother ? targetMother.email : '',
           relationship: data.relationship || 'Partner',
           phone: '',
-          pairingCode: uniqueCode,
-          isConnected: false
-        }
+          pairingCode: targetMother ? targetMother.uniqueCode : uniqueCode,
+          isConnected: isPaired
+        },
+        sharingPermissions: { ...DEFAULT_SHARING_PERMISSIONS }
       };
 
-      if (data.motherPairingCode) {
-        const motherMatch = allAccounts.find(
-          a => a.role === 'mother' && a.uniqueCode.toUpperCase() === data.motherPairingCode?.toUpperCase()
-        );
-        if (!motherMatch) {
-          return {
-            success: false,
-            message: `Mother pairing code "${data.motherPairingCode}" not found. Please double-check with the mother (e.g. MAMA-2026).`
-          };
-        }
-        isPaired = true;
-        partnerLinkedCode = motherMatch.uniqueCode;
-        linkedMotherProfile = {
-          ...motherMatch.profile,
-          id: `usr_partner_${Date.now()}`,
-          name: data.name,
-          email: data.email,
-          role: 'partner',
-          partnerProfile: {
-            name: motherMatch.name,
-            email: motherMatch.email,
-            relationship: 'Expecting Mother',
-            phone: '',
-            pairingCode: motherMatch.uniqueCode,
-            isConnected: true
-          }
-        };
-      }
-
-      const newAccount: UserAccount = {
-        id: linkedMotherProfile.id,
+      const newPartnerAccount: UserAccount = {
+        id: initialPartnerProfile.id,
         name: data.name,
         email: data.email,
         role: 'partner',
         uniqueCode,
         partnerLinkedCode,
         isPaired,
-        profile: linkedMotherProfile
+        profile: initialPartnerProfile
       };
 
-      const updated = [...allAccounts, newAccount];
-      setAllAccounts(updated);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('bloomnest_accounts', JSON.stringify(updated));
+      let updatedAccounts = [...allAccounts, newPartnerAccount];
+
+      if (targetMother && isPaired) {
+        // Connect in pairingService
+        const pairResult = pairingService.connectPartnerWithMother(newPartnerAccount, targetMother);
+        if (pairResult.success && pairResult.relationship) {
+          newPartnerAccount.activeRelationshipId = pairResult.relationship.id;
+          const updatedMotherAccount: UserAccount = {
+            ...targetMother,
+            isPaired: true,
+            partnerLinkedCode: newPartnerAccount.uniqueCode,
+            activeRelationshipId: pairResult.relationship.id,
+            profile: {
+              ...targetMother.profile,
+              partnerProfile: {
+                name: newPartnerAccount.name,
+                email: newPartnerAccount.email,
+                relationship: 'Partner',
+                phone: '',
+                pairingCode: targetMother.uniqueCode,
+                isConnected: true,
+                pairedAt: pairResult.relationship.accepted_at
+              }
+            }
+          };
+
+          updatedAccounts = updatedAccounts.map(a =>
+            a.id === updatedMotherAccount.id ? updatedMotherAccount : a
+          );
+        }
       }
 
-      setCurrentUser(newAccount);
+      setAllAccounts(updatedAccounts);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_accounts', JSON.stringify(updatedAccounts));
+        localStorage.setItem('bloomnest_auth_session', JSON.stringify(newPartnerAccount));
+      }
+
+      setCurrentUser(newPartnerAccount);
       setIsAuthenticated(true);
-      setActiveRole('partner');
-      setProfile(linkedMotherProfile);
+      setProfile(initialPartnerProfile);
       return { success: true };
     }
   };
 
-  const pairPartnerWithMotherCode = (motherCode: string): { success: boolean; message: string } => {
-    const cleanCode = motherCode.trim().toUpperCase();
-    const motherMatch = allAccounts.find(a => a.role === 'mother' && a.uniqueCode.toUpperCase() === cleanCode);
-    if (!motherMatch) {
+  const pairPartnerWithMotherCode = (motherCodeOrId: string): { success: boolean; message: string } => {
+    if (!currentUser) {
+      return { success: false, message: 'You must be logged in to connect.' };
+    }
+
+    if (currentUser.role !== 'partner') {
       return {
         success: false,
-        message: `No mother found with pairing code "${cleanCode}". Please verify the code on her Settings screen.`
+        message: 'Security validation error: Only registered Partner accounts can initiate mother pairing.'
       };
     }
 
-    if (currentUser) {
-      const updatedUser: UserAccount = {
-        ...currentUser,
-        isPaired: true,
-        partnerLinkedCode: motherMatch.uniqueCode,
-        profile: {
-          ...motherMatch.profile,
-          name: currentUser.name,
-          email: currentUser.email,
-          role: 'partner',
-          partnerProfile: {
-            name: motherMatch.name,
-            email: motherMatch.email,
-            relationship: 'Expecting Mother',
-            phone: '',
-            pairingCode: motherMatch.uniqueCode,
-            isConnected: true
-          }
-        }
+    if (currentUser.isPaired || pairingService.isPartnerPaired(currentUser.id)) {
+      const activeRel = pairingService.getActiveRelationshipForUser(currentUser.id);
+      return {
+        success: false,
+        message: `Your account is already paired with ${activeRel?.mother_name || 'an expecting mother'}. Under 1-to-1 relationship rules, you must disconnect first before connecting with another mother.`
       };
+    }
 
-      const updatedAccounts = allAccounts.map(a => a.id === currentUser.id ? updatedUser : a);
-      setAllAccounts(updatedAccounts);
-      setCurrentUser(updatedUser);
-      setProfile(updatedUser.profile);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('bloomnest_accounts', JSON.stringify(updatedAccounts));
-        localStorage.setItem('bloomnest_auth_session', JSON.stringify(updatedUser));
-      }
+    const cleanInput = motherCodeOrId.trim().toUpperCase();
+    const targetMother = allAccounts.find(
+      a => a.role === 'mother' && (a.uniqueCode.toUpperCase() === cleanInput || a.id === motherCodeOrId)
+    );
+
+    if (!targetMother) {
+      return {
+        success: false,
+        message: `Mother with code or ID "${cleanInput}" not found in registered accounts.`
+      };
+    }
+
+    // Call pairingService
+    const result = pairingService.connectPartnerWithMother(currentUser, targetMother);
+    if (!result.success || !result.relationship) {
+      return { success: false, message: result.message };
+    }
+
+    // Update target mother in allAccounts
+    const updatedMotherProfile: UserProfile = {
+      ...targetMother.profile,
+      partnerProfile: {
+        name: currentUser.name,
+        email: currentUser.email,
+        relationship: 'Partner',
+        phone: '',
+        pairingCode: targetMother.uniqueCode,
+        isConnected: true,
+        pairedAt: result.relationship.accepted_at
+      },
+      sharingPermissions: result.relationship.permissions
+    };
+
+    const updatedMotherAccount: UserAccount = {
+      ...targetMother,
+      isPaired: true,
+      partnerLinkedCode: currentUser.uniqueCode,
+      activeRelationshipId: result.relationship.id,
+      profile: updatedMotherProfile
+    };
+
+    // Update requesting partner
+    const updatedPartnerProfile: UserProfile = {
+      ...targetMother.profile,
+      id: currentUser.id,
+      name: currentUser.name,
+      email: currentUser.email,
+      role: 'partner',
+      partnerProfile: {
+        name: targetMother.name,
+        email: targetMother.email,
+        relationship: 'Expecting Mother',
+        phone: '',
+        pairingCode: targetMother.uniqueCode,
+        isConnected: true,
+        pairedAt: result.relationship.accepted_at
+      },
+      sharingPermissions: result.relationship.permissions
+    };
+
+    const updatedPartnerAccount: UserAccount = {
+      ...currentUser,
+      isPaired: true,
+      partnerLinkedCode: targetMother.uniqueCode,
+      activeRelationshipId: result.relationship.id,
+      profile: updatedPartnerProfile
+    };
+
+    const updatedAccounts = allAccounts.map(a => {
+      if (a.id === updatedMotherAccount.id) return updatedMotherAccount;
+      if (a.id === updatedPartnerAccount.id) return updatedPartnerAccount;
+      return a;
+    });
+
+    setAllAccounts(updatedAccounts);
+    setCurrentUser(updatedPartnerAccount);
+    setProfile(updatedPartnerProfile);
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_accounts', JSON.stringify(updatedAccounts));
+      localStorage.setItem('bloomnest_auth_session', JSON.stringify(updatedPartnerAccount));
     }
 
     return {
       success: true,
-      message: `Successfully connected with ${motherMatch.name}'s pregnancy sanctuary! Caregiver view is now active.`
+      message: `Successfully connected with ${targetMother.name}! Permitted caregiver synchronization is now active.`
     };
   };
 
-  const unlinkPartner = () => {
-    if (currentUser && currentUser.role === 'partner') {
-      const updatedUser: UserAccount = {
-        ...currentUser,
-        isPaired: false,
-        partnerLinkedCode: undefined,
-        profile: {
-          ...currentUser.profile,
-          currentGestationalWeek: 0,
-          estimatedDueDate: 'Not Connected',
-          partnerProfile: {
-            name: '',
-            email: '',
-            relationship: 'Partner',
-            phone: '',
-            pairingCode: currentUser.uniqueCode,
-            isConnected: false
-          }
-        }
-      };
+  const unlinkPartner = (): { success: boolean; message: string } => {
+    if (!currentUser) return { success: false, message: 'Not logged in.' };
 
-      const updatedAccounts = allAccounts.map(a => a.id === currentUser.id ? updatedUser : a);
-      setAllAccounts(updatedAccounts);
-      setCurrentUser(updatedUser);
-      setProfile(updatedUser.profile);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('bloomnest_accounts', JSON.stringify(updatedAccounts));
-        localStorage.setItem('bloomnest_auth_session', JSON.stringify(updatedUser));
+    const activeRel = pairingService.getActiveRelationshipForUser(currentUser.id);
+    if (!activeRel) {
+      return { success: false, message: 'No active pairing relationship found.' };
+    }
+
+    const res = pairingService.disconnectRelationship(activeRel.id, currentUser.id);
+    if (!res.success) return res;
+
+    // Disconnect both accounts
+    const motherId = activeRel.mother_user_id;
+    const partnerId = activeRel.partner_user_id;
+
+    const updatedAccounts = allAccounts.map(acc => {
+      if (acc.id === motherId) {
+        return {
+          ...acc,
+          isPaired: false,
+          partnerLinkedCode: undefined,
+          activeRelationshipId: undefined,
+          profile: {
+            ...acc.profile,
+            partnerProfile: {
+              name: '',
+              email: '',
+              relationship: 'Partner',
+              phone: '',
+              pairingCode: acc.uniqueCode,
+              isConnected: false
+            }
+          }
+        };
       }
+      if (acc.id === partnerId) {
+        return {
+          ...acc,
+          isPaired: false,
+          partnerLinkedCode: undefined,
+          activeRelationshipId: undefined,
+          profile: {
+            ...acc.profile,
+            currentGestationalWeek: 0,
+            estimatedDueDate: 'Not Connected',
+            partnerProfile: {
+              name: '',
+              email: '',
+              relationship: 'Partner',
+              phone: '',
+              pairingCode: acc.uniqueCode,
+              isConnected: false
+            }
+          }
+        };
+      }
+      return acc;
+    });
+
+    setAllAccounts(updatedAccounts);
+    const updatedSelf = updatedAccounts.find(a => a.id === currentUser.id) || currentUser;
+    setCurrentUser(updatedSelf);
+    setProfile(updatedSelf.profile);
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_accounts', JSON.stringify(updatedAccounts));
+      localStorage.setItem('bloomnest_auth_session', JSON.stringify(updatedSelf));
+    }
+
+    return {
+      success: true,
+      message: 'Pairing successfully disconnected. Both accounts are now eligible for new pairing.'
+    };
+  };
+
+  const updateSharingPermissions = (newPerms: Partial<GranularSharingPermissions>) => {
+    if (!currentUser || currentUser.role !== 'mother') {
+      console.warn('Unauthorized: Only an expecting mother can update sharing permissions.');
+      return;
+    }
+
+    const activeRel = pairingService.getActiveRelationshipForUser(currentUser.id);
+    if (activeRel) {
+      pairingService.updatePermissions(activeRel.id, currentUser.id, newPerms);
+    }
+
+    const updatedPermissions = {
+      ...profile.sharingPermissions,
+      ...newPerms
+    };
+
+    setProfile(prev => ({
+      ...prev,
+      sharingPermissions: updatedPermissions
+    }));
+
+    // Update in allAccounts
+    const updatedAccounts = allAccounts.map(a => {
+      if (a.id === currentUser.id) {
+        return {
+          ...a,
+          profile: {
+            ...a.profile,
+            sharingPermissions: updatedPermissions
+          }
+        };
+      }
+      if (activeRel && a.id === activeRel.partner_user_id) {
+        return {
+          ...a,
+          profile: {
+            ...a.profile,
+            sharingPermissions: updatedPermissions
+          }
+        };
+      }
+      return a;
+    });
+
+    setAllAccounts(updatedAccounts);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_accounts', JSON.stringify(updatedAccounts));
     }
   };
 
@@ -986,32 +1241,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (acc) {
       setCurrentUser(acc);
       setIsAuthenticated(true);
-      setActiveRole(acc.role);
       setProfile(acc.profile);
       if (typeof window !== 'undefined') {
         localStorage.setItem('bloomnest_auth_session', JSON.stringify(acc));
-        localStorage.setItem('bloomnest_active_role', acc.role);
       }
-    }
-  };
-
-  const handleSetActiveRole = (newRole: 'mother' | 'partner') => {
-    setActiveRole(newRole);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('bloomnest_active_role', newRole);
-    }
-    const matchingAccount = allAccounts.find(a => a.role === newRole);
-    if (matchingAccount) {
-      setCurrentUser(matchingAccount);
-      setProfile(matchingAccount.profile);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('bloomnest_auth_session', JSON.stringify(matchingAccount));
-      }
-    } else {
-      setProfile(prev => ({
-        ...prev,
-        role: newRole
-      }));
     }
   };
 
@@ -1552,10 +1785,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         pairPartnerWithMotherCode,
         unlinkPartner,
         switchAccount,
+        activeRelationship,
+        availableMothers,
+        updateSharingPermissions,
+        isMotherSharedDashboardOpen,
+        setIsMotherSharedDashboardOpen,
         profile,
         updateProfile,
         activeRole,
-        setActiveRole: handleSetActiveRole,
+        setActiveRole,
         contractions,
         addContraction,
         clearContractions,

@@ -47,11 +47,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     currentUser,
     logout,
     activeRole,
-    setActiveRole,
     triggerEmergencyModal,
     selectedLanguage,
     setSelectedLanguage,
     is511RuleAlertActive,
+    setIsMotherSharedDashboardOpen,
     t
   } = useApp();
 
@@ -265,14 +265,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
-              <button
-                onClick={() => setActiveRole(activeRole === 'mother' ? 'partner' : 'mother')}
-                className="px-2 py-1 bg-card hover:bg-muted text-foreground border border-border rounded-lg transition-colors text-[10px] font-bold flex items-center gap-1 cursor-pointer"
-                title={`Switch to ${activeRole === 'mother' ? 'Father / Partner' : 'Mother'}`}
-              >
-                <span>🔄</span>
-                <span>{activeRole === 'mother' ? 'Father' : 'Mother'}</span>
-              </button>
+              {currentUser?.role === 'partner' && currentUser?.isPaired && (
+                <button
+                  onClick={() => setIsMotherSharedDashboardOpen(true)}
+                  className="px-2 py-1 bg-card hover:bg-muted text-foreground border border-border rounded-lg transition-colors text-[10px] font-bold flex items-center gap-1 cursor-pointer"
+                  title="View Mother's Shared Dashboard"
+                >
+                  <span>🌸</span>
+                  <span className="hidden sm:inline">Shared</span>
+                </button>
+              )}
               <button
                 onClick={() => { setActiveTab('settings'); onCloseMobile(); }}
                 className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors cursor-pointer"

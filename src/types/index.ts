@@ -42,19 +42,66 @@ export interface UserProfile {
     isConnected: boolean;
     pairedAt?: string;
   };
-  sharingPermissions: {
-    shareVitals: boolean;
-    shareMood: boolean;
-    shareUltrasounds: boolean;
-    shareAppointments: boolean;
-    shareHospitalChecklist: boolean;
-    shareBirthPlan?: boolean;
-  };
+  sharingPermissions: GranularSharingPermissions;
   isPostpartum: boolean;
   babyBirthDate?: string;
   babyName?: string;
   babyGender?: 'boy' | 'girl' | 'undisclosed';
   onboardingCompleted?: boolean;
+}
+
+export interface GranularSharingPermissions {
+  viewPregnancyProgress: boolean;
+  viewAppointments: boolean;
+  viewSharedMilestones: boolean;
+  viewHealthSummaries: boolean;
+  viewBirthPlan: boolean;
+  viewHospitalChecklist: boolean;
+  editSharedTasks: boolean;
+  receiveReminders: boolean;
+  viewUltrasounds: boolean; // default false
+  viewAIConversations: boolean; // default false (strictly private)
+  viewJournalEntries: boolean; // default false (strictly private)
+  shareVitals?: boolean;
+  shareMood?: boolean;
+  shareUltrasounds?: boolean;
+  shareAppointments?: boolean;
+  shareHospitalChecklist?: boolean;
+  shareBirthPlan?: boolean;
+}
+
+export type RelationshipStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'EXPIRED' | 'DISCONNECTED';
+
+export interface MotherPartnerRelationship {
+  id: string;
+  mother_user_id: string;
+  mother_name: string;
+  mother_email: string;
+  mother_code: string;
+  partner_user_id: string;
+  partner_name: string;
+  partner_email: string;
+  partner_code: string;
+  pairing_code_id: string;
+  status: RelationshipStatus;
+  requested_at: string;
+  accepted_at?: string;
+  disconnected_at?: string;
+  created_at: string;
+  updated_at: string;
+  permissions: GranularSharingPermissions;
+}
+
+export interface AvailableMotherSummary {
+  id: string;
+  name: string;
+  email: string;
+  code: string;
+  gestationalWeek: number;
+  estimatedDueDate: string;
+  isAvailable: boolean;
+  pairedPartnerName?: string;
+  pendingPartnerName?: string;
 }
 
 export interface UserAccount {
@@ -65,6 +112,7 @@ export interface UserAccount {
   uniqueCode: string; // e.g. MAMA-2026 for mother, PAPA-7140 for partner
   partnerLinkedCode?: string; // the mother code a partner is paired with
   isPaired: boolean;
+  activeRelationshipId?: string;
   profile: UserProfile;
 }
 

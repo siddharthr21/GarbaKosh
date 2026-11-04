@@ -30,11 +30,12 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
     profile,
     updateProfile,
     activeRole,
-    setActiveRole,
     currentUser,
     pairPartnerWithMotherCode,
     unlinkPartner,
     allAccounts,
+    availableMothers,
+    setIsMotherSharedDashboardOpen,
     t
   } = useApp();
 
@@ -143,87 +144,149 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
           </p>
         </div>
 
-        {/* View Switcher Pill */}
-        <div className="flex items-center gap-2 bg-card p-1 rounded-2xl border border-border shadow-soft text-xs font-semibold">
-          <span className="text-muted-foreground pl-2">{t('Current Mode', 'Current Mode')}:</span>
-          <button
-            onClick={() => setActiveRole('mother')}
-            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-              activeRole === 'mother' ? 'bg-primary text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {profile.name.split(' ')[0]} ({t('Mother', 'Mother')})
-          </button>
-          <button
-            onClick={() => setActiveRole('partner')}
-            className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-              activeRole === 'partner' ? 'bg-accent text-white shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {profile.partnerProfile?.name?.split(' ')[0] || 'Rohan'} ({t('Partner', 'Partner')})
-          </button>
+        {/* Partner Account Header Info & Shared View Trigger */}
+        <div className="flex items-center gap-2 self-start md:self-auto">
+          {currentUser?.isPaired ? (
+            <button
+              onClick={() => setIsMotherSharedDashboardOpen(true)}
+              className="px-4 py-2 rounded-2xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>🌸</span>
+              <span>View Mother's Shared Dashboard</span>
+            </button>
+          ) : (
+            <div className="px-3 py-1.5 rounded-2xl bg-card border border-border text-xs font-mono font-bold text-muted-foreground shadow-2xs">
+              Role: PARTNER ({currentUser?.uniqueCode})
+            </div>
+          )}
         </div>
       </div>
 
       {/* Unpaired Partner Security Gateway Banner */}
       {isPartnerUnpaired && (
-        <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-3xl p-6 shadow-soft space-y-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-xs uppercase tracking-wider">
-                <Lock className="w-4 h-4" />
-                <span>{t('unpairedNoticeTitle', 'Zero Data Leakage Security Active · Unpaired Partner Account')}</span>
+        <div className="space-y-4">
+          <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-3xl p-6 shadow-soft space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-xs uppercase tracking-wider">
+                  <Lock className="w-4 h-4" />
+                  <span>{t('unpairedNoticeTitle', 'Zero Data Leakage Security Active · Unpaired Partner Account')}</span>
+                </div>
+                <h2 className="text-lg font-serif font-bold text-foreground">
+                  {t('Welcome', 'Welcome')}, {currentUser?.name || 'Partner'}!
+                </h2>
+                <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+                  {t('unpairedNoticeBody', 'Maternal clinical records, ultrasound images, and vitals logs are protected by cryptographic account isolation. Connect with an eligible expecting mother below or enter her unique pairing code.')}
+                </p>
               </div>
-              <h2 className="text-lg font-serif font-bold text-foreground">
-                {t('Welcome', 'Welcome')}, {currentUser?.name || 'Partner'}!
-              </h2>
-              <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-                {t('unpairedNoticeBody', 'Maternal clinical records, ultrasound images, and vitals logs are protected by cryptographic account isolation. Enter the mother\'s unique code to request synchronized caregiver access.')}
-              </p>
+
+              <div className="p-3 bg-card rounded-2xl border border-border text-center shrink-0 min-w-[170px]">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">{t('partnerCode', 'Your Partner Code')}</span>
+                <span className="text-lg font-mono font-black text-foreground">{currentUser?.uniqueCode || 'PAPA-9921'}</span>
+              </div>
             </div>
 
-            <div className="p-3 bg-card rounded-2xl border border-border text-center shrink-0 min-w-[170px]">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground block">{t('partnerCode', 'Your Partner Code')}</span>
-              <span className="text-lg font-mono font-black text-foreground">{currentUser?.uniqueCode || 'PAPA-9921'}</span>
-            </div>
+            <form onSubmit={handlePairSubmit} className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+              <div className="relative flex-1 w-full">
+                <input
+                  type="text"
+                  value={motherCodeInput}
+                  onChange={e => setMotherCodeInput(e.target.value.toUpperCase())}
+                  placeholder={t('enterMotherCode', "Enter Mother's Unique Code (e.g. MAMA-4819 for Priya, MAMA-6314 for Diya)")}
+                  className="w-full px-4 py-2.5 rounded-xl bg-card border border-input text-xs font-mono font-bold tracking-wider placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+              >
+                {t('connectSanctuaryBtn', 'Connect Sanctuary')}
+              </button>
+            </form>
+
+            {pairingStatus && (
+              <div className={`p-3 rounded-xl text-xs font-semibold ${
+                pairingStatus.success ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'
+              }`}>
+                {pairingStatus.text}
+              </div>
+            )}
           </div>
 
-          <form onSubmit={handlePairSubmit} className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-            <div className="relative flex-1 w-full">
-              <input
-                type="text"
-                value={motherCodeInput}
-                onChange={e => setMotherCodeInput(e.target.value.toUpperCase())}
-                placeholder={t('enterMotherCode', "Enter Mother's Unique Code (e.g. MAMA-2026)")}
-                className="w-full px-4 py-2.5 rounded-xl bg-card border border-input text-xs font-mono font-bold tracking-wider placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-accent"
-              />
+          {/* Registered Available Mothers List (Requirement 3) */}
+          <div className="p-6 bg-card rounded-3xl border border-border shadow-soft space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="font-serif font-bold text-foreground text-sm flex items-center gap-2">
+                  <Users className="w-4 h-4 text-accent" />
+                  <span>Registered Available Mothers (Eligible for 1-to-1 Pairing)</span>
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Under strict 1-to-1 pairing rules, only genuinely available expecting mothers are displayed. Paired mothers are automatically excluded from connection.
+                </p>
+              </div>
+              <span className="px-2.5 py-1 rounded-full bg-primary-soft text-primary text-[11px] font-bold shrink-0">
+                {availableMothers.filter(m => m.isAvailable).length} Available for Pairing
+              </span>
             </div>
-            <button
-              type="submit"
-              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
-            >
-              {t('connectSanctuaryBtn', 'Connect Sanctuary')}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMotherCodeInput('MAMA-2026');
-                pairPartnerWithMotherCode('MAMA-2026');
-              }}
-              className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-xs font-bold text-foreground transition-all shrink-0 cursor-pointer"
-              title="Test connection with Siri Rao"
-            >
-              {t('Quick Test', 'Quick Test')}: MAMA-2026
-            </button>
-          </form>
 
-          {pairingStatus && (
-            <div className={`p-3 rounded-xl text-xs font-semibold ${
-              pairingStatus.success ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'
-            }`}>
-              {pairingStatus.text}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {availableMothers.map(mother => {
+                const isAvailable = mother.isAvailable;
+                return (
+                  <div
+                    key={mother.id}
+                    className={`p-4 rounded-2xl border transition-all text-xs flex flex-col justify-between gap-3 ${
+                      isAvailable
+                        ? 'bg-card border-border hover:border-accent shadow-2xs'
+                        : 'bg-muted/30 border-dashed border-border opacity-70'
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-foreground text-sm">{mother.name}</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          isAvailable
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-stone-200 text-stone-700'
+                        }`}>
+                          {isAvailable ? 'Available' : 'Already Connected'}
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground text-[11px]">
+                        Week {mother.gestationalWeek} · Due {mother.estimatedDueDate}
+                      </p>
+                      <span className="font-mono text-[10px] text-muted-foreground block">
+                        Invitation Code: {mother.code}
+                      </span>
+                      {!isAvailable && mother.pairedPartnerName && (
+                        <span className="text-[10px] text-stone-500 italic block">
+                          Paired with {mother.pairedPartnerName}
+                        </span>
+                      )}
+                    </div>
+
+                    {isAvailable ? (
+                      <button
+                        onClick={() => {
+                          const res = pairPartnerWithMotherCode(mother.id);
+                          setPairingStatus({ success: res.success, text: res.message });
+                        }}
+                        className="w-full py-2 bg-accent hover:bg-accent-hover text-white rounded-xl font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-1"
+                      >
+                        <span>Connect with {mother.name.split(' ')[0]}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    ) : (
+                      <div className="py-1.5 text-center text-[11px] font-semibold text-muted-foreground bg-muted/40 rounded-xl">
+                        Not available for pairing
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -244,16 +307,24 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
               {t('Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders.', 'Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders. The mother retains granular permission control over personal clinical notes.')}
             </p>
 
-            {currentUser?.role === 'partner' && (
-              <div className="pt-1">
+            <div className="flex flex-wrap items-center gap-2.5 pt-2">
+              <button
+                onClick={() => setIsMotherSharedDashboardOpen(true)}
+                className="px-4 py-2 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>🌸</span>
+                <span>View Mother's Shared Dashboard</span>
+              </button>
+
+              {currentUser?.role === 'partner' && (
                 <button
                   onClick={handleUnlink}
-                  className="text-xs text-rose-600 hover:text-rose-700 underline font-semibold"
+                  className="px-3 py-2 rounded-xl bg-card border border-border hover:bg-rose-50 text-rose-600 text-xs font-semibold transition-colors cursor-pointer"
                 >
-                  Disconnect from this mother sanctuary
+                  Disconnect from Sanctuary
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Pairing Code Card */}

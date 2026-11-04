@@ -8,6 +8,7 @@ import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { OnboardingModal } from '@/components/modals/OnboardingModal';
 import { DesignSystemModal } from '@/components/modals/DesignSystemModal';
+import { SharedMotherDashboardModal } from '@/components/modals/SharedMotherDashboardModal';
 import { DashboardModule } from '@/components/modules/DashboardModule';
 import { PregnancyJourneyModule } from '@/components/modules/PregnancyJourneyModule';
 import { BloomAiModule } from '@/components/modules/BloomAiModule';
@@ -117,6 +118,9 @@ export default function Home() {
 
       {/* Design System Preview Modal */}
       <DesignSystemModal />
+
+      {/* Shared Mother Dashboard Modal for Partner */}
+      <SharedMotherDashboardModal />
     </div>
   );
 }
