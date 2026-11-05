@@ -36,9 +36,20 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
     sendUserMessage,
     selectedLanguage,
     setSelectedLanguage,
+    groqApiKey,
+    geminiApiKey,
+    openaiApiKey,
+    aiServerStatus,
     profile,
     t
   } = useApp();
+
+  const isAiConnected = Boolean(
+    groqApiKey ||
+    geminiApiKey ||
+    openaiApiKey ||
+    aiServerStatus?.configured
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const [inputVal, setInputVal] = useState('');
@@ -272,6 +283,12 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
                   <span className="text-[9px] px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-full font-bold">
                     Week {profile.currentGestationalWeek || 24}
                   </span>
+                  {isAiConnected && (
+                    <span className="text-[9px] px-1.5 py-0.2 bg-emerald-500 text-white rounded-full font-bold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      Live
+                    </span>
+                  )}
                 </div>
                 <p className="text-[10px] text-gray-500">24/7 Maternal Clinical Companion</p>
               </div>

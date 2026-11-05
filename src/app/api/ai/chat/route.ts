@@ -6,6 +6,8 @@ interface ChatRequestBody {
   groqApiKey?: string;
   grokApiKey?: string;
   geminiApiKey?: string;
+  openaiApiKey?: string;
+  openrouterApiKey?: string;
   history?: Array<{ sender: 'user' | 'assistant'; text: string }>;
   gestationalWeek?: number;
   userRole?: 'mother' | 'partner';
@@ -13,8 +15,6 @@ interface ChatRequestBody {
   motherName?: string;
   test?: boolean;
 }
-
-const DEFAULT_GROQ_KEY = process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
 
 // 1. Emergency Red Flags Requiring Immediate Clinical Escalation
 const EMERGENCY_PATTERNS = [
@@ -163,14 +163,21 @@ function parseAiResponse(raw: string, lang = 'en-US', week = 24): { answer: stri
   return { answer, followUps };
 }
 
-// Call Groq Cloud API (Ultra-Fast LPU Engine)
+// 1. Call Groq Cloud API (Ultra-Fast LPU Inference)
 async function callGroqAPI(
   groqKey: string,
   systemPrompt: string,
   userMessage: string,
   history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
-): Promise<{ text: string; model: string } | null> {
-  const models = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
+): Promise<{ text: string; model: string; error?: string } | null> {
+  const models = [
+    'openai/gpt-oss-120b',
+    'qwen/qwen3.8-27b',
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'openai/gpt-oss-20b',
+    'mixtral-8x7b-32768'
+  ];
 
   const messages = [
     { role: 'system', content: systemPrompt },
@@ -181,72 +188,18 @@ async function callGroqAPI(
     { role: 'user', content: userMessage }
   ];
 
+  let lastError = '';
+
   for (const model of models) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 14000);
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${groqKey.trim()}`
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          model,
-          messages,
-          temperature: 0.7,
-          max_tokens: 1500
-        })
-      });
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const data = await res.json();
-        const content = data.choices?.[0]?.message?.content;
-        if (content && content.trim().length > 10) {
-          return { text: content.trim(), model };
-        }
-      } else {
-        const errText = await res.text();
-        console.warn(`Groq (${model}) error HTTP ${res.status}:`, errText);
-      }
-    } catch (e: any) {
-      console.warn(`Groq model ${model} fetch failed:`, e?.message || e);
-    }
-  }
-  return null;
-}
-
-// Call xAI Grok API
-async function callGrokAPI(
-  grokKey: string,
-  systemPrompt: string,
-  userMessage: string,
-  history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
-): Promise<{ text: string; model: string } | null> {
-  const models = ['grok-2-latest', 'grok-beta', 'grok-2'];
-
-  const messages = [
-    { role: 'system', content: systemPrompt },
-    ...history.slice(-4).map(h => ({
-      role: h.sender === 'user' ? 'user' : 'assistant',
-      content: h.text
-    })),
-    { role: 'user', content: userMessage }
-  ];
-
-  for (const model of models) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 9000);
-
-      const res = await fetch('https://api.x.ai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${grokKey.trim()}`
         },
         signal: controller.signal,
         body: JSON.stringify({
@@ -260,26 +213,30 @@ async function callGrokAPI(
 
       if (res.ok) {
         const data = await res.json();
-        const content = data.choices?.[0]?.message?.content;
-        if (content && content.trim().length > 10) {
+        const choice = data.choices?.[0]?.message;
+        const content = choice?.content || choice?.reasoning;
+        if (content && content.trim().length > 0) {
           return { text: content.trim(), model };
         }
+      } else {
+        const errText = await res.text();
+        lastError = `Groq HTTP ${res.status}: ${errText.substring(0, 150)}`;
       }
     } catch (e: any) {
-      console.warn(`xAI Grok model ${model} fetch failed:`, e?.message || e);
+      lastError = `Groq error: ${e?.message || e}`;
     }
   }
-  return null;
+  return lastError ? { text: '', model: '', error: lastError } : null;
 }
 
-// Call Google Gemini Live API
+// 2. Call Google Gemini API
 async function callGeminiAPI(
   geminiKey: string,
   systemPrompt: string,
   userMessage: string,
   history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
-): Promise<{ text: string; model: string } | null> {
-  const models = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+): Promise<{ text: string; model: string; error?: string } | null> {
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
 
   const contents = [
     ...history.slice(-4).map(h => ({
@@ -292,10 +249,12 @@ async function callGeminiAPI(
     }
   ];
 
+  let lastError = '';
+
   for (const model of models) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.trim()}`,
@@ -317,15 +276,198 @@ async function callGeminiAPI(
       if (res.ok) {
         const data = await res.json();
         const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidateText && candidateText.trim().length > 10) {
+        if (candidateText && candidateText.trim().length > 0) {
           return { text: candidateText.trim(), model };
         }
+      } else {
+        const errText = await res.text();
+        lastError = `Gemini HTTP ${res.status}: ${errText.substring(0, 150)}`;
       }
     } catch (e: any) {
-      console.warn(`Gemini (${model}) failed:`, e?.message || e);
+      lastError = `Gemini error: ${e?.message || e}`;
     }
   }
-  return null;
+  return lastError ? { text: '', model: '', error: lastError } : null;
+}
+
+// 3. Call OpenAI API
+async function callOpenAIAPI(
+  openAiKey: string,
+  systemPrompt: string,
+  userMessage: string,
+  history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
+): Promise<{ text: string; model: string; error?: string } | null> {
+  const models = ['gpt-4o-mini', 'gpt-4o', 'gpt-3.5-turbo'];
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...history.slice(-4).map(h => ({
+      role: h.sender === 'user' ? 'user' : 'assistant',
+      content: h.text
+    })),
+    { role: 'user', content: userMessage }
+  ];
+
+  let lastError = '';
+
+  for (const model of models) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openAiKey.trim()}`
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.7,
+          max_tokens: 1200
+        })
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.choices?.[0]?.message?.content;
+        if (content && content.trim().length > 0) {
+          return { text: content.trim(), model };
+        }
+      } else {
+        const errText = await res.text();
+        lastError = `OpenAI HTTP ${res.status}: ${errText.substring(0, 150)}`;
+      }
+    } catch (e: any) {
+      lastError = `OpenAI error: ${e?.message || e}`;
+    }
+  }
+  return lastError ? { text: '', model: '', error: lastError } : null;
+}
+
+// 4. Call OpenRouter API
+async function callOpenRouterAPI(
+  openRouterKey: string,
+  systemPrompt: string,
+  userMessage: string,
+  history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
+): Promise<{ text: string; model: string; error?: string } | null> {
+  const models = [
+    'meta-llama/llama-3.3-70b-instruct',
+    'openai/gpt-4o-mini',
+    'google/gemini-2.0-flash-exp:free'
+  ];
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...history.slice(-4).map(h => ({
+      role: h.sender === 'user' ? 'user' : 'assistant',
+      content: h.text
+    })),
+    { role: 'user', content: userMessage }
+  ];
+
+  let lastError = '';
+
+  for (const model of models) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openRouterKey.trim()}`,
+          'HTTP-Referer': 'https://garbhsarthi.app',
+          'X-Title': 'GarbhSarthi Pregnancy Sanctuary'
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.7,
+          max_tokens: 1200
+        })
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.choices?.[0]?.message?.content;
+        if (content && content.trim().length > 0) {
+          return { text: content.trim(), model };
+        }
+      } else {
+        const errText = await res.text();
+        lastError = `OpenRouter HTTP ${res.status}: ${errText.substring(0, 150)}`;
+      }
+    } catch (e: any) {
+      lastError = `OpenRouter error: ${e?.message || e}`;
+    }
+  }
+  return lastError ? { text: '', model: '', error: lastError } : null;
+}
+
+// 5. Call xAI Grok API
+async function callGrokAPI(
+  grokKey: string,
+  systemPrompt: string,
+  userMessage: string,
+  history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
+): Promise<{ text: string; model: string; error?: string } | null> {
+  const models = ['grok-2-latest', 'grok-beta', 'grok-2'];
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...history.slice(-4).map(h => ({
+      role: h.sender === 'user' ? 'user' : 'assistant',
+      content: h.text
+    })),
+    { role: 'user', content: userMessage }
+  ];
+
+  let lastError = '';
+
+  for (const model of models) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const res = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${grokKey.trim()}`
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.7,
+          max_tokens: 1200
+        })
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.choices?.[0]?.message?.content;
+        if (content && content.trim().length > 0) {
+          return { text: content.trim(), model };
+        }
+      } else {
+        const errText = await res.text();
+        lastError = `xAI Grok HTTP ${res.status}: ${errText.substring(0, 150)}`;
+      }
+    } catch (e: any) {
+      lastError = `xAI Grok error: ${e?.message || e}`;
+    }
+  }
+  return lastError ? { text: '', model: '', error: lastError } : null;
 }
 
 // Topic-Tailored Clinical Fallback (if completely offline)
@@ -396,15 +538,63 @@ function generateOfflineClinicalSynthesis(
   };
 }
 
+// GET Endpoint: Check configured AI providers and connection health
+export async function GET() {
+  const hasGroq = Boolean(process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY);
+  const hasGemini = Boolean(process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+  const hasOpenAI = Boolean(process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY);
+  const hasOpenRouter = Boolean(process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY);
+  const hasGrok = Boolean(process.env.XAI_API_KEY || process.env.GROK_API_KEY);
+
+  const activeProvider = hasGroq
+    ? 'groq'
+    : hasGemini
+    ? 'gemini'
+    : hasOpenAI
+    ? 'openai'
+    : hasOpenRouter
+    ? 'openrouter'
+    : hasGrok
+    ? 'grok'
+    : null;
+
+  return NextResponse.json({
+    configured: Boolean(activeProvider),
+    serverProviders: {
+      groq: hasGroq,
+      gemini: hasGemini,
+      openai: hasOpenAI,
+      openrouter: hasOpenRouter,
+      grok: hasGrok
+    },
+    activeProvider,
+    providerDisplayName:
+      activeProvider === 'groq'
+        ? 'Groq Cloud LPU'
+        : activeProvider === 'gemini'
+        ? 'Google Gemini'
+        : activeProvider === 'openai'
+        ? 'OpenAI'
+        : activeProvider === 'openrouter'
+        ? 'OpenRouter'
+        : activeProvider === 'grok'
+        ? 'xAI Grok'
+        : null
+  });
+}
+
+// POST Endpoint: Handle Chat & Key Validation
 export async function POST(req: NextRequest) {
   try {
     const body: ChatRequestBody = await req.json();
     const {
       message = '',
-      apiKey,
-      groqApiKey: bodyGroqKey,
-      grokApiKey: bodyGrokKey,
-      geminiApiKey: bodyGeminiKey,
+      apiKey = '',
+      groqApiKey: bodyGroqKey = '',
+      geminiApiKey: bodyGeminiKey = '',
+      openaiApiKey: bodyOpenAIKey = '',
+      openrouterApiKey: bodyOpenRouterKey = '',
+      grokApiKey: bodyGrokKey = '',
       history = [],
       gestationalWeek = 24,
       userRole = 'mother',
@@ -414,93 +604,209 @@ export async function POST(req: NextRequest) {
     } = body;
 
     const cleanInput = (message || '').trim();
-    if (!cleanInput) {
+    if (!cleanInput && !test) {
       return NextResponse.json(
         { error: 'Message cannot be empty.' },
         { status: 400 }
       );
     }
 
-    // Determine Groq API Key (Highest priority: User's provided key)
-    const headerGroq = req.headers.get('x-groq-key');
+    // Auto-detect key provider if generic key is provided
+    let autoGroq = '';
+    let autoGemini = '';
+    let autoOpenAI = '';
+    let autoOpenRouter = '';
+    let autoGrok = '';
+
+    const genericKey = (apiKey || req.headers.get('x-api-key') || '').trim();
+    if (genericKey) {
+      if (genericKey.startsWith('gsk_')) autoGroq = genericKey;
+      else if (genericKey.startsWith('AIzaSy')) autoGemini = genericKey;
+      else if (genericKey.startsWith('sk-or-v1-')) autoOpenRouter = genericKey;
+      else if (genericKey.startsWith('xai-')) autoGrok = genericKey;
+      else if (genericKey.startsWith('sk-')) autoOpenAI = genericKey;
+      else autoGroq = genericKey; // Default fallback to Groq
+    }
+
+    // Effective keys combining body, headers, auto-detection, and server environment
     const effectiveGroqKey = (
       bodyGroqKey ||
-      headerGroq ||
-      (apiKey && apiKey.startsWith('gsk_') ? apiKey : '') ||
+      req.headers.get('x-groq-key') ||
+      autoGroq ||
       process.env.GROQ_API_KEY ||
       process.env.NEXT_PUBLIC_GROQ_API_KEY ||
-      DEFAULT_GROQ_KEY
-    ).trim();
-
-    // Determine xAI Grok Key
-    const headerGrok = req.headers.get('x-grok-key') || req.headers.get('x-xai-key');
-    const effectiveGrokKey = (
-      bodyGrokKey ||
-      headerGrok ||
-      (apiKey && apiKey.startsWith('xai-') ? apiKey : '') ||
-      process.env.GROK_API_KEY ||
-      process.env.XAI_API_KEY ||
       ''
     ).trim();
 
-    // Determine Gemini API Key
-    const headerGemini = req.headers.get('x-gemini-key');
     const effectiveGeminiKey = (
       bodyGeminiKey ||
-      headerGemini ||
-      (apiKey && !apiKey.startsWith('gsk_') && !apiKey.startsWith('xai-') ? apiKey : '') ||
+      req.headers.get('x-gemini-key') ||
+      autoGemini ||
       process.env.GEMINI_API_KEY ||
       process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
       ''
     ).trim();
 
-    // Key connection test mode
+    const effectiveOpenAIKey = (
+      bodyOpenAIKey ||
+      req.headers.get('x-openai-key') ||
+      autoOpenAI ||
+      process.env.OPENAI_API_KEY ||
+      process.env.NEXT_PUBLIC_OPENAI_API_KEY ||
+      ''
+    ).trim();
+
+    const effectiveOpenRouterKey = (
+      bodyOpenRouterKey ||
+      req.headers.get('x-openrouter-key') ||
+      autoOpenRouter ||
+      process.env.OPENROUTER_API_KEY ||
+      process.env.NEXT_PUBLIC_OPENROUTER_API_KEY ||
+      ''
+    ).trim();
+
+    const effectiveGrokKey = (
+      bodyGrokKey ||
+      req.headers.get('x-grok-key') ||
+      autoGrok ||
+      process.env.XAI_API_KEY ||
+      process.env.GROK_API_KEY ||
+      ''
+    ).trim();
+
+    // ---------------------------------------------------------
+    // TEST CONNECTION MODE: Verify key and return diagnostic
+    // ---------------------------------------------------------
     if (test) {
+      // 1. Test Groq
       if (effectiveGroqKey) {
         const groqTest = await callGroqAPI(
           effectiveGroqKey,
-          'You are a test responder. Reply with: OK',
+          'You are an AI connectivity tester. Respond with: OK',
           'ping'
         );
-        if (groqTest) {
+        if (groqTest && groqTest.text) {
           return NextResponse.json({
             success: true,
-            source: `groq-lpu:${groqTest.model}`,
+            provider: 'Groq Cloud LPU',
+            model: groqTest.model,
             message: `Connected successfully to Groq Cloud (${groqTest.model})!`
           });
         }
-      }
-      if (effectiveGrokKey) {
-        const grokTest = await callGrokAPI(
-          effectiveGrokKey,
-          'You are a test responder. Reply with: OK',
-          'ping'
-        );
-        if (grokTest) {
+        if (groqTest?.error) {
           return NextResponse.json({
-            success: true,
-            source: `xai-grok:${grokTest.model}`,
-            message: `Connected successfully to xAI Grok (${grokTest.model})!`
-          });
+            success: false,
+            provider: 'Groq Cloud LPU',
+            error: groqTest.error
+          }, { status: 400 });
         }
       }
+
+      // 2. Test Gemini
       if (effectiveGeminiKey) {
         const geminiTest = await callGeminiAPI(
           effectiveGeminiKey,
-          'You are a test responder. Reply with: OK',
+          'You are an AI connectivity tester. Respond with: OK',
           'ping'
         );
-        if (geminiTest) {
+        if (geminiTest && geminiTest.text) {
           return NextResponse.json({
             success: true,
-            source: `gemini-live:${geminiTest.model}`,
+            provider: 'Google Gemini',
+            model: geminiTest.model,
             message: `Connected successfully to Google Gemini (${geminiTest.model})!`
           });
         }
+        if (geminiTest?.error) {
+          return NextResponse.json({
+            success: false,
+            provider: 'Google Gemini',
+            error: geminiTest.error
+          }, { status: 400 });
+        }
       }
+
+      // 3. Test OpenAI
+      if (effectiveOpenAIKey) {
+        const openAiTest = await callOpenAIAPI(
+          effectiveOpenAIKey,
+          'You are an AI connectivity tester. Respond with: OK',
+          'ping'
+        );
+        if (openAiTest && openAiTest.text) {
+          return NextResponse.json({
+            success: true,
+            provider: 'OpenAI',
+            model: openAiTest.model,
+            message: `Connected successfully to OpenAI (${openAiTest.model})!`
+          });
+        }
+        if (openAiTest?.error) {
+          return NextResponse.json({
+            success: false,
+            provider: 'OpenAI',
+            error: openAiTest.error
+          }, { status: 400 });
+        }
+      }
+
+      // 4. Test OpenRouter
+      if (effectiveOpenRouterKey) {
+        const openRouterTest = await callOpenRouterAPI(
+          effectiveOpenRouterKey,
+          'You are an AI connectivity tester. Respond with: OK',
+          'ping'
+        );
+        if (openRouterTest && openRouterTest.text) {
+          return NextResponse.json({
+            success: true,
+            provider: 'OpenRouter',
+            model: openRouterTest.model,
+            message: `Connected successfully to OpenRouter (${openRouterTest.model})!`
+          });
+        }
+        if (openRouterTest?.error) {
+          return NextResponse.json({
+            success: false,
+            provider: 'OpenRouter',
+            error: openRouterTest.error
+          }, { status: 400 });
+        }
+      }
+
+      // 5. Test xAI Grok
+      if (effectiveGrokKey) {
+        const grokTest = await callGrokAPI(
+          effectiveGrokKey,
+          'You are an AI connectivity tester. Respond with: OK',
+          'ping'
+        );
+        if (grokTest && grokTest.text) {
+          return NextResponse.json({
+            success: true,
+            provider: 'xAI Grok',
+            model: grokTest.model,
+            message: `Connected successfully to xAI Grok (${grokTest.model})!`
+          });
+        }
+        if (grokTest?.error) {
+          return NextResponse.json({
+            success: false,
+            provider: 'xAI Grok',
+            error: grokTest.error
+          }, { status: 400 });
+        }
+      }
+
+      return NextResponse.json({
+        success: false,
+        error: 'No active AI API key was found or provided. Please enter a valid Groq, Gemini, or OpenAI API key.'
+      }, { status: 400 });
     }
 
+    // ---------------------------------------------------------
     // 1. Mandatory Obstetric Red Flag Emergency Triage
+    // ---------------------------------------------------------
     for (const emergency of EMERGENCY_PATTERNS) {
       if (emergency.regex.test(cleanInput)) {
         return NextResponse.json({
@@ -527,7 +833,9 @@ export async function POST(req: NextRequest) {
       language
     });
 
-    // 2. Primary Engine: Groq Ultra-Fast LPU API (Using User's gsk_ key)
+    // ---------------------------------------------------------
+    // 2. Primary Engine: Groq Cloud LPU
+    // ---------------------------------------------------------
     if (effectiveGroqKey) {
       const groqRes = await callGroqAPI(effectiveGroqKey, systemPrompt, cleanInput, history);
       if (groqRes && groqRes.text) {
@@ -542,22 +850,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 3. Alternative Engine: xAI Grok (if provided)
-    if (effectiveGrokKey) {
-      const grokRes = await callGrokAPI(effectiveGrokKey, systemPrompt, cleanInput, history);
-      if (grokRes && grokRes.text) {
-        const parsed = parseAiResponse(grokRes.text, language, gestationalWeek);
-        return NextResponse.json({
-          success: true,
-          isEmergencyAlert: false,
-          response: parsed.answer,
-          followUps: parsed.followUps,
-          source: `grok-live:${grokRes.model}`
-        });
-      }
-    }
-
-    // 4. Alternative Engine: Google Gemini API (if configured)
+    // ---------------------------------------------------------
+    // 3. Fallback Engine: Google Gemini
+    // ---------------------------------------------------------
     if (effectiveGeminiKey) {
       const geminiRes = await callGeminiAPI(effectiveGeminiKey, systemPrompt, cleanInput, history);
       if (geminiRes && geminiRes.text) {
@@ -572,7 +867,60 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 5. Offline Clinical Fallback (if completely disconnected from network)
+    // ---------------------------------------------------------
+    // 4. Fallback Engine: OpenAI
+    // ---------------------------------------------------------
+    if (effectiveOpenAIKey) {
+      const openAiRes = await callOpenAIAPI(effectiveOpenAIKey, systemPrompt, cleanInput, history);
+      if (openAiRes && openAiRes.text) {
+        const parsed = parseAiResponse(openAiRes.text, language, gestationalWeek);
+        return NextResponse.json({
+          success: true,
+          isEmergencyAlert: false,
+          response: parsed.answer,
+          followUps: parsed.followUps,
+          source: `openai:${openAiRes.model}`
+        });
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 5. Fallback Engine: OpenRouter
+    // ---------------------------------------------------------
+    if (effectiveOpenRouterKey) {
+      const openRouterRes = await callOpenRouterAPI(effectiveOpenRouterKey, systemPrompt, cleanInput, history);
+      if (openRouterRes && openRouterRes.text) {
+        const parsed = parseAiResponse(openRouterRes.text, language, gestationalWeek);
+        return NextResponse.json({
+          success: true,
+          isEmergencyAlert: false,
+          response: parsed.answer,
+          followUps: parsed.followUps,
+          source: `openrouter:${openRouterRes.model}`
+        });
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 6. Fallback Engine: xAI Grok
+    // ---------------------------------------------------------
+    if (effectiveGrokKey) {
+      const grokRes = await callGrokAPI(effectiveGrokKey, systemPrompt, cleanInput, history);
+      if (grokRes && grokRes.text) {
+        const parsed = parseAiResponse(grokRes.text, language, gestationalWeek);
+        return NextResponse.json({
+          success: true,
+          isEmergencyAlert: false,
+          response: parsed.answer,
+          followUps: parsed.followUps,
+          source: `grok-live:${grokRes.model}`
+        });
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 7. Topic-Tailored Clinical Fallback (Offline Mode)
+    // ---------------------------------------------------------
     const offlineFallback = generateOfflineClinicalSynthesis(
       cleanInput,
       motherName,

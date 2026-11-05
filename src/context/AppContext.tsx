@@ -163,10 +163,19 @@ interface AppContextType {
   setSelectedLanguage: (lang: string) => void;
   geminiApiKey: string;
   setGeminiApiKey: (key: string) => void;
+  openaiApiKey: string;
+  setOpenaiApiKey: (key: string) => void;
   grokApiKey: string;
   setGrokApiKey: (key: string) => void;
   groqApiKey: string;
   setGroqApiKey: (key: string) => void;
+  aiServerStatus: {
+    configured: boolean;
+    serverProviders: Record<string, boolean>;
+    activeProvider: string | null;
+    providerDisplayName: string | null;
+  };
+  refreshAiServerStatus: () => Promise<void>;
   t: (key: string, fallback?: string) => string;
   
   // Utility
@@ -673,6 +682,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const [openaiApiKey, setOpenaiApiKeyState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('bloomnest_openai_api_key') || '';
+    }
+    return '';
+  });
+
+  const setOpenaiApiKey = (key: string) => {
+    setOpenaiApiKeyState(key);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_openai_api_key', key);
+    }
+  };
+
   const [groqApiKey, setGroqApiKeyState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('bloomnest_groq_api_key');
@@ -701,6 +724,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       localStorage.setItem('bloomnest_grok_api_key', key);
     }
   };
+
+  const [aiServerStatus, setAiServerStatus] = useState<{
+    configured: boolean;
+    serverProviders: Record<string, boolean>;
+    activeProvider: string | null;
+    providerDisplayName: string | null;
+  }>({
+    configured: false,
+    serverProviders: {},
+    activeProvider: null,
+    providerDisplayName: null
+  });
+
+  const refreshAiServerStatus = async () => {
+    try {
+      const res = await fetch('/api/ai/chat');
+      if (res.ok) {
+        const data = await res.json();
+        setAiServerStatus(data);
+      }
+    } catch {
+      // offline or silent
+    }
+  };
+
+  useEffect(() => {
+    refreshAiServerStatus();
+  }, []);
 
   const [activeEmergencyModal, setActiveEmergencyModal] = useState<string | null>(null);
 
@@ -1655,15 +1706,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         headers: {
           'Content-Type': 'application/json',
           ...(groqApiKey ? { 'x-groq-key': groqApiKey } : {}),
-          ...(grokApiKey ? { 'x-grok-key': grokApiKey } : {}),
-          ...(geminiApiKey ? { 'x-gemini-key': geminiApiKey } : {})
+          ...(geminiApiKey ? { 'x-gemini-key': geminiApiKey } : {}),
+          ...(openaiApiKey ? { 'x-openai-key': openaiApiKey } : {}),
+          ...(grokApiKey ? { 'x-grok-key': grokApiKey } : {})
         },
         body: JSON.stringify({
           message: userText,
           groqApiKey,
-          grokApiKey,
           geminiApiKey,
-          apiKey: groqApiKey || grokApiKey || geminiApiKey,
+          openaiApiKey,
+          grokApiKey,
+          apiKey: groqApiKey || geminiApiKey || openaiApiKey || grokApiKey,
           history: chatMessages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
           gestationalWeek: profile.currentGestationalWeek || 24,
           userRole: currentUser?.role || profile.role || 'mother',
@@ -1952,10 +2005,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSelectedLanguage,
         geminiApiKey,
         setGeminiApiKey,
+        openaiApiKey,
+        setOpenaiApiKey,
         grokApiKey,
         setGrokApiKey,
         groqApiKey,
         setGroqApiKey,
+        aiServerStatus,
+        refreshAiServerStatus,
         t,
         resetToDemoData,
         exportAllDataJson,
