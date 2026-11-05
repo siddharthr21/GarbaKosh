@@ -105,6 +105,17 @@ export const BloomAiModule: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, isSending]);
 
+  // Pre-load speech synthesis voices for natural regional multi-language playback
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const loadVoices = () => {
+        window.speechSynthesis.getVoices();
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
   // Speech Recognition (Speech-to-Text) Listener
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -253,9 +264,13 @@ export const BloomAiModule: React.FC = () => {
     utterance.lang = selectedLanguage;
     utterance.rate = 0.95;
 
-    // Pick best matching voice if available
+    // Pick best matching voice if available (match full locale or language prefix)
     const voices = window.speechSynthesis.getVoices();
-    const matchingVoice = voices.find(v => v.lang.startsWith(selectedLanguage.split('-')[0]));
+    const targetLang = selectedLanguage.toLowerCase().replace('_', '-');
+    const langPrefix = targetLang.split('-')[0];
+    const matchingVoice =
+      voices.find(v => v.lang.toLowerCase().replace('_', '-') === targetLang) ||
+      voices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
     if (matchingVoice) {
       utterance.voice = matchingVoice;
     }
@@ -353,7 +368,14 @@ export const BloomAiModule: React.FC = () => {
       window.location.href = `tel:${profile.doctorInfo.emergencyContact.split(' ')[0]}`;
       return;
     }
+    if (isListening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {}
+      setIsListening(false);
+    }
     setInputVal('');
+    setLiveTranscript('');
     setIsSending(true);
     try {
       await sendUserMessage(question, selectedLanguage);
@@ -585,7 +607,7 @@ export const BloomAiModule: React.FC = () => {
           {filteredPrompts.slice(0, 4).map((p, idx) => (
             <button
               key={idx}
-              onClick={() => setInputVal(p.question)}
+              onClick={() => handleFollowUpClick(p.question)}
               className="text-left text-xs bg-white hover:bg-blush-50 text-gray-700 hover:text-blush-700 px-3 py-2 rounded-2xl border border-gray-200 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />

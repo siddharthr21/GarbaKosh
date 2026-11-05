@@ -58,6 +58,17 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
     }
   }, [chatMessages, isOpen, isSending]);
 
+  // Pre-load speech synthesis voices for natural regional multi-language playback
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const loadVoices = () => {
+        window.speechSynthesis.getVoices();
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
   // Speech Recognition
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -128,7 +139,23 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
     utterance.lang = selectedLanguage;
     utterance.rate = 0.95;
 
+    // Pick best matching voice if available (match full locale or language prefix)
+    const voices = window.speechSynthesis.getVoices();
+    const targetLang = selectedLanguage.toLowerCase().replace('_', '-');
+    const langPrefix = targetLang.split('-')[0];
+    const matchingVoice =
+      voices.find(v => v.lang.toLowerCase().replace('_', '-') === targetLang) ||
+      voices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
+    }
+
     utterance.onend = () => {
+      setIsSpeaking(false);
+      setSpeakingMessageId(null);
+    };
+
+    utterance.onerror = () => {
       setIsSpeaking(false);
       setSpeakingMessageId(null);
     };
@@ -380,15 +407,26 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
 
           {/* Quick Prompts Bar */}
           <div className="px-3 py-1.5 bg-white border-t border-gray-100 flex items-center gap-1.5 overflow-x-auto text-[11px]">
-            {['Week 24 guidance', 'Relieve back pain', 'Safe kicks count', 'Hospital bag'].map((q, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleFollowUpClick(q)}
-                className="px-2 py-0.5 rounded-lg bg-gray-100 hover:bg-blush-50 text-gray-600 hover:text-primary shrink-0 transition-colors cursor-pointer"
-              >
-                {q}
-              </button>
-            ))}
+            {(() => {
+              const quickPromptsByLang: Record<string, string[]> = {
+                'kn-IN': ['ಆಹಾರ ಕ್ರಮ', 'ಬೆನ್ನು ನೋವು ಪರಿಹಾರ', 'ಮಗುವಿನ ಚಲನೆ', 'ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್'],
+                'hi-IN': ['आहार सलाह', 'पीठ दर्द में आराम', 'शिशु की हलचल', 'अस्पताल बैग'],
+                'ta-IN': ['சத்தான உணவு', 'முதுகு வலி தீர்வு', 'குழந்தை அசைவு', 'மருத்துவமனை பை'],
+                'te-IN': ['పోషకాహారం', 'నడుము నొప్పి నివారణ', 'శిశువు కదలికలు', 'హాస్పిటల్ బ్యాగ్'],
+                'ml-IN': ['പോഷകാഹാരം', 'നടുവേദന പരിഹാരം', 'കുഞ്ഞിന്റെ ചലനം', 'ഹോസ്പിറ്റൽ ബാഗ്'],
+                'en-US': ['Week 24 guidance', 'Relieve back pain', 'Safe kicks count', 'Hospital bag']
+              };
+              const prompts = quickPromptsByLang[selectedLanguage] || quickPromptsByLang['en-US'];
+              return prompts.map((q, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleFollowUpClick(q)}
+                  className="px-2 py-0.5 rounded-lg bg-gray-100 hover:bg-blush-50 text-gray-600 hover:text-primary shrink-0 transition-colors cursor-pointer"
+                >
+                  {q}
+                </button>
+              ));
+            })()}
           </div>
 
           {/* Input Form */}

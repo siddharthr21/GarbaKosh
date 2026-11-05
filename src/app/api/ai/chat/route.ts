@@ -13,31 +13,31 @@ interface ChatRequestBody {
 // 1. Emergency Red Flags Requiring Immediate Clinical Escalation
 const EMERGENCY_PATTERNS = [
   {
-    regex: /(heavy bleeding|bleed|soaked pad|clots|hemorrhage|haemorrhage|blood in urine)/i,
+    regex: /(heavy bleeding|bleed|soaked pad|clots|hemorrhage|haemorrhage|blood in urine|ರಕ್ತಸ್ರಾವ|ರಕ್ತ|खून|रक्तस्राव|இரத்தப்போக்கு|రక్తస్రావం|രക്തസ്രാവം)/i,
     title: '🚨 CRITICAL MEDICAL ALERT: IMMEDIATE ATTENTION FOR BLEEDING',
     warning: 'Heavy or persistent vaginal bleeding (soaking through a pad in under an hour, or passing large clots) can indicate placental abruption, placenta previa, or an obstetric emergency.',
     action: 'Proceed immediately to your nearest hospital maternity triage or call emergency medical services (112 / 108 / 911) right away. Do not insert anything vaginally.'
   },
   {
-    regex: /(severe headache|blurred vision|flashing spots|flashing lights|sudden swelling face|high bp|preeclampsia|epigastric pain)/i,
+    regex: /(severe headache|blurred vision|flashing spots|flashing lights|sudden swelling face|high bp|preeclampsia|epigastric pain|ತೀವ್ರ ತಲೆನೋವು|कंधे या पेट में तेज दर्द|कपकपी|తీవ్రమైన తలనొప్పి|കഠിനമായ തലവേദന)/i,
     title: '⚠️ CRITICAL: POSSIBLE PREECLAMPSIA SIGNS',
     warning: 'Persistent severe headache accompanied by vision changes (flashing lights, blurriness) or sudden facial/hand swelling can indicate dangerous blood pressure elevation.',
     action: 'Check your blood pressure immediately and contact your maternity emergency triage right away for prompt clinical evaluation.'
   },
   {
-    regex: /(not moving|no kicks|stopped moving|reduced movement|cannot feel baby|no fetal movement)/i,
+    regex: /(not moving|no kicks|stopped moving|reduced movement|cannot feel baby|no fetal movement|ಮಗು ಚಲಿಸುತ್ತಿಲ್ಲ|ಕಿಕ್ ಇಲ್ಲ|हलचल बंद|किक नहीं|அசைவு இல்லை|కదలికలు లేవు|കുഞ്ഞ് അനങ്ങുന്നില്ല)/i,
     title: '🚨 URGENT: FETAL MOVEMENT EVALUATION',
     warning: 'At 24+ weeks, a significant reduction or cessation of your baby’s active kicks warrants prompt clinical fetal monitoring via CTG or ultrasound.',
     action: 'Drink a tall glass of ice-cold water, lie on your left side in a quiet room for 30 minutes. If 10 movements are not felt within 2 hours, proceed to maternity triage immediately.'
   },
   {
-    regex: /(water broke|leaking fluid|gush of water|broken water|green fluid|brown fluid|meconium)/i,
+    regex: /(water broke|leaking fluid|gush of water|broken water|green fluid|brown fluid|meconium|ಉದೆ ನೀರು|पानी की थैली|பனிக்குடம்|ఉమ్మనీరు|പനിനീർ)/i,
     title: '⚠️ NOTICE: POSSIBLE RUPTURE OF MEMBRANES (WATER BREAKING)',
     warning: 'Leaking amniotic fluid requires sterile clinical assessment to prevent intrauterine infection.',
     action: 'Note fluid color and odor, use a clean maternity pad, and contact your delivery hospital triage immediately. If fluid is green or dark brown, proceed to the hospital without delay.'
   },
   {
-    regex: /(harm myself|kill myself|suicide|end it all|hurt baby|cannot do this anymore|hear voices)/i,
+    regex: /(harm myself|kill myself|suicide|end it all|hurt baby|cannot do this anymore|hear voices|ಆತ್ಮಹತ್ಯೆ|खुदकुशी|தற்கொலை|ఆత్మహత్య|ആത്മഹത്യ)/i,
     title: '❤️ WE ARE HERE FOR YOU - CRISIS SUPPORT',
     warning: 'Please know that you are not alone. Perinatal emotional distress and postpartum depression are treatable medical conditions.',
     action: 'Please call or text the Suicide & Crisis Lifeline (988), the Tele-MANAS National Mental Health Helpline (14416 in India), or emergency services (112 / 108) right away.'
@@ -394,7 +394,7 @@ const KNOWLEDGE_BASE: Record<string, Record<string, TopicContent>> = {
     },
     'te-IN': {
       answer: `గర్భధారణలో ఛాతీలో మంట (ఎసిడిటీ) రావడం సహజం.\n\n✨ **ఉపశమన చిట్కాలు:**\n• భోజనం చేసిన వెంటనే పడుకోవద్దు; కాసేపు కూర్చోండి లేదా నడవండి.\n• చల్లని పాలు లేదా మజ్జిగ తాగడం వల్ల వెంటనే ఉపశమనం లభిస్తుంది.\n• కారం, నూనె పదార్థాలు తగ్గించండి.\n• రాత్రి పడుకునేటప్పుడు తల కొద్దిగా ఎత్తుగా ఉండేలా దిండు పెట్టుకోండి.`,
-      followUps: ['ఎసిడిటీ నివారణ చిట్కాలు', 'సురಕ್ಷితమైన పానీయాలు', 'డాక్టర్ సలహాలు']
+      followUps: ['ఎసిడిటీ నివారణ చిట్కాలు', 'సురక్షితమైన పానీయాలు', 'డాక్టర్ సలహాలు']
     },
     'ml-IN': {
       answer: `ഗർഭകാലത്തെ നെഞ്ചെരിച്ചിൽ മാറ്റാൻ ലളിതമായ ചില വഴികൾ:\n\n✨ **പ്രധാന നിർദ്ദേശങ്ങൾ:**\n• ഭക്ഷണശേഷം ഉടൻ കിടക്കരുത്; അല്പസമയം ഇരിക്കുകയോ നടക്കുകയോ ചെയ്യുക.\n• തണുത്ത പാലോ സംഭാരമോ കുടിക്കുന്നത് നെഞ്ചെരിച്ചിൽ ഉടൻ കുറയ്ക്കും.\n• എരിവും പുളിയും എണ്ണയും അധികമുള്ള ഭക്ഷണങ്ങൾ ഒഴിവാക്കുക.\n• ഉറങ്ങുമ്പോൾ തല അല്പം ഉയർത്തി വയ്ക്കുക.`,
@@ -484,7 +484,7 @@ const KNOWLEDGE_BASE: Record<string, Record<string, TopicContent>> = {
   }
 };
 
-// 3. Fallback Context Generator for Any Query Outside Standard Topics
+// 3. Multilingual Clinical Synthesis for ALL 6 Supported Languages
 function generateClinicalSynthesis(
   userQuery: string,
   motherName: string,
@@ -494,17 +494,23 @@ function generateClinicalSynthesis(
 ): { answer: string; followUps: string[] } {
   const lower = userQuery.toLowerCase();
 
-  // Detect specific clinical sub-intents
-  const isMedicationQuery = /(medicine|tablet|pill|paracetamol|dolo|antibiotic|safe drug|headache pill)/i.test(lower);
-  const isDischargeQuery = /(discharge|white discharge|leukorrhea|leak|itch|smell|yeast)/i.test(lower);
-  const isPartnerQuery = /(partner|husband|dad|father|role|support|help her)/i.test(lower);
-  const isBabyDevelopment = /(size|weight|developing|hearing|lung|brain|eyes|milestone|week)/i.test(lower);
+  const isMedicationQuery = /(medicine|tablet|pill|paracetamol|dolo|antibiotic|safe drug|headache|ಮಾತ್ರೆ|औषधि|दवा|மருந்து|మందులు|മരുന്ന്)/i.test(lower);
+  const isDischargeQuery = /(discharge|white discharge|leukorrhea|leak|itch|smell|yeast|ಡಿಸ್ಚಾರ್ಜ್|सफेद पानी|வெள்ளைப்படுதல்|డిశ్చార్జ్|വെള്ളപോക്ക്)/i.test(lower);
+  const isPartnerQuery = /(partner|husband|dad|father|role|support|help her|ಗಂಡ|ಪತಿ|पति|கணவர்|భర్త|ഭർത്താവ്)/i.test(lower);
+  const isBabyDevelopment = /(size|weight|developing|hearing|lung|brain|eyes|milestone|week|ತೂಕ|ಬೆಳವಣಿಗೆ|वजन|विकास|வளர்ச்சி|ఎదుగుదల|വളർച്ച)/i.test(lower);
 
+  // Kannada Synthesis
   if (language === 'kn-IN') {
     if (isMedicationQuery) {
       return {
         answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಯಾವುದೇ ಮಾತ್ರೆ ಅಥವಾ ಔಷಧಿಯನ್ನು ವೈದ್ಯರ ಸಲಹೆಯಿಲ್ಲದೆ ತೆಗೆದುಕೊಳ್ಳಬಾರದು.\n\n✨ **ಮುಖ್ಯ ವೈದ್ಯಕೀಯ ಮಾರ್ಗದರ್ಶಿ:**\n• **ಜ್ವರ ಅಥವಾ ತಲೆನೋವಿಗೆ:** ಪ್ಯಾರಸಿಟಮಾಲ್ (Paracetamol) ಸಾಮಾನ್ಯವಾಗಿ ಸುರಕ್ಷಿತವೆಂದು ಪರಿಗಣಿಸಲಾಗುತ್ತದೆ, ಆದರೆ ನಿಖರವಾದ ಡೋಸ್ ತಿಳಿಯಲು ನಿಮ್ಮ ಸ್ತ್ರೀರೋಗ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.\n• **ತಪ್ಪಿಸಬೇಕಾದ ಮಾತ್ರೆಗಳು:** ಐಬುಪ್ರೊಫೇನ್ (Ibuprofen), ಆಸ್ಪಿರಿನ್ ಮತ್ತು ನೋವುನಿವಾರಕ ಮಾತ್ರೆಗಳನ್ನು ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ತೆಗೆದುಕೊಳ್ಳಬಾರದು.\n• ಯಾವುದೇ ಆಂಟಿಬಯೋಟಿಕ್ ಅಥವಾ ಶೀತದ ಸಿರಪ್ ತೆಗೆದುಕೊಳ್ಳುವ ಮುನ್ನ ವೈದ್ಯರ ಅನುಮತಿ ಕಡ್ಡಾಯ.`,
         followUps: ['ತಲೆನೋವಿಗೆ ಸುರಕ್ಷಿತ ಮನೆಮದ್ದು', 'ಗರ್ಭಿಣಿಯರ ವಿಟಮಿನ್ ಮಾತ್ರೆಗಳು', 'ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ']
+      };
+    }
+    if (isPartnerQuery || userRole === 'partner') {
+      return {
+        answer: `ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಸಂಗಾತಿಯ ಬೆಂಬಲ ತಾಯಿ ಮತ್ತು ಮಗುವಿನ ಆರೋಗ್ಯಕ್ಕೆ ಅತ್ಯಮೂಲ್ಯ! 🌟\n\n✨ **ಸಂಗಾತಿಯ ಮುಖ್ಯ ಜವಾಬ್ದಾರಿಗಳು:**\n• ಪ್ರತಿದಿನ ಪತ್ನಿಗೆ ಕಾಲು ಮತ್ತು ಬೆನ್ನಿನ ಲಘು ಮಸಾಜ್ ಮಾಡಿ ವಿಶ್ರಾಂತಿ ನೀಡಿ.\n• ಸಮಯಕ್ಕೆ ಸರಿಯಾಗಿ ಪೌಷ್ಟಿಕ ಆಹಾರ ಮತ್ತು ನೀರು ಕುಡಿಯಲು ನೆರವಾಗಿ.\n• ಮಗುವಿನೊಂದಿಗೆ ಪ್ರತಿದಿನ ಸಂಜೆ ೧೦ ನಿಮಿಷ ಮಾತನಾಡಿ (ಗರ್ಭ ಸಂಸ್ಕಾರ).\n• ಹೆರಿಗೆ ದಿನಾಂಕ ಹಾಗೂ ಆಸ್ಪತ್ರೆ ಚೀಲದ ಸಿದ್ಧತೆಯಲ್ಲಿ ಜೊತೆಯಾಗಿರಿ.`,
+        followUps: ['ಗರ್ಭ ಸಂಸ್ಕಾರದಲ್ಲಿ ಪತಿಯ ಪಾತ್ರ', 'ಆಸ್ಪತ್ರೆ ಚೀಲದ ಪಟ್ಟಿ', 'ಹೆರಿಗೆ ಸಿದ್ಧತೆ']
       };
     }
     return {
@@ -513,6 +519,7 @@ function generateClinicalSynthesis(
     };
   }
 
+  // Hindi Synthesis
   if (language === 'hi-IN') {
     if (isMedicationQuery) {
       return {
@@ -520,9 +527,39 @@ function generateClinicalSynthesis(
         followUps: ['सिरदर्द के घरेलू उपाय', 'गर्भावस्था के जरूरी सप्लीमेंट्स', 'डॉक्टर से परामर्श']
       };
     }
+    if (isPartnerQuery || userRole === 'partner') {
+      return {
+        answer: `गर्भावस्था में पार्टनर का भावनात्मक और शारीरिक सहयोग मां और शिशु दोनों के लिए सबसे बड़ा संबल होता है! 🌟\n\n✨ **पार्टनर के लिए महत्वपूर्ण सुझाव:**\n• दिनभर की थकान के बाद मां के पैरों और पीठ की हल्की मालिश करें।\n• पानी की बोतल हमेशा भरी रखें और समय पर फल व सूखे मेवे दें।\n• पेट पर हाथ रखकर शिशु से बात करें (गर्भ संस्कार संवाद)।\n• 5-1-1 प्रसव नियम को समझें और हॉस्पिटल बैग तैयार रखें।`,
+        followUps: ['गर्भ संस्कार में पिता की भूमिका', 'डिलीवरी की तैयारी', 'पार्टनर चेकलिस्ट']
+      };
+    }
     return {
       answer: `"${userQuery}" के बारे में पूछने के लिए धन्यवाद, ${motherName}! 🌸\n\nगर्भावस्था के **${gestationalWeek}वें हफ्ते** में आपका शरीर शिशु के विकास के अनुरूप कई बदलावों को संभाल रहा है।\n\n✨ **महत्वपूर्ण चिकित्सीय सलाह:**\n• **देखभाल:** रोजाना 8-10 गिलास पानी पिएं, हल्का पौष्टिक आहार लें और बाईं करवट लेकर सोने की आदत बनाएं।\n• **सकारात्मकता:** प्रतिदिन थोड़ा टहलें, शांत संगीत सुनें और पर्याप्त आराम करें।\n• **सावधानी:** किसी भी असामान्य दर्द, ब्लीडिंग या तेज सिरदर्द में तुरंत डॉक्टर से संपर्क करें।\n\nक्या आप इस बारे में और विस्तार से जानना चाहती हैं?`,
       followUps: ['इस हफ्ते शिशु का विकास', 'स्वस्थ आहार चार्ट', 'गर्भावस्था में सुरक्षित योग']
+    };
+  }
+
+  // Tamil Synthesis
+  if (language === 'ta-IN') {
+    return {
+      answer: `வணக்கம் ${motherName}! 🌸 உங்கள் கேள்விக்கு "${userQuery}" நன்றி.\n\nகர்ப்பத்தின் **${gestationalWeek}-வது வாரத்தில்** உங்கள் உடல் மற்றும் குழந்தை ஆரோக்கியமாக வளர்ந்து வருகிறது.\n\n✨ **மருத்துவ ஆலோசனைகள்:**\n• **உடல் நலம்:** தினமும் போதுமான தண்ணீர் மற்றும் இளநீர் அருந்தி, இடது பக்கமாக படுத்து உறங்குங்கள்.\n• **சத்தான உணவு:** கீரைகள், ராகி, பருப்பு வகைகள் மற்றும் பழங்களை உணவில் சேர்த்துக் கொள்ளுங்கள்.\n• **மருத்துவர் ஆலோசனை:** ஏதேனும் அசௌகரியம் அல்லது கடுமையான வலி ஏற்பட்டால் உங்கள் மருத்துவரை அணுகவும்.\n\nமேலும் தகவல்கள் வேண்டுமா?`,
+      followUps: ['இந்த வார குழந்தையின் வளர்ச்சி', 'கர்ப்பகால சத்தான உணவுகள்', 'எளிய யோகாசனங்கள்']
+    };
+  }
+
+  // Telugu Synthesis
+  if (language === 'te-IN') {
+    return {
+      answer: `నమస్కారం ${motherName}! 🌸 మీ ప్రశ్న "${userQuery}" కు ధన్యవాదాలు.\n\nగర్భధారణ **${gestationalWeek}వ వారంలో** శిశువు ఎదుగుదల వేగంగా జరుగుతోంది.\n\n✨ **ఆరోగ్య సూచనలు:**\n• **జాగ్రత్తలు:** పుష్కలంగా నీరు తాగండి మరియు ఎడమ వైపు తిరిగి విశ్రాంతి తీసుకోండి.\n• **ఆహారం:** పాలు, గుడ్లు, ఆకుకూరలు మరియు రాగులు ఎక్కువగా తీసుకోండి.\n• **వైద్య సలహా:** నిరంతర నొప్పి లేదా రక్తస్రావం ఉంటే వెంటనే డాక్టర్‌ను సంప్రదించండి.\n\nమరిన్ని వివరాలు కావాలా?`,
+      followUps: ['ఈ వారం శిశువు ఎదుగుదల', 'గర్భిణీలకు మంచి ఆహారం', 'సుఖ ప్రసవానికి చిట్కాలు']
+    };
+  }
+
+  // Malayalam Synthesis
+  if (language === 'ml-IN') {
+    return {
+      answer: `നമസ്കാരം ${motherName}! 🌸 നിങ്ങളുടെ ചോദ്യത്തിന് "${userQuery}" നന്ദി.\n\nഗർഭത്തിന്റെ **${gestationalWeek}-ാം ആഴ്ചയിൽ** കുഞ്ഞിന്റെ വളർച്ച ആരോഗ്യകരമായി പുരോഗമിക്കുന്നു.\n\n✨ **പ്രധാന നിർദ്ദേശങ്ങൾ:**\n• **ആരോഗ്യം:** ധാരാളം വെള്ളം കുടിക്കുകയും ഇടതുവശം ചരിഞ്ഞു കിടന്നു വിശ്രമിക്കുകയും ചെയ്യുക.\n• **ഭക്ഷണക്രമം:** ഇലക്കറികൾ, പാൽ, പഴങ്ങൾ, മുട്ട എന്നിവ ഭക്ഷണത്തിൽ ഉൾപ്പെടുത്തുക.\n• **ഡോക്ടറുടെ സഹായം:** അസാധാരണമായ എന്തെങ്കിലും ലക്ഷണങ്ങൾ കണ്ടാൽ ഉടൻ ഡോക്ടറെ കാണുക.\n\nകൂടുതൽ വിവരങ്ങൾ വേണമോ?`,
+      followUps: ['ഈ ആഴ്ചയിലെ കുഞ്ഞിന്റെ വളർച്ച', 'ഗർഭകാല പോഷകാഹാരങ്ങൾ', 'സുഖപ്രസവത്തിനുള്ള വഴികൾ']
     };
   }
 
@@ -586,7 +623,7 @@ export async function POST(req: NextRequest) {
 
     // 1. Red Flag Medical Emergency Check (Top Priority Triage)
     for (const flag of EMERGENCY_PATTERNS) {
-      if (flag.regex.test(lower)) {
+      if (flag.regex.test(cleanInput)) {
         return NextResponse.json({
           success: true,
           isEmergencyAlert: true,
@@ -636,11 +673,15 @@ Always reply naturally, directly, and comprehensively to the exact question aske
         const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
         for (const model of models) {
           try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
+
             const geminiRes = await fetch(
               `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`,
               {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({
                   contents,
                   generationConfig: {
@@ -650,6 +691,7 @@ Always reply naturally, directly, and comprehensively to the exact question aske
                 })
               }
             );
+            clearTimeout(timeoutId);
 
             if (geminiRes.ok) {
               const geminiData = await geminiRes.json();
@@ -673,78 +715,47 @@ Always reply naturally, directly, and comprehensively to the exact question aske
           }
         }
       } catch (geminiError) {
-        console.warn('Gemini API call failed, attempting fallback pipeline:', geminiError);
+        console.warn('Gemini API call failed, attempting clinical engine:', geminiError);
       }
     }
 
-    // 3. Free Generative AI Fallback Pipeline (Pollinations API)
-    try {
-      const freePrompt = `You are Bloom AI, an obstetric and pregnancy clinical assistant. The user is ${motherName} at Week ${gestationalWeek} of pregnancy. Answer the following question in ${language} with clinically accurate, empathetic, and culturally conscious advice using bullet points:\n\n"${cleanInput}"`;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5500);
-
-      const pollRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(freePrompt)}?model=openai&seed=42`, {
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-
-      if (pollRes.ok) {
-        const text = await pollRes.text();
-        if (text && text.trim().length > 30 && !text.includes('Rate limit') && !text.includes('429 Too Many Requests')) {
-          return NextResponse.json({
-            success: true,
-            isEmergencyAlert: false,
-            response: text.trim(),
-            followUps: [
-              `Week ${gestationalWeek} development tips`,
-              'Safe prenatal nutrition guide',
-              'Hospital bag checklist'
-            ],
-            source: 'generative-ai-free'
-          });
-        }
-      }
-    } catch (pollErr) {
-      // Free endpoint timed out or offline, proceed to clinical engine
-    }
-
-    // 4. Robust Multilingual Clinical Knowledge Engine
+    // 3. Fast & Comprehensive Multilingual Clinical Knowledge Engine
     const langKey = (['en-US', 'kn-IN', 'hi-IN', 'ta-IN', 'te-IN', 'ml-IN'].includes(language) ? language : 'en-US');
 
-    // Categorize user query across all 21 domains
+    // Categorize user query across all 21 domains with multilingual keyword support
     let topicKey: string | null = null;
 
-    if (/^(hi|hello|hey|namaste|vanakkam|namaskara|namaskaram|who are you|help|start|good morning|good evening)/i.test(lower)) {
+    if (/^(hi|hello|hey|namaste|vanakkam|namaskara|namaskaram|who are you|help|start|good morning|good evening|ನಮಸ್ಕಾರ|ಹಲೋ|नमस्ते|வணக்கம்|నమస్కారం|ഹലോ)/i.test(cleanInput)) {
       topicKey = 'greeting';
-    } else if (/(food|eat|diet|nutrition|iron|calcium|ragi|papaya|pineapple|protein|vitamin|caffeine|tea|coffee|kesar|saffron|dry fruit|almond|walnut|curd|paneer|what should i eat)/i.test(lower)) {
+    } else if (/(food|eat|diet|nutrition|iron|calcium|ragi|papaya|pineapple|protein|vitamin|caffeine|tea|coffee|kesar|saffron|dry fruit|almond|walnut|curd|paneer|what should i eat|ಆಹಾರ|ಊಟ|ತಿನ್ನ|ರಾಗಿ|ಪಪ್ಪಾಯಿ|ಕೇಸರಿ|खाना|आहार|डाइट|पपीता|केसर|उबले|दूध|உணவு|சாப்பாடு|ராகி|பழம்|ఆహారం|భోజనం|రాగులు|పండ్లు|ഭക്ഷണം|ആഹാരം|റാഗി)/i.test(cleanInput)) {
       topicKey = 'nutrition';
-    } else if (/(nausea|vomit|morning sickness|throw up|sick|sour taste|gagging|hyperemesis)/i.test(lower)) {
+    } else if (/(nausea|vomit|morning sickness|throw up|sick|sour taste|gagging|hyperemesis|ವಾಂತಿ|ವಾಕರಿಕೆ|ಉಬ್ಬರ|उल्टी|जी मिचलाना|मतली|चक्कर|வாந்தி|குமட்டல்|மயக்கம்|వాంతులు|వికారం|కడుపులో తిప్పడం|ഛർദ്ദി|ഓക്കാനം)/i.test(cleanInput)) {
       topicKey = 'nausea';
-    } else if (/(kick|movement|flutter|active baby|counting|quickening|baby moving|kicks)/i.test(lower)) {
+    } else if (/(kick|movement|flutter|active baby|counting|quickening|baby moving|kicks|ಕಿಕ್|ಮಗುವಿನ ಚಲನೆ|ಒದೆಯ|किक|हलचल|शिशु की किक|கிக்|அசைவு|உதைப்பு|కిక్స్|కదలికలు|బిడ్డ కదలడం|ചലനം|കുഞ്ഞിന്റെ ചലനം)/i.test(cleanInput)) {
       topicKey = 'kicks';
-    } else if (/(labor|labour|contraction|5-1-1|511|water break|dilat|delivery|birth plan)/i.test(lower)) {
+    } else if (/(labor|labour|contraction|5-1-1|511|water break|dilat|delivery|birth plan|ಹೆರಿಗೆ|ಹೆರಿಗೆ ನೋವು|ಕಾನ್ಪು|ಪ್ರಸವ|लेबर|प्रसव|प्रसव पीड़ा|பிரசவம்|பிரசவ வலி|కాన్పు నొప్పులు|డెలివరీ|പ്രസവം|പ്രസവവേദന)/i.test(cleanInput)) {
       topicKey = 'labor';
-    } else if (/(hospital bag|pack|bag|what to bring|checklist|nursing nightgown)/i.test(lower)) {
+    } else if (/(hospital bag|pack|bag|what to bring|checklist|nursing nightgown|ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್|ಆಸ್ಪತ್ರೆ ಚೀಲ|हॉस्पिटल बैग|अस्पताल का बैग|மருத்துவமனை பை|ஹாస్పిటల్ బ్యాగ్|ഹോസ്പിറ്റൽ ബാഗ്)/i.test(cleanInput)) {
       topicKey = 'hospitalbag';
-    } else if (/(breastfeed|latch|colostrum|breast milk|nursing baby|sore nipple)/i.test(lower)) {
+    } else if (/(breastfeed|latch|colostrum|breast milk|nursing baby|sore nipple|ಎದೆಹಾಲು|ಹಾಲುಣಿಸು|ಮೊಲೆಹಾಲು|स्तनपान|मां का दूध|पहला दूध|தாய்ப்பால்|பால் கொடுத்தல்|తల్లిపాలు|పాలివ్వడం|മുലപ്പാൽ|മുലയൂട്ടൽ)/i.test(cleanInput)) {
       topicKey = 'breastfeeding';
-    } else if (/(back pain|backache|spine|pelvic pain|pgp|sciatica|back hurts|lower back)/i.test(lower)) {
+    } else if (/(back pain|backache|spine|pelvic pain|pgp|sciatica|back hurts|lower back|ಬೆನ್ನುನೋವು|ಸೊಂಟ ನೋವು|ಕೆಳಬೆನ್ನು|पीठ दर्द|कमर दर्द|रीढ़|முதுகுவலி|இடுப்பு வலி|నడుము నొప్పి|వీపు నొప్పి|നടുവേദന|ഇടുപ്പുവേദന)/i.test(cleanInput)) {
       topicKey = 'backpain';
-    } else if (/(sleep|insomnia|tired|pillow|sleeping position|left side|sleeping on back|cannot sleep)/i.test(lower)) {
+    } else if (/(sleep|insomnia|tired|pillow|sleeping position|left side|sleeping on back|cannot sleep|ನಿದ್ರೆ|ನಿದ್ದೆ|ಮಲಗು|ದಿಂಬು|नींद|सोना|बाईं करवट|तकिया|தூக்கம்|தூங்கும் நிலை|തലையணை|నిద్ర|పడుకోవడం|దిండు|ഉറക്കം|കിടക്കുന്ന രീതി)/i.test(cleanInput)) {
       topicKey = 'sleep';
-    } else if (/(scan|ultrasound|anomaly|tiffa|sonography|doppler|afi|fluid level|nt scan)/i.test(lower)) {
+    } else if (/(scan|ultrasound|anomaly|tiffa|sonography|doppler|afi|fluid level|nt scan|ಸ್ಕ್ಯಾನ್|ಅಲ್ಟ್ರಾಸೌಂಡ್|ಟಿಫಾ|स्कैन|अल्ट्रासाउंड|सोनोग्राफी|ஸ்கேன்|అల్ట్రాసౌండ్ స్కాన్|സ്കാനിംഗ്)/i.test(cleanInput)) {
       topicKey = 'scans';
-    } else if (/(garbh sanskar|sanskar|mantra|music|raga|spiritual|meditation|pranayama|bonding|baby talk)/i.test(lower)) {
+    } else if (/(garbh sanskar|sanskar|mantra|music|raga|spiritual|meditation|pranayama|bonding|baby talk|ಗರ್ಭ ಸಂಸ್ಕಾರ|ಸಂಗೀತ|ಧ್ಯಾನ|ರಾಗ|गर्भ संस्कार|संगीत|मंत्र|राग|ध्यान|கர்ப்ப சம்ஸ்காரம்|இசை|గర్భ సంస్కార|సంగీతం|ഗർഭ സംസ്കാരം)/i.test(cleanInput)) {
       topicKey = 'garbhsanskar';
-    } else if (/(sugar|diabetes|gdm|glucose|ogtt|sweet|insulin|hba1c)/i.test(lower)) {
+    } else if (/(sugar|diabetes|gdm|glucose|ogtt|sweet|insulin|hba1c|ಸಕ್ಕರೆ|ಮಧುಮೇಹ|शुगर|डायबिटीज|मधुमेह|சர்க்கரை நோய்|షుగర్ వ్యాధి|പ്രമേഹം)/i.test(cleanInput)) {
       topicKey = 'diabetes';
-    } else if (/(heartburn|acid|acidity|reflux|gerd|burning chest|indigestion)/i.test(lower)) {
+    } else if (/(heartburn|acid|acidity|reflux|gerd|burning chest|indigestion|ಎದೆ ಉರಿ|ಅಸಿಡಿಟಿ|सीने में जलन|एसिडिटी|நெஞ்செரிச்சல்|ఎసిడిటీ|ఛాతీలో మంట|നെഞ്ചെരിച്ചിൽ)/i.test(cleanInput)) {
       topicKey = 'heartburn';
-    } else if (/(exercise|yoga|kegel|pelvic floor|squat|walk|walking|workout)/i.test(lower)) {
+    } else if (/(exercise|yoga|kegel|pelvic floor|squat|walk|walking|workout|ವ್ಯಾಯಾಮ|ಯೋಗ|ನಡಿಗೆ|ಕೀಗಲ್|व्यायाम|योग|सैर|टहलना|कीगल|உடற்பயிற்சி|யோகா|நடைபயிற்சி|వ్యాయామం|యోగా|నడక|വ്യായാമം|നടത്തം)/i.test(cleanInput)) {
       topicKey = 'exercise';
-    } else if (/(travel|fly|flight|plane|flying|trip|drive|car ride)/i.test(lower)) {
+    } else if (/(travel|fly|flight|plane|flying|trip|drive|car ride|ಪ್ರಯಾಣ|ವಿಮಾನ|ಕಾರು|यात्रा|सफर|फ्लाइट|गाड़ी|பயணம்|விமான பயணம்|ప్రయాణం|విమానం|യാത്ര|ഫ്ലൈറ്റ്)/i.test(cleanInput)) {
       topicKey = 'travel';
-    } else if (/(swell|swelling|edema|puffy|feet swollen|ankles swollen)/i.test(lower)) {
+    } else if (/(swell|swelling|edema|puffy|feet swollen|ankles swollen|ಕಾಲು ಊತ|ಹಿಮ್ಮಡಿ ಊತ|सूजन|पैरों में सूजन|கால் வீக்கம்|ముఖం వాపు|కాళ్ళ వాపు|നീർക്കെട്ട്|കാലിലെ നീര്)/i.test(cleanInput)) {
       topicKey = 'swelling';
     }
 
@@ -761,7 +772,7 @@ Always reply naturally, directly, and comprehensively to the exact question aske
       }
     }
 
-    // 5. Intelligent Dynamic Synthesis (Specific Clinical Answer for Any Question)
+    // 4. Intelligent Dynamic Synthesis (Specific Clinical Answer for Any Question in Native Language)
     const dynamicResponse = generateClinicalSynthesis(cleanInput, motherName, gestationalWeek, langKey, userRole);
 
     return NextResponse.json({

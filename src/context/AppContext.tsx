@@ -1756,7 +1756,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         responseText = matchedItem.response;
         followUps = matchedItem.followUps;
       } else {
-        responseText = getLocalizedAiGreeting(langCode, profile.name.split(' ')[0]);
+        responseText =
+          langCode === 'kn-IN'
+            ? `ಧನ್ಯವಾದಗಳು ${profile.name.split(' ')[0]}! 🌸 ${profile.currentGestationalWeek || 24}ನೇ ವಾರದಲ್ಲಿ ನಿಮ್ಮ ಆರೋಗ್ಯ ಮತ್ತು ಮಗುವಿನ ಬೆಳವಣಿಗೆಗೆ ಸಾಕಷ್ಟು ವಿಶ್ರಾಂತಿ, ನೀರು ಮತ್ತು ಸಮತೋಲಿತ ಪೌಷ್ಟಿಕ ಆಹಾರ ಅತ್ಯಗತ್ಯ. ನಿರಂತರ ನೋವು ಅಥವಾ ಅಸ್ವಸ್ಥತೆ ಇದ್ದರೆ ನಿಮ್ಮ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ.`
+            : langCode === 'hi-IN'
+            ? `धन्यवाद ${profile.name.split(' ')[0]}! 🌸 गर्भावस्था के ${profile.currentGestationalWeek || 24}वें हफ्ते में पर्याप्त पानी, हल्का पौष्टिक आहार और बाईं करवट सोना सबसे अच्छा रहता है। किसी भी परेशानी में अपने डॉक्टर से सलाह लें।`
+            : `Thank you ${profile.name.split(' ')[0]}! 🌸 At Week ${profile.currentGestationalWeek || 24}, prioritize restful sleep on your left side (SOS), adequate hydration (8–10 glasses daily), and balanced nutrient-dense meals. Always consult your obstetrician for persistent symptoms.`;
         followUps = responsesForLang.flatMap(r => r.followUps.slice(0, 1)).slice(0, 3);
       }
 
@@ -1774,7 +1779,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const clearChat = () => {
-    setChatMessages(INITIAL_CHAT_MESSAGES);
+    const greetingText = getLocalizedAiGreeting(selectedLanguage, profile.name.split(' ')[0]);
+    setChatMessages([
+      {
+        id: `msg-${Date.now()}`,
+        sender: 'assistant',
+        text: greetingText,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        suggestedFollowUps:
+          selectedLanguage === 'kn-IN'
+            ? ['ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಆಹಾರ ಕ್ರಮ', 'ಬೆಳಗಿನ ವಾಕರಿಕೆಗೆ ಪರಿಹಾರ', 'ಹೆರಿಗೆ ಸಿದ್ಧತೆ 5-1-1 ನಿಯಮ']
+            : selectedLanguage === 'hi-IN'
+            ? ['गर्भावस्था में क्या खाना चाहिए?', 'मॉर्निंग सिकनेस से कैसे बचें?', 'प्रसव के लक्षण और तैयारी']
+            : [
+                'What are common symptoms during Week 24?',
+                'How to safely relieve round ligament pain?',
+                'What should I prepare for the glucose screening test?'
+              ]
+      }
+    ]);
   };
 
   const resetToDemoData = () => {
