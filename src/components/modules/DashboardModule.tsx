@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { WEEKS_DATA, MONTHS_DATA } from '@/data/pregnancyJourneyData';
 import { calculateMaternalNutritionTargets } from '@/data/nutritionData';
+import { FetalWeeklyHero } from '@/components/dashboard/FetalWeeklyHero';
 import {
   Heart,
   Calendar,
@@ -468,117 +469,11 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
         </div>
       </div>
 
-      {/* Welcome Hero Banner (Garbkosh Hero Gradient & Luminous Card) */}
-      <div className="relative overflow-hidden rounded-4xl bg-hero-gradient p-6 md:p-8 border border-border shadow-card">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card/80 backdrop-blur-md text-xs font-semibold text-primary border border-border">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{t('month')} {currentMonth} · {t('trimester')} {currentMonth <= 3 ? 1 : currentMonth <= 6 ? 2 : 3}</span>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-serif font-extrabold text-foreground tracking-tight">
-              {t('welcomeBack')}, {profile.name}! 🌸
-            </h1>
-            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-              {t('week')} <strong>{profile.currentGestationalWeek}</strong>. {t('babySizeOf')} <strong>{weekInfo.babySizeFruit} {weekInfo.fruitEmoji}</strong>.
-            </p>
-          </div>
-
-          {/* Delivery Countdown Card */}
-          <div className="shrink-0 bg-card/90 backdrop-blur-md p-5 rounded-3xl border border-border text-center min-w-[170px] shadow-soft">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t('dueCountdown')}</span>
-            <div className="text-4xl font-mono font-black my-1 text-foreground">{daysRemaining}</div>
-            <span className="text-xs text-muted-foreground font-medium">{daysRemaining} {t('daysUntil')} {profile.estimatedDueDate}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Week 1 to 40 Interactive Progress Tracker */}
-      <div className="bg-card rounded-4xl p-6 border border-border shadow-soft space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 className="text-base font-serif font-bold text-foreground flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              Week 1 - 40 Pregnancy Progress Tracker
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              Interactive timeline: click any milestone to preview fetal size and developmental highlights.
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigateTab('journey')}
-            className="text-xs font-bold text-primary hover:text-primary-hover flex items-center gap-1 shrink-0"
-          >
-            <span>Explore 9-Month Journey</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Horizontal Week Scroller */}
-        <div className="overflow-x-auto pb-2 scrollbar-thin">
-          <div className="flex items-center gap-2 min-w-max py-2">
-            {Array.from({ length: 40 }, (_, i) => i + 1).map((w) => {
-              const isCurrent = w === profile.currentGestationalWeek;
-              const isSelected = w === selectedTrackerWeek;
-              const isPast = w < profile.currentGestationalWeek;
-
-              return (
-                <button
-                  key={w}
-                  onClick={() => setSelectedTrackerWeek(w)}
-                  className={`w-11 h-13 rounded-2xl flex flex-col items-center justify-center transition-all text-xs relative ${
-                    isCurrent
-                      ? 'bg-primary text-white font-extrabold shadow-soft scale-105 ring-2 ring-primary ring-offset-2'
-                      : isSelected
-                      ? 'bg-accent text-white font-bold'
-                      : isPast
-                      ? 'bg-primary-soft text-primary font-semibold border border-primary/20'
-                      : 'bg-muted/40 text-muted-foreground hover:bg-muted'
-                  }`}
-                >
-                  <span className="text-[9px] uppercase">Wk</span>
-                  <span className="text-sm font-bold">{w}</span>
-                  {isCurrent && (
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-accent rounded-full border-2 border-white" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Selected Week Preview Card */}
-        <div className="p-4 bg-muted/30 rounded-3xl border border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-card shadow-xs flex items-center justify-center text-3xl border border-border">
-              {weekInfo.fruitEmoji}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-accent uppercase tracking-wide">
-                  Week {selectedTrackerWeek} Milestone
-                </span>
-                <span className="text-xs text-border">·</span>
-                <span className="text-xs text-muted-foreground">Size of an {weekInfo.babySizeFruit}</span>
-              </div>
-              <h3 className="text-sm font-bold text-foreground mt-0.5">{weekInfo.headline}</h3>
-              <p className="text-xs text-muted-foreground mt-1 max-w-2xl leading-relaxed">{weekInfo.babyDevelopment}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 text-xs shrink-0 bg-card px-4 py-2.5 rounded-2xl border border-border">
-            <div>
-              <span className="block text-muted-foreground text-[10px] uppercase font-bold">Length</span>
-              <span className="font-bold text-foreground">{weekInfo.babyLengthCm} cm</span>
-            </div>
-            <div className="h-6 w-px bg-border" />
-            <div>
-              <span className="block text-muted-foreground text-[10px] uppercase font-bold">Weight</span>
-              <span className="font-bold text-foreground">{weekInfo.babyWeightG} g</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Fetal Weekly Development & Maternal Care Hero (UI/UX matching maternal mockup) */}
+      <FetalWeeklyHero
+        currentGestationalWeek={profile.currentGestationalWeek}
+        estimatedDueDate={profile.estimatedDueDate}
+      />
 
       {/* Main Grid: Health Overview, Checklist, Nutrition, Appointments */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
