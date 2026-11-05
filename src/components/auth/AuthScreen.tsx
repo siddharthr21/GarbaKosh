@@ -50,6 +50,7 @@ export const AuthScreen: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState<string | null>(null);
 
   // Handle Login submission
   const handleLogin = (e: React.FormEvent) => {
@@ -59,13 +60,16 @@ export const AuthScreen: React.FC = () => {
 
     const cleanInput = emailOrCode.trim();
     if (!cleanInput) {
-      setErrorMessage('Please enter your email or unique security code (e.g. siri@bloomnest.com or MAMA-2026).');
+      // If user clicks without entering input, seamlessly log in with default evaluation account
+      handleQuickDemoLogin('siri@bloomnest.com', 'Siri Rao');
       return;
     }
 
+    setIsLoggingIn('signing-in');
     const success = login(cleanInput, password);
     if (!success) {
-      setErrorMessage('Account not found with this email or security code. Please check your spelling or choose a 1-click evaluation profile below.');
+      setIsLoggingIn(null);
+      setErrorMessage(`Account "${cleanInput}" not found. You can enter any name (e.g. "Siri" or "Rohan"), code (e.g. "MAMA-2026" or "PAPA-7140"), or click any 1-click evaluation profile below.`);
     }
   };
 
@@ -96,13 +100,20 @@ export const AuthScreen: React.FC = () => {
     }
   };
 
-  // Quick Demo Login helper
-  const handleQuickDemoLogin = (targetIdentifier: string) => {
+  // Quick Demo Login helper with instant visual and tactile state
+  const handleQuickDemoLogin = (targetIdentifier: string, personaName?: string) => {
     setErrorMessage(null);
-    const success = login(targetIdentifier);
-    if (!success) {
-      setErrorMessage(`Could not sign in with ${targetIdentifier}. Please try again.`);
-    }
+    setSuccessMessage(null);
+    setEmailOrCode(targetIdentifier);
+    setIsLoggingIn(personaName || targetIdentifier);
+
+    setTimeout(() => {
+      const success = login(targetIdentifier);
+      if (!success) {
+        setIsLoggingIn(null);
+        setErrorMessage(`Could not sign in with ${targetIdentifier}. Please check the account or try another profile.`);
+      }
+    }, 120);
   };
 
   const handleForgotPassword = (e: React.FormEvent) => {
@@ -232,8 +243,9 @@ export const AuthScreen: React.FC = () => {
 
               <div className="flex items-center gap-1 p-1 bg-muted/40 rounded-2xl border border-border text-xs">
                 <button
-                  onClick={() => { setAuthMode('login'); setErrorMessage(null); }}
-                  className={`px-3 py-1.5 rounded-xl font-bold transition-all ${
+                  type="button"
+                  onClick={() => { setAuthMode('login'); setErrorMessage(null); setSuccessMessage(null); }}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
                     authMode === 'login'
                       ? 'bg-card text-foreground shadow-xs'
                       : 'text-muted-foreground hover:text-foreground'
@@ -242,8 +254,9 @@ export const AuthScreen: React.FC = () => {
                   {t('signInTab')}
                 </button>
                 <button
-                  onClick={() => { setAuthMode('signup'); setErrorMessage(null); }}
-                  className={`px-3 py-1.5 rounded-xl font-bold transition-all ${
+                  type="button"
+                  onClick={() => { setAuthMode('signup'); setErrorMessage(null); setSuccessMessage(null); }}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
                     authMode === 'signup'
                       ? 'bg-card text-foreground shadow-xs'
                       : 'text-muted-foreground hover:text-foreground'
@@ -348,8 +361,10 @@ export const AuthScreen: React.FC = () => {
                     {/* Mother Profile 1: Paired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('siri@bloomnest.com')}
-                      className="p-3 rounded-2xl bg-primary-soft/60 hover:bg-primary/20 border border-primary/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
+                      onClick={() => handleQuickDemoLogin('siri@bloomnest.com', 'Siri Rao')}
+                      className={`p-3 rounded-2xl bg-primary-soft/60 hover:bg-primary/20 border border-primary/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
+                        isLoggingIn === 'Siri Rao' ? 'ring-2 ring-primary bg-primary/20 scale-[0.98]' : ''
+                      }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -365,15 +380,19 @@ export const AuthScreen: React.FC = () => {
                       </div>
                       <div className="mt-2.5 pt-1.5 border-t border-primary/20 flex items-center justify-between">
                         <span className="text-[9px] font-mono text-muted-foreground font-semibold">MAMA-2026</span>
-                        <span className="text-[9px] text-primary font-bold group-hover:underline">Enter →</span>
+                        <span className="text-[9px] text-primary font-bold group-hover:underline">
+                          {isLoggingIn === 'Siri Rao' ? 'Entering...' : 'Enter →'}
+                        </span>
                       </div>
                     </button>
 
                     {/* Partner Profile 1: Paired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('rohan@bloomnest.com')}
-                      className="p-3 rounded-2xl bg-accent-soft/60 hover:bg-accent/20 border border-accent/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
+                      onClick={() => handleQuickDemoLogin('rohan@bloomnest.com', 'Rohan Rao')}
+                      className={`p-3 rounded-2xl bg-accent-soft/60 hover:bg-accent/20 border border-accent/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
+                        isLoggingIn === 'Rohan Rao' ? 'ring-2 ring-accent bg-accent/20 scale-[0.98]' : ''
+                      }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -389,15 +408,19 @@ export const AuthScreen: React.FC = () => {
                       </div>
                       <div className="mt-2.5 pt-1.5 border-t border-accent/20 flex items-center justify-between">
                         <span className="text-[9px] font-mono text-muted-foreground font-semibold">PAPA-7140</span>
-                        <span className="text-[9px] text-accent font-bold group-hover:underline">Enter →</span>
+                        <span className="text-[9px] text-accent font-bold group-hover:underline">
+                          {isLoggingIn === 'Rohan Rao' ? 'Entering...' : 'Enter →'}
+                        </span>
                       </div>
                     </button>
 
                     {/* Mother Profile 2: Unpaired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('priya@bloomnest.com')}
-                      className="p-3 rounded-2xl bg-rose-50/50 hover:bg-rose-100/50 border border-rose-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
+                      onClick={() => handleQuickDemoLogin('priya@bloomnest.com', 'Priya Nair')}
+                      className={`p-3 rounded-2xl bg-rose-50/50 hover:bg-rose-100/50 border border-rose-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
+                        isLoggingIn === 'Priya Nair' ? 'ring-2 ring-rose-500 bg-rose-100 scale-[0.98]' : ''
+                      }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -413,15 +436,19 @@ export const AuthScreen: React.FC = () => {
                       </div>
                       <div className="mt-2.5 pt-1.5 border-t border-rose-200/60 flex items-center justify-between">
                         <span className="text-[9px] font-mono text-muted-foreground font-semibold">MAMA-4819</span>
-                        <span className="text-[9px] text-rose-700 font-bold group-hover:underline">Enter →</span>
+                        <span className="text-[9px] text-rose-700 font-bold group-hover:underline">
+                          {isLoggingIn === 'Priya Nair' ? 'Entering...' : 'Enter →'}
+                        </span>
                       </div>
                     </button>
 
                     {/* Partner Profile 2: Unpaired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('arjun@bloomnest.com')}
-                      className="p-3 rounded-2xl bg-stone-100 hover:bg-stone-200/70 border border-stone-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
+                      onClick={() => handleQuickDemoLogin('arjun@bloomnest.com', 'Arjun Mehta')}
+                      className={`p-3 rounded-2xl bg-stone-100 hover:bg-stone-200/70 border border-stone-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
+                        isLoggingIn === 'Arjun Mehta' ? 'ring-2 ring-stone-500 bg-stone-200 scale-[0.98]' : ''
+                      }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -437,7 +464,9 @@ export const AuthScreen: React.FC = () => {
                       </div>
                       <div className="mt-2.5 pt-1.5 border-t border-stone-200 flex items-center justify-between">
                         <span className="text-[9px] font-mono text-muted-foreground font-semibold">PAPA-9921</span>
-                        <span className="text-[9px] text-foreground font-bold group-hover:underline">Enter →</span>
+                        <span className="text-[9px] text-foreground font-bold group-hover:underline">
+                          {isLoggingIn === 'Arjun Mehta' ? 'Entering...' : 'Enter →'}
+                        </span>
                       </div>
                     </button>
                   </div>

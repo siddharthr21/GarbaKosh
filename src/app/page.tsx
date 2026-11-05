@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { Sidebar } from '@/components/layout/Sidebar';
@@ -34,9 +34,14 @@ export default function Home() {
   const { isAuthenticated } = useApp();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Authentication Gate: Require login before accessing the maternal sanctuary dashboard
-  if (!isAuthenticated) {
+  if (!mounted || !isAuthenticated) {
     return <AuthScreen />;
   }
 

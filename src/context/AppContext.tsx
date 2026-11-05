@@ -426,14 +426,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         try {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            const existingIds = new Set(parsed.map((a: UserAccount) => a.id));
-            const merged = [...parsed];
+            const mergedMap = new Map<string, UserAccount>();
+            for (const acc of parsed) {
+              if (acc && acc.id) mergedMap.set(acc.id, acc);
+            }
+            // Guarantee all canonical initial accounts exist with valid uniqueCodes
             for (const defAcc of INITIAL_ACCOUNTS) {
-              if (!existingIds.has(defAcc.id)) {
-                merged.push(defAcc);
+              const existing = mergedMap.get(defAcc.id);
+              if (!existing || !existing.uniqueCode) {
+                mergedMap.set(defAcc.id, defAcc);
               }
             }
-            return merged;
+            return Array.from(mergedMap.values());
           }
         } catch (e) {}
       }
@@ -730,12 +734,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Authentication & Multi-Account Functions
   const login = (emailOrCode: string, password?: string): boolean => {
     if (!emailOrCode || !emailOrCode.trim()) return false;
-    const clean = emailOrCode.trim().toLowerCase();
-    const cleanCode = emailOrCode.trim().toUpperCase();
+    const raw = emailOrCode.trim();
+    const clean = raw.toLowerCase();
+    const cleanCode = raw.toUpperCase();
+    const alphanumeric = clean.replace(/[^a-z0-9]/g, '');
 
-    const found = allAccounts.find(
-      a => a.email.toLowerCase() === clean || (a.uniqueCode && a.uniqueCode.toUpperCase() === cleanCode)
-    );
+    // Search accounts registry with multiple resilient matching strategies
+    const matchAccount = (accList: UserAccount[]) => {
+      return accList.find(a => {
+        const aEmail = (a.email || '').toLowerCase();
+        const aCode = (a.uniqueCode || '').toUpperCase();
+        const aCodeAlpha = aCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const aName = (a.name || '').toLowerCase();
+        const aFirstName = aName.split(' ')[0];
+
+        // 1. Direct email match
+        if (aEmail === clean) return true;
+        // 2. Direct unique code match (e.g. MAMA-2026)
+        if (aCode === cleanCode) return true;
+        // 3. Alphanumeric code match (e.g. mama2026 or papa7140)
+        if (alphanumeric && aCodeAlpha === alphanumeric) return true;
+        // 4. Full name match (e.g. "siri rao")
+        if (aName === clean) return true;
+        // 5. First name match (e.g. "siri" or "rohan" or "priya" or "arjun")
+        if (aFirstName === clean) return true;
+
+        return false;
+      });
+    };
+
+    let found = matchAccount(allAccounts);
+    if (!found) {
+      found = matchAccount(INITIAL_ACCOUNTS);
+    }
     if (!found) return false;
 
     // If partner has a linked mother, ensure latest profile sync
@@ -743,7 +774,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (found.role === 'partner' && found.partnerLinkedCode) {
       const linkedMother = allAccounts.find(
         a => a.role === 'mother' && a.uniqueCode.toUpperCase() === found.partnerLinkedCode?.toUpperCase()
+      ) || INITIAL_ACCOUNTS.find(
+        a => a.role === 'mother' && a.uniqueCode.toUpperCase() === found.partnerLinkedCode?.toUpperCase()
       );
+
       if (linkedMother) {
         targetProfile = {
           ...targetProfile,
@@ -770,7 +804,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setCurrentUser(updatedFound);
     setIsAuthenticated(true);
-    setActiveRole(updatedFound.role);
     setProfile(targetProfile);
 
     if (typeof window !== 'undefined') {
