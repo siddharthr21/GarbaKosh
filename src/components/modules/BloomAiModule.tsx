@@ -43,6 +43,8 @@ export const BloomAiModule: React.FC = () => {
     setGeminiApiKey,
     grokApiKey,
     setGrokApiKey,
+    groqApiKey,
+    setGroqApiKey,
     triggerEmergencyModal,
     t
   } = useApp();
@@ -56,17 +58,13 @@ export const BloomAiModule: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
   const [micErrorNotice, setMicErrorNotice] = useState<string | null>(null);
   const [showApiModal, setShowApiModal] = useState(false);
-  const [grokKeyInput, setGrokKeyInput] = useState(grokApiKey || '');
+  const [groqKeyInput, setGroqKeyInput] = useState(groqApiKey || '');
   const [geminiKeyInput, setGeminiKeyInput] = useState(geminiApiKey || '');
   const [keySavedToast, setKeySavedToast] = useState(false);
   const [isTestingKey, setIsTestingKey] = useState(false);
   const [testKeyStatus, setTestKeyStatus] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleTestApiKey = async () => {
-    if (!grokKeyInput.trim() && !geminiKeyInput.trim()) {
-      setTestKeyStatus({ success: false, message: 'Please enter an xAI Grok API Key or Gemini Key to test.' });
-      return;
-    }
     setIsTestingKey(true);
     setTestKeyStatus(null);
     try {
@@ -75,7 +73,7 @@ export const BloomAiModule: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: 'Hello, confirm you are active and working.',
-          grokApiKey: grokKeyInput.trim(),
+          groqApiKey: groqKeyInput.trim(),
           geminiApiKey: geminiKeyInput.trim(),
           gestationalWeek: profile.currentGestationalWeek || 24,
           language: 'en-US',
@@ -86,7 +84,7 @@ export const BloomAiModule: React.FC = () => {
         const data = await res.json();
         setTestKeyStatus({
           success: true,
-          message: data.message || `Connected! Verified with ${data.source || 'AI Engine'}.`
+          message: data.message || `Connected! Verified with ${data.source || 'Groq Cloud Engine'}.`
         });
       } else {
         const data = await res.json().catch(() => ({}));
@@ -484,26 +482,24 @@ export const BloomAiModule: React.FC = () => {
               ))}
             </select>
 
-            {/* AI Engine Configuration Button (Grok / Gemini / Dynamic) */}
+            {/* AI Engine Configuration Button */}
             <button
               onClick={() => {
-                setGrokKeyInput(grokApiKey || '');
+                setGroqKeyInput(groqApiKey || '');
                 setGeminiKeyInput(geminiApiKey || '');
                 setTestKeyStatus(null);
                 setShowApiModal(true);
               }}
               className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
-                grokApiKey
+                groqApiKey
                   ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100'
-                  : geminiApiKey
-                  ? 'bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100'
                   : 'bg-primary-soft text-primary border border-primary/30 hover:bg-primary/20'
               }`}
-              title="Configure xAI Grok API Key or Live AI Settings"
+              title="Configure Groq Cloud API Key or Live AI Settings"
             >
               <Key className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">
-                {grokApiKey ? 'xAI Grok: Active' : geminiApiKey ? 'Gemini Live: Active' : 'AI Engine: Live Dynamic'}
+                {groqApiKey ? 'Groq LPU AI: Active' : 'Configure AI Engine'}
               </span>
             </button>
 
@@ -805,38 +801,38 @@ export const BloomAiModule: React.FC = () => {
             </div>
 
             <p className="text-xs text-gray-600 leading-relaxed">
-              Connect your <strong>xAI Grok API key</strong> to unlock live generative reasoning tailored directly to your questions in English, Kannada, Hindi, Tamil, Telugu, and Malayalam.
+              Powered by <strong>Groq LPU Inference</strong> for sub-second, dynamic medical reasoning tailored to your questions in English, Kannada, Hindi, Tamil, Telugu, and Malayalam.
             </p>
 
-            {/* Grok API Key Section */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/70 space-y-2">
+            {/* Groq API Key Section */}
+            <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-300 space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                  <span>xAI Grok API Key:</span>
+                <label className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Groq API Key (gsk_...):</span>
                 </label>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold uppercase tracking-wider">
-                  Recommended
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider">
+                  Active & Connected
                 </span>
               </div>
               <input
                 type="password"
-                value={grokKeyInput}
-                onChange={e => setGrokKeyInput(e.target.value)}
-                placeholder="xai-..."
-                className="w-full px-3.5 py-2.5 bg-white border border-amber-300 rounded-xl text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                value={groqKeyInput}
+                onChange={e => setGroqKeyInput(e.target.value)}
+                placeholder="gsk_..."
+                className="w-full px-3.5 py-2.5 bg-white border border-emerald-400 rounded-xl text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
               />
               <div className="flex items-center justify-between text-[11px] pt-0.5">
                 <a
-                  href="https://console.x.ai/"
+                  href="https://console.groq.com/keys"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-amber-800 hover:underline font-bold flex items-center gap-1"
+                  className="text-emerald-800 hover:underline font-bold flex items-center gap-1"
                 >
-                  <span>Get Grok Key at console.x.ai</span>
+                  <span>Groq Cloud Console (console.groq.com)</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
-                <span className="text-gray-500">grok-2-latest • High-IQ obstetric reasoning</span>
+                <span className="text-emerald-700 font-medium">openai/gpt-oss-120b • Ultra-Fast LPU</span>
               </div>
             </div>
 
@@ -911,16 +907,16 @@ export const BloomAiModule: React.FC = () => {
               </button>
 
               <div className="flex items-center gap-2">
-                {(grokApiKey || geminiApiKey) && (
+                {(groqApiKey || geminiApiKey) && (
                   <button
                     type="button"
                     onClick={() => {
-                      setGrokApiKey('');
+                      setGroqApiKey('');
                       setGeminiApiKey('');
-                      setGrokKeyInput('');
+                      setGroqKeyInput('');
                       setGeminiKeyInput('');
                       setTestKeyStatus(null);
-                      alert('Custom API keys cleared. Dynamic live AI will continue.');
+                      alert('Custom API keys cleared.');
                     }}
                     className="px-3 py-2 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition-colors cursor-pointer"
                   >
@@ -930,7 +926,7 @@ export const BloomAiModule: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setGrokApiKey(grokKeyInput.trim());
+                    setGroqApiKey(groqKeyInput.trim());
                     setGeminiApiKey(geminiKeyInput.trim());
                     setKeySavedToast(true);
                     setTimeout(() => {

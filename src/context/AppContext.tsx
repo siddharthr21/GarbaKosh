@@ -162,6 +162,8 @@ interface AppContextType {
   setGeminiApiKey: (key: string) => void;
   grokApiKey: string;
   setGrokApiKey: (key: string) => void;
+  groqApiKey: string;
+  setGroqApiKey: (key: string) => void;
   t: (key: string, fallback?: string) => string;
   
   // Utility
@@ -810,6 +812,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setGeminiApiKeyState(key);
     if (typeof window !== 'undefined') {
       localStorage.setItem('bloomnest_gemini_api_key', key);
+    }
+  };
+
+  const [groqApiKey, setGroqApiKeyState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bloomnest_groq_api_key');
+      if (saved) return saved;
+    }
+    return process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
+  });
+
+  const setGroqApiKey = (key: string) => {
+    setGroqApiKeyState(key);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_groq_api_key', key);
     }
   };
 
@@ -1660,14 +1677,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(groqApiKey ? { 'x-groq-key': groqApiKey } : {}),
           ...(grokApiKey ? { 'x-grok-key': grokApiKey } : {}),
           ...(geminiApiKey ? { 'x-gemini-key': geminiApiKey } : {})
         },
         body: JSON.stringify({
           message: userText,
+          groqApiKey,
           grokApiKey,
           geminiApiKey,
-          apiKey: grokApiKey || geminiApiKey,
+          apiKey: groqApiKey || grokApiKey || geminiApiKey,
           history: chatMessages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
           gestationalWeek: profile.currentGestationalWeek || 24,
           userRole: currentUser?.role || profile.role || 'mother',
@@ -1955,6 +1974,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setGeminiApiKey,
         grokApiKey,
         setGrokApiKey,
+        groqApiKey,
+        setGroqApiKey,
         t,
         resetToDemoData,
         exportAllDataJson,

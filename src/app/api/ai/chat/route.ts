@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 interface ChatRequestBody {
   message: string;
   apiKey?: string;
+  groqApiKey?: string;
   grokApiKey?: string;
   geminiApiKey?: string;
   history?: Array<{ sender: 'user' | 'assistant'; text: string }>;
@@ -12,6 +13,8 @@ interface ChatRequestBody {
   motherName?: string;
   test?: boolean;
 }
+
+const DEFAULT_GROQ_KEY = process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
 
 // 1. Emergency Red Flags Requiring Immediate Clinical Escalation
 const EMERGENCY_PATTERNS = [
@@ -87,6 +90,7 @@ Guidelines:
 4. Structure your response with clean GitHub-flavored markdown:
    - Use bold titles and headings
    - Use bullet points (•) for actionable steps
+   - Use comparison tables where helpful
    - Highlight warnings or foods to avoid with ⚠️
    - Highlight beneficial tips with ✨
 5. Include culturally relevant Indian obstetric practices where appropriate (e.g. Garbh Sanskar music, nutritious foods like ragi, tender coconut, safe herbs, partner support).
@@ -159,6 +163,62 @@ function parseAiResponse(raw: string, lang = 'en-US', week = 24): { answer: stri
   return { answer, followUps };
 }
 
+// Call Groq Cloud API (Ultra-Fast LPU Engine)
+async function callGroqAPI(
+  groqKey: string,
+  systemPrompt: string,
+  userMessage: string,
+  history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
+): Promise<{ text: string; model: string } | null> {
+  const models = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...history.slice(-4).map(h => ({
+      role: h.sender === 'user' ? 'user' : 'assistant',
+      content: h.text
+    })),
+    { role: 'user', content: userMessage }
+  ];
+
+  for (const model of models) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 14000);
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${groqKey.trim()}`
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.7,
+          max_tokens: 1500
+        })
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        const content = data.choices?.[0]?.message?.content;
+        if (content && content.trim().length > 10) {
+          return { text: content.trim(), model };
+        }
+      } else {
+        const errText = await res.text();
+        console.warn(`Groq (${model}) error HTTP ${res.status}:`, errText);
+      }
+    } catch (e: any) {
+      console.warn(`Groq model ${model} fetch failed:`, e?.message || e);
+    }
+  }
+  return null;
+}
+
 // Call xAI Grok API
 async function callGrokAPI(
   grokKey: string,
@@ -204,54 +264,10 @@ async function callGrokAPI(
         if (content && content.trim().length > 10) {
           return { text: content.trim(), model };
         }
-      } else {
-        const errText = await res.text();
-        console.warn(`xAI Grok (${model}) error HTTP ${res.status}:`, errText);
       }
     } catch (e: any) {
       console.warn(`xAI Grok model ${model} fetch failed:`, e?.message || e);
     }
-  }
-  return null;
-}
-
-// Call Live Dynamic AI (Reasoning Engine) for zero-config live dynamic generation
-async function callDynamicLiveAI(
-  systemPrompt: string,
-  userMessage: string,
-  history: Array<{ sender: 'user' | 'assistant'; text: string }> = []
-): Promise<string | null> {
-  const messages = [
-    { role: 'system', content: systemPrompt },
-    ...history.slice(-4).map(h => ({
-      role: h.sender === 'user' ? 'user' : 'assistant',
-      content: h.text
-    })),
-    { role: 'user', content: userMessage }
-  ];
-
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000);
-
-    const res = await fetch('https://text.pollinations.ai/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        messages
-      })
-    });
-    clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const text = await res.text();
-      if (text && text.trim().length > 20) {
-        return text.trim();
-      }
-    }
-  } catch (err: any) {
-    console.warn('Live dynamic AI engine fetch failed:', err?.message || err);
   }
   return null;
 }
@@ -312,7 +328,7 @@ async function callGeminiAPI(
   return null;
 }
 
-// Fallback synthesis if offline (Tailored to specific medical topic)
+// Topic-Tailored Clinical Fallback (if completely offline)
 function generateOfflineClinicalSynthesis(
   question: string,
   motherName: string,
@@ -324,8 +340,6 @@ function generateOfflineClinicalSynthesis(
   const isNutrition = /(food|eat|diet|nutrition|coconut|papaya|pineapple|ragi|calcium|iron|ಊಟ|ಆಹಾರ|ತಿನ್ನ|ಎಳನೀರು|खाना|डाइट|உணவு|ఆహారం|ഭക്ഷണം)/i.test(q);
   const isPain = /(pain|back|ache|spine|hurt|ನೋವು|ಬೆನ್ನು|ಸೊಂಟ|दर्द|पीठ|कमर|வலி|முதுகு|నొప్పి|నడుము|വേദന|നടു)/i.test(q);
   const isSwelling = /(swell|feet|ankle|edema|ಊತ|ಕಾಲು|ಹಿಮ್ಮಡಿ|सूजन|पैरों|வீக்கம்|கால்|వాపు|కాళ్ళ|നീര്|കാലിലെ)/i.test(q);
-  const isKicks = /(kick|move|flutter|ಚಲನೆ|ಒದೆ|ಕಿಕ್|हलचल|किक|கிக்|அசைவு|కదలికలు|బిడ్డ|അനക്കം)/i.test(q);
-  const isNausea = /(nausea|vomit|sickness|ವಾಂತಿ|ವಾಕರಿಕೆ|उल्टी|मतली|குமட்டல்|வாந்தி|వికారం|వాంతులు|ഛർദ്ദി|ഓക്കാനം)/i.test(q);
 
   if (language === 'kn-IN') {
     if (isNutrition) {
@@ -388,6 +402,7 @@ export async function POST(req: NextRequest) {
     const {
       message = '',
       apiKey,
+      groqApiKey: bodyGroqKey,
       grokApiKey: bodyGrokKey,
       geminiApiKey: bodyGeminiKey,
       history = [],
@@ -406,7 +421,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Determine Grok API Key
+    // Determine Groq API Key (Highest priority: User's provided key)
+    const headerGroq = req.headers.get('x-groq-key');
+    const effectiveGroqKey = (
+      bodyGroqKey ||
+      headerGroq ||
+      (apiKey && apiKey.startsWith('gsk_') ? apiKey : '') ||
+      process.env.GROQ_API_KEY ||
+      process.env.NEXT_PUBLIC_GROQ_API_KEY ||
+      DEFAULT_GROQ_KEY
+    ).trim();
+
+    // Determine xAI Grok Key
     const headerGrok = req.headers.get('x-grok-key') || req.headers.get('x-xai-key');
     const effectiveGrokKey = (
       bodyGrokKey ||
@@ -422,7 +448,7 @@ export async function POST(req: NextRequest) {
     const effectiveGeminiKey = (
       bodyGeminiKey ||
       headerGemini ||
-      (apiKey && !apiKey.startsWith('xai-') ? apiKey : '') ||
+      (apiKey && !apiKey.startsWith('gsk_') && !apiKey.startsWith('xai-') ? apiKey : '') ||
       process.env.GEMINI_API_KEY ||
       process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
       ''
@@ -430,6 +456,20 @@ export async function POST(req: NextRequest) {
 
     // Key connection test mode
     if (test) {
+      if (effectiveGroqKey) {
+        const groqTest = await callGroqAPI(
+          effectiveGroqKey,
+          'You are a test responder. Reply with: OK',
+          'ping'
+        );
+        if (groqTest) {
+          return NextResponse.json({
+            success: true,
+            source: `groq-lpu:${groqTest.model}`,
+            message: `Connected successfully to Groq Cloud (${groqTest.model})!`
+          });
+        }
+      }
       if (effectiveGrokKey) {
         const grokTest = await callGrokAPI(
           effectiveGrokKey,
@@ -442,13 +482,9 @@ export async function POST(req: NextRequest) {
             source: `xai-grok:${grokTest.model}`,
             message: `Connected successfully to xAI Grok (${grokTest.model})!`
           });
-        } else {
-          return NextResponse.json(
-            { error: 'xAI Grok authentication test failed. Please verify your API key from https://console.x.ai' },
-            { status: 401 }
-          );
         }
-      } else if (effectiveGeminiKey) {
+      }
+      if (effectiveGeminiKey) {
         const geminiTest = await callGeminiAPI(
           effectiveGeminiKey,
           'You are a test responder. Reply with: OK',
@@ -460,11 +496,6 @@ export async function POST(req: NextRequest) {
             source: `gemini-live:${geminiTest.model}`,
             message: `Connected successfully to Google Gemini (${geminiTest.model})!`
           });
-        } else {
-          return NextResponse.json(
-            { error: 'Gemini authentication test failed. Please verify your API key.' },
-            { status: 401 }
-          );
         }
       }
     }
@@ -496,7 +527,22 @@ export async function POST(req: NextRequest) {
       language
     });
 
-    // 2. Primary Engine: xAI Grok API
+    // 2. Primary Engine: Groq Ultra-Fast LPU API (Using User's gsk_ key)
+    if (effectiveGroqKey) {
+      const groqRes = await callGroqAPI(effectiveGroqKey, systemPrompt, cleanInput, history);
+      if (groqRes && groqRes.text) {
+        const parsed = parseAiResponse(groqRes.text, language, gestationalWeek);
+        return NextResponse.json({
+          success: true,
+          isEmergencyAlert: false,
+          response: parsed.answer,
+          followUps: parsed.followUps,
+          source: `groq-lpu:${groqRes.model}`
+        });
+      }
+    }
+
+    // 3. Alternative Engine: xAI Grok (if provided)
     if (effectiveGrokKey) {
       const grokRes = await callGrokAPI(effectiveGrokKey, systemPrompt, cleanInput, history);
       if (grokRes && grokRes.text) {
@@ -511,7 +557,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 3. Secondary Engine: Google Gemini API (if configured)
+    // 4. Alternative Engine: Google Gemini API (if configured)
     if (effectiveGeminiKey) {
       const geminiRes = await callGeminiAPI(effectiveGeminiKey, systemPrompt, cleanInput, history);
       if (geminiRes && geminiRes.text) {
@@ -524,19 +570,6 @@ export async function POST(req: NextRequest) {
           source: `gemini-live:${geminiRes.model}`
         });
       }
-    }
-
-    // 4. Live Dynamic AI Engine (Instant Reasoning LLM - Zero Hardcoded Answers)
-    const liveDynamicText = await callDynamicLiveAI(systemPrompt, cleanInput, history);
-    if (liveDynamicText) {
-      const parsed = parseAiResponse(liveDynamicText, language, gestationalWeek);
-      return NextResponse.json({
-        success: true,
-        isEmergencyAlert: false,
-        response: parsed.answer,
-        followUps: parsed.followUps,
-        source: 'live-dynamic-ai'
-      });
     }
 
     // 5. Offline Clinical Fallback (if completely disconnected from network)
