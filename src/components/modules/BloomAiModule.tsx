@@ -41,6 +41,8 @@ export const BloomAiModule: React.FC = () => {
     setSelectedLanguage,
     geminiApiKey,
     setGeminiApiKey,
+    grokApiKey,
+    setGrokApiKey,
     triggerEmergencyModal,
     t
   } = useApp();
@@ -54,14 +56,15 @@ export const BloomAiModule: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
   const [micErrorNotice, setMicErrorNotice] = useState<string | null>(null);
   const [showApiModal, setShowApiModal] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState(geminiApiKey || '');
+  const [grokKeyInput, setGrokKeyInput] = useState(grokApiKey || '');
+  const [geminiKeyInput, setGeminiKeyInput] = useState(geminiApiKey || '');
   const [keySavedToast, setKeySavedToast] = useState(false);
   const [isTestingKey, setIsTestingKey] = useState(false);
   const [testKeyStatus, setTestKeyStatus] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleTestApiKey = async () => {
-    if (!apiKeyInput.trim()) {
-      setTestKeyStatus({ success: false, message: 'Please enter a Gemini API Key first.' });
+    if (!grokKeyInput.trim() && !geminiKeyInput.trim()) {
+      setTestKeyStatus({ success: false, message: 'Please enter an xAI Grok API Key or Gemini Key to test.' });
       return;
     }
     setIsTestingKey(true);
@@ -72,23 +75,25 @@ export const BloomAiModule: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: 'Hello, confirm you are active and working.',
-          apiKey: apiKeyInput.trim(),
+          grokApiKey: grokKeyInput.trim(),
+          geminiApiKey: geminiKeyInput.trim(),
           gestationalWeek: profile.currentGestationalWeek || 24,
-          language: 'en-US'
+          language: 'en-US',
+          test: true
         })
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.source?.startsWith('gemini-live')) {
-          setTestKeyStatus({ success: true, message: `Connected! Verified with Google ${data.source}.` });
-        } else {
-          setTestKeyStatus({
-            success: true,
-            message: `Response received successfully (${data.source}).`
-          });
-        }
+        setTestKeyStatus({
+          success: true,
+          message: data.message || `Connected! Verified with ${data.source || 'AI Engine'}.`
+        });
       } else {
-        setTestKeyStatus({ success: false, message: `Test failed (HTTP ${res.status}). Please check key validity.` });
+        const data = await res.json().catch(() => ({}));
+        setTestKeyStatus({
+          success: false,
+          message: data.error || `Test failed (HTTP ${res.status}). Please check key validity.`
+        });
       }
     } catch (e: any) {
       setTestKeyStatus({ success: false, message: 'Network connection error while testing key.' });
@@ -479,22 +484,26 @@ export const BloomAiModule: React.FC = () => {
               ))}
             </select>
 
-            {/* Gemini API Key Configuration Button */}
+            {/* AI Engine Configuration Button (Grok / Gemini / Dynamic) */}
             <button
               onClick={() => {
-                setApiKeyInput(geminiApiKey || '');
+                setGrokKeyInput(grokApiKey || '');
+                setGeminiKeyInput(geminiApiKey || '');
+                setTestKeyStatus(null);
                 setShowApiModal(true);
               }}
               className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
-                geminiApiKey
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+                grokApiKey
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100'
+                  : geminiApiKey
+                  ? 'bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100'
                   : 'bg-primary-soft text-primary border border-primary/30 hover:bg-primary/20'
               }`}
-              title="Configure Google Gemini Live API Key"
+              title="Configure xAI Grok API Key or Live AI Settings"
             >
               <Key className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">
-                {geminiApiKey ? 'Gemini Live: Active' : 'Connect Gemini AI'}
+                {grokApiKey ? 'xAI Grok: Active' : geminiApiKey ? 'Gemini Live: Active' : 'AI Engine: Live Dynamic'}
               </span>
             </button>
 
@@ -783,44 +792,77 @@ export const BloomAiModule: React.FC = () => {
                   <Key className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-base">Google Gemini AI Engine</h3>
-                  <p className="text-xs text-gray-500">Live Generative Obstetric Intelligence</p>
+                  <h3 className="font-bold text-gray-900 text-base">Live AI Engine Configuration</h3>
+                  <p className="text-xs text-gray-500">xAI Grok & Multi-Provider Maternal Intelligence</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowApiModal(false)}
-                className="p-2 text-gray-400 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <p className="text-xs text-gray-600 leading-relaxed">
-              Connect your free Google Gemini API key to unlock completely dynamic, unscripted responses in English, Kannada, Hindi, Tamil, Telugu, and Malayalam.
+              Connect your <strong>xAI Grok API key</strong> to unlock live generative reasoning tailored directly to your questions in English, Kannada, Hindi, Tamil, Telugu, and Malayalam.
             </p>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-800">
-                Gemini API Key:
+            {/* Grok API Key Section */}
+            <div className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/70 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>xAI Grok API Key:</span>
+                </label>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold uppercase tracking-wider">
+                  Recommended
+                </span>
+              </div>
+              <input
+                type="password"
+                value={grokKeyInput}
+                onChange={e => setGrokKeyInput(e.target.value)}
+                placeholder="xai-..."
+                className="w-full px-3.5 py-2.5 bg-white border border-amber-300 rounded-xl text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+              <div className="flex items-center justify-between text-[11px] pt-0.5">
+                <a
+                  href="https://console.x.ai/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-800 hover:underline font-bold flex items-center gap-1"
+                >
+                  <span>Get Grok Key at console.x.ai</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <span className="text-gray-500">grok-2-latest • High-IQ obstetric reasoning</span>
+              </div>
+            </div>
+
+            {/* Alternative: Gemini API Key Section */}
+            <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 space-y-2">
+              <label className="block text-xs font-bold text-gray-700">
+                Alternative: Google Gemini API Key:
               </label>
               <input
                 type="password"
-                value={apiKeyInput}
-                onChange={e => setApiKeyInput(e.target.value)}
+                value={geminiKeyInput}
+                onChange={e => setGeminiKeyInput(e.target.value)}
                 placeholder="AIzaSy..."
-                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                className="w-full px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/40"
               />
-              <div className="flex items-center justify-between text-[11px] pt-1">
+              <div className="flex items-center justify-between text-[11px] pt-0.5">
                 <a
                   href="https://aistudio.google.com/app/apikey"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline font-bold flex items-center gap-1"
                 >
-                  <span>Get 100% Free Gemini Key</span>
+                  <span>Get Free Gemini Key</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
-                <span className="text-gray-400">Zero cost • 1,500 req/day</span>
+                <span className="text-gray-400">Zero cost fallback</span>
               </div>
             </div>
 
@@ -844,7 +886,7 @@ export const BloomAiModule: React.FC = () => {
             {keySavedToast && (
               <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 animate-in fade-in">
                 <Check className="w-4 h-4 text-emerald-600" />
-                <span>Gemini API Key successfully saved and connected!</span>
+                <span>Live AI configuration saved and connected successfully!</span>
               </div>
             )}
 
@@ -858,7 +900,7 @@ export const BloomAiModule: React.FC = () => {
                 {isTestingKey ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-                    <span>Testing...</span>
+                    <span>Verifying...</span>
                   </>
                 ) : (
                   <>
@@ -869,24 +911,27 @@ export const BloomAiModule: React.FC = () => {
               </button>
 
               <div className="flex items-center gap-2">
-                {geminiApiKey && (
+                {(grokApiKey || geminiApiKey) && (
                   <button
                     type="button"
                     onClick={() => {
+                      setGrokApiKey('');
                       setGeminiApiKey('');
-                      setApiKeyInput('');
+                      setGrokKeyInput('');
+                      setGeminiKeyInput('');
                       setTestKeyStatus(null);
-                      alert('Gemini API Key cleared.');
+                      alert('Custom API keys cleared. Dynamic live AI will continue.');
                     }}
                     className="px-3 py-2 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition-colors cursor-pointer"
                   >
-                    Clear Key
+                    Clear Keys
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => {
-                    setGeminiApiKey(apiKeyInput.trim());
+                    setGrokApiKey(grokKeyInput.trim());
+                    setGeminiApiKey(geminiKeyInput.trim());
                     setKeySavedToast(true);
                     setTimeout(() => {
                       setKeySavedToast(false);

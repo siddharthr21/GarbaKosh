@@ -160,6 +160,8 @@ interface AppContextType {
   setSelectedLanguage: (lang: string) => void;
   geminiApiKey: string;
   setGeminiApiKey: (key: string) => void;
+  grokApiKey: string;
+  setGrokApiKey: (key: string) => void;
   t: (key: string, fallback?: string) => string;
   
   // Utility
@@ -808,6 +810,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setGeminiApiKeyState(key);
     if (typeof window !== 'undefined') {
       localStorage.setItem('bloomnest_gemini_api_key', key);
+    }
+  };
+
+  const [grokApiKey, setGrokApiKeyState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('bloomnest_grok_api_key') || '';
+    }
+    return '';
+  });
+
+  const setGrokApiKey = (key: string) => {
+    setGrokApiKeyState(key);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_grok_api_key', key);
     }
   };
 
@@ -1644,11 +1660,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(grokApiKey ? { 'x-grok-key': grokApiKey } : {}),
           ...(geminiApiKey ? { 'x-gemini-key': geminiApiKey } : {})
         },
         body: JSON.stringify({
           message: userText,
-          apiKey: geminiApiKey,
+          grokApiKey,
+          geminiApiKey,
+          apiKey: grokApiKey || geminiApiKey,
           history: chatMessages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
           gestationalWeek: profile.currentGestationalWeek || 24,
           userRole: currentUser?.role || profile.role || 'mother',
@@ -1934,6 +1953,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSelectedLanguage,
         geminiApiKey,
         setGeminiApiKey,
+        grokApiKey,
+        setGrokApiKey,
         t,
         resetToDemoData,
         exportAllDataJson,
