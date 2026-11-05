@@ -60,6 +60,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
 
   const [connectingMotherId, setConnectingMotherId] = useState<string | null>(null);
   const [pairingNotice, setPairingNotice] = useState<{ success: boolean; message: string } | null>(null);
+  const [manualMotherCode, setManualMotherCode] = useState('');
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [selectedTrackerWeek, setSelectedTrackerWeek] = useState(profile.currentGestationalWeek);
@@ -190,18 +191,47 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
         {/* Unpaired Partner Privacy Alert & Registered Available Mothers Section */}
         {currentUser?.role === 'partner' && !currentUser?.isPaired && (
           <div className="space-y-4">
-            <div className="p-5 rounded-3xl bg-amber-500/10 border-2 border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in">
-              <div className="space-y-1">
-                <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
-                  <ShieldAlert className="w-4 h-4" /> Data Sequestered · Unpaired Partner Account ({currentUser.uniqueCode})
+            <div className="p-5 rounded-3xl bg-amber-500/10 border-2 border-amber-500/30 flex flex-col gap-4 animate-in fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
+                    <ShieldAlert className="w-4 h-4" /> Data Sequestered · Unpaired Partner Account
+                  </span>
+                  <p className="text-xs text-muted-foreground max-w-xl">
+                    Maternal clinical records, ultrasounds, and vitals are protected by cryptographic account isolation. Enter your partner's code below or choose an available mother.
+                  </p>
+                </div>
+                <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-card border border-border text-foreground shrink-0 self-start sm:self-auto">
+                  Your Code: {currentUser.uniqueCode}
                 </span>
-                <p className="text-xs text-muted-foreground max-w-xl">
-                  You are not yet linked to an expecting mother’s account. Maternal clinical records, ultrasounds, and vitals are protected by cryptographic account isolation.
-                </p>
               </div>
-              <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-card border border-border text-foreground">
-                Your Code: {currentUser.uniqueCode}
-              </span>
+
+              {/* Direct Code Entry */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!manualMotherCode.trim()) return;
+                  const res = pairPartnerWithMotherCode(manualMotherCode.trim());
+                  setPairingNotice(res);
+                  if (res.success) setManualMotherCode('');
+                }}
+                className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-amber-500/20"
+              >
+                <input
+                  type="text"
+                  value={manualMotherCode}
+                  onChange={e => setManualMotherCode(e.target.value.toUpperCase())}
+                  placeholder="Enter Mother's Code (e.g. MAMA-4819 for Priya, MAMA-6314 for Diya)"
+                  className="w-full sm:flex-1 px-3.5 py-2 rounded-xl bg-card border border-input text-xs font-mono font-bold tracking-wider placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+                <button
+                  type="submit"
+                  disabled={!manualMotherCode.trim()}
+                  className="w-full sm:w-auto px-5 py-2 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50 shrink-0"
+                >
+                  Connect Code
+                </button>
+              </form>
             </div>
 
             {/* Registered Available Mothers Directory (Requirement 3) */}

@@ -115,7 +115,7 @@ export class PairingManager {
           r => r.status === 'ACTIVE' && r.mother_user_id === mother.id
         );
         const isSelf = requestingUserId && mother.id === requestingUserId;
-        const isAvailable = !activeRel && !isSelf;
+        const isAvailable = !activeRel && !isSelf && !mother.isPaired;
 
         return {
           id: mother.id,
@@ -125,7 +125,7 @@ export class PairingManager {
           gestationalWeek: mother.profile.currentGestationalWeek || 20,
           estimatedDueDate: mother.profile.estimatedDueDate || '2027-04-15',
           isAvailable,
-          pairedPartnerName: activeRel ? activeRel.partner_name : undefined
+          pairedPartnerName: activeRel ? activeRel.partner_name : (mother.isPaired ? (mother.profile.partnerProfile?.name || 'Connected Partner') : undefined)
         };
       });
   }

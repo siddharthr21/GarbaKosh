@@ -63,8 +63,10 @@ export const SettingsModule: React.FC = () => {
   // Partner Pairing State & Granular Permissions
   const isMother = (currentUser?.role || profile.role) === 'mother';
   const mySecurityCode = currentUser?.uniqueCode || profile.partnerProfile?.pairingCode || (isMother ? 'MAMA-2026' : 'PAPA-7140');
-  const isPaired = currentUser?.isPaired ?? (profile.partnerProfile?.isConnected ?? false);
-  const connectedPartnerName = profile.partnerProfile?.name || (isMother ? 'Rohan Rao' : 'Siri Rao');
+  const isPaired = Boolean(currentUser?.isPaired);
+  const connectedPartnerName = activeRelationship
+    ? (isMother ? activeRelationship.partner_name : activeRelationship.mother_name)
+    : (currentUser?.profile.partnerProfile?.name || (isMother ? 'Partner' : 'Expecting Mother'));
 
   const currentPermissions = activeRelationship?.permissions || {
     viewPregnancyProgress: true,
@@ -401,26 +403,39 @@ export const SettingsModule: React.FC = () => {
             {/* Partner Connection Status Bar */}
             <div className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${isPaired ? 'bg-primary' : 'bg-muted-foreground'}`} />
+                <span className={`w-2.5 h-2.5 rounded-full ${isPaired ? 'bg-emerald-500 animate-pulse' : 'bg-stone-400'}`} />
                 <span>
                   {isPaired ? (
-                    <>Connected partner: <strong>{connectedPartnerName}</strong></>
+                    <>Connected with {isMother ? 'partner' : 'mother'}: <strong className="text-foreground font-semibold">{connectedPartnerName}</strong></>
                   ) : (
-                    <>No active partner connected.</>
+                    <>No active partner connected yet. Share your code <strong className="font-mono text-primary font-bold">{mySecurityCode}</strong> to link.</>
                   )}
                 </span>
               </div>
 
-              {isPaired && isMother && (
-                <button
-                  type="button"
-                  onClick={handleDisconnectPartner}
-                  className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold border border-rose-500/20 text-[11px] flex items-center gap-1.5 transition-all self-start sm:self-auto cursor-pointer"
-                >
-                  <Unlink className="w-3.5 h-3.5" />
-                  <span>Disconnect Partner</span>
-                </button>
-              )}
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                {!isPaired && isMother && (
+                  <button
+                    type="button"
+                    onClick={copyCode}
+                    className="px-3 py-1.5 rounded-xl bg-primary-soft hover:bg-primary/20 text-primary font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                  >
+                    {copiedCode ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedCode ? 'Copied' : 'Copy Code'}</span>
+                  </button>
+                )}
+
+                {isPaired && (
+                  <button
+                    type="button"
+                    onClick={handleDisconnectPartner}
+                    className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold border border-rose-500/20 text-[11px] flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Unlink className="w-3.5 h-3.5" />
+                    <span>Disconnect {isMother ? 'Partner' : 'Sanctuary'}</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
