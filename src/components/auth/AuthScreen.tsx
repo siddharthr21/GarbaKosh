@@ -36,7 +36,8 @@ export const AuthScreen: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'mother' | 'partner'>('mother');
 
   // Form states
-  const [email, setEmail] = useState('');
+  const [emailOrCode, setEmailOrCode] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [motherPairingCode, setMotherPairingCode] = useState('');
@@ -54,10 +55,17 @@ export const AuthScreen: React.FC = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setSuccessMessage(null);
 
-    const success = login(email.trim(), password);
+    const cleanInput = emailOrCode.trim();
+    if (!cleanInput) {
+      setErrorMessage('Please enter your email or unique security code (e.g. siri@bloomnest.com or MAMA-2026).');
+      return;
+    }
+
+    const success = login(cleanInput, password);
     if (!success) {
-      setErrorMessage('Account not found with this email. Try our 1-click demo accounts below or create a new account.');
+      setErrorMessage('Account not found with this email or security code. Please check your spelling or choose a 1-click evaluation profile below.');
     }
   };
 
@@ -67,17 +75,17 @@ export const AuthScreen: React.FC = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    if (!name.trim() || !email.trim()) {
-      setErrorMessage('Please fill in your name and email.');
+    if (!name.trim() || !registerEmail.trim()) {
+      setErrorMessage('Please fill in your name and email address.');
       return;
     }
 
     const res = register({
       name: name.trim(),
-      email: email.trim(),
+      email: registerEmail.trim(),
       role: selectedRole,
       password: password || 'secret123',
-      motherPairingCode: selectedRole === 'partner' ? motherPairingCode.trim().toUpperCase() : undefined,
+      motherPairingCode: selectedRole === 'partner' && motherPairingCode.trim() ? motherPairingCode.trim() : undefined,
       relationship: selectedRole === 'partner' ? relationship : undefined,
       gestationalWeek: selectedRole === 'mother' ? Number(gestationalWeek) || 24 : undefined,
       dietaryPreference
@@ -89,8 +97,12 @@ export const AuthScreen: React.FC = () => {
   };
 
   // Quick Demo Login helper
-  const handleQuickDemoLogin = (targetEmail: string) => {
-    login(targetEmail);
+  const handleQuickDemoLogin = (targetIdentifier: string) => {
+    setErrorMessage(null);
+    const success = login(targetIdentifier);
+    if (!success) {
+      setErrorMessage(`Could not sign in with ${targetIdentifier}. Please try again.`);
+    }
   };
 
   const handleForgotPassword = (e: React.FormEvent) => {
@@ -263,15 +275,17 @@ export const AuthScreen: React.FC = () => {
               <div className="space-y-5">
                 <form onSubmit={handleLogin} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="block text-foreground font-bold mb-1">{t('emailLabel')}</label>
+                    <label className="block text-foreground font-bold mb-1">
+                      {selectedLanguage === 'en-US' ? 'Email Address or Security Code' : `${t('emailLabel')} / Code`}
+                    </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3.5 top-3 text-muted-foreground" />
+                      <KeyRound className="w-4 h-4 absolute left-3.5 top-3 text-muted-foreground" />
                       <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="e.g. siri@bloomnest.com"
-                        className="w-full pl-10 pr-3 py-2.5 bg-muted/30 border border-input rounded-2xl text-xs focus:ring-2 focus:ring-primary focus:outline-none"
+                        type="text"
+                        value={emailOrCode}
+                        onChange={(e) => setEmailOrCode(e.target.value)}
+                        placeholder="e.g. siri@bloomnest.com or MAMA-2026"
+                        className="w-full pl-10 pr-3 py-2.5 bg-muted/30 border border-input rounded-2xl text-xs focus:ring-2 focus:ring-primary focus:outline-none font-medium"
                         required
                       />
                     </div>
@@ -294,9 +308,8 @@ export const AuthScreen: React.FC = () => {
                         type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
+                        placeholder="•••••••• (Optional for demo accounts)"
                         className="w-full pl-10 pr-10 py-2.5 bg-muted/30 border border-input rounded-2xl text-xs focus:ring-2 focus:ring-primary focus:outline-none"
-                        required
                       />
                       <button
                         type="button"
@@ -310,7 +323,7 @@ export const AuthScreen: React.FC = () => {
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-primary hover:bg-primary-hover text-white rounded-2xl font-bold shadow-soft transition-all text-xs flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-primary hover:bg-primary-hover text-white rounded-2xl font-bold shadow-soft transition-all text-xs flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>{t('signInBtn')}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -318,55 +331,114 @@ export const AuthScreen: React.FC = () => {
                 </form>
 
                 {/* 1-Click Instant Demo Accounts Section */}
-                <div className="pt-3 border-t border-border space-y-2.5">
+                <div className="pt-4 border-t border-border space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                      {t('demoProfilesTitle')}
+                    <div>
+                      <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
+                        {t('demoProfilesTitle')}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">Select a persona below for immediate test access</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-primary bg-primary-soft px-2 py-0.5 rounded-full border border-primary/20">
+                      1-Click Login
                     </span>
-                    <span className="text-[10px] text-primary font-bold">No password required</span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                    {/* Mother Profile */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+                    {/* Mother Profile 1: Paired */}
                     <button
                       type="button"
                       onClick={() => handleQuickDemoLogin('siri@bloomnest.com')}
-                      className="p-3 rounded-2xl bg-primary-soft hover:bg-primary/20 border border-primary/30 text-left transition-all group"
+                      className="p-3 rounded-2xl bg-primary-soft/60 hover:bg-primary/20 border border-primary/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-foreground">Siri Rao</span>
-                        <span className="text-xs">🌸</span>
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-foreground group-hover:text-primary transition-colors">Siri Rao</span>
+                          <span className="text-sm">🌸</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-primary block">Mother • Wk 24</span>
+                        <div className="mt-1 flex items-center gap-1">
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 font-semibold border border-emerald-500/20">
+                            🔗 Paired
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-semibold text-primary block">Mother (Week 24)</span>
-                      <span className="text-[9px] font-mono text-muted-foreground">Code: MAMA-2026</span>
+                      <div className="mt-2.5 pt-1.5 border-t border-primary/20 flex items-center justify-between">
+                        <span className="text-[9px] font-mono text-muted-foreground font-semibold">MAMA-2026</span>
+                        <span className="text-[9px] text-primary font-bold group-hover:underline">Enter →</span>
+                      </div>
                     </button>
 
-                    {/* Linked Partner Profile */}
+                    {/* Partner Profile 1: Paired */}
                     <button
                       type="button"
                       onClick={() => handleQuickDemoLogin('rohan@bloomnest.com')}
-                      className="p-3 rounded-2xl bg-accent-soft hover:bg-accent/20 border border-accent/30 text-left transition-all group"
+                      className="p-3 rounded-2xl bg-accent-soft/60 hover:bg-accent/20 border border-accent/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-foreground">Rohan Rao</span>
-                        <span className="text-xs">🤝</span>
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-foreground group-hover:text-accent transition-colors">Rohan Rao</span>
+                          <span className="text-sm">🤝</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-accent block">Partner • Paired</span>
+                        <div className="mt-1 flex items-center gap-1">
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 font-semibold border border-emerald-500/20">
+                            Linked to Siri
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-semibold text-accent block">Paired Partner</span>
-                      <span className="text-[9px] font-mono text-muted-foreground">Code: PAPA-7140</span>
+                      <div className="mt-2.5 pt-1.5 border-t border-accent/20 flex items-center justify-between">
+                        <span className="text-[9px] font-mono text-muted-foreground font-semibold">PAPA-7140</span>
+                        <span className="text-[9px] text-accent font-bold group-hover:underline">Enter →</span>
+                      </div>
                     </button>
 
-                    {/* Unlinked Partner Profile */}
+                    {/* Mother Profile 2: Unpaired */}
+                    <button
+                      type="button"
+                      onClick={() => handleQuickDemoLogin('priya@bloomnest.com')}
+                      className="p-3 rounded-2xl bg-rose-50/50 hover:bg-rose-100/50 border border-rose-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-foreground group-hover:text-rose-700 transition-colors">Priya Nair</span>
+                          <span className="text-sm">🌸</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-rose-700 block">Mother • Wk 20</span>
+                        <div className="mt-1 flex items-center gap-1">
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-amber-500/10 text-amber-700 font-semibold border border-amber-500/20">
+                            🔓 Unpaired
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-2.5 pt-1.5 border-t border-rose-200/60 flex items-center justify-between">
+                        <span className="text-[9px] font-mono text-muted-foreground font-semibold">MAMA-4819</span>
+                        <span className="text-[9px] text-rose-700 font-bold group-hover:underline">Enter →</span>
+                      </div>
+                    </button>
+
+                    {/* Partner Profile 2: Unpaired */}
                     <button
                       type="button"
                       onClick={() => handleQuickDemoLogin('arjun@bloomnest.com')}
-                      className="p-3 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border text-left transition-all group"
+                      className="p-3 rounded-2xl bg-stone-100 hover:bg-stone-200/70 border border-stone-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs"
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-foreground">Arjun Mehta</span>
-                        <span className="text-xs">🔒</span>
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-foreground group-hover:text-foreground transition-colors">Arjun Mehta</span>
+                          <span className="text-sm">🔒</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-stone-700 block">Partner • Unpaired</span>
+                        <div className="mt-1 flex items-center gap-1">
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-stone-500/10 text-stone-700 font-semibold border border-stone-300">
+                            Ready to pair
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-semibold text-muted-foreground block">Unpaired Partner</span>
-                      <span className="text-[9px] font-mono text-muted-foreground">Code: PAPA-9921</span>
+                      <div className="mt-2.5 pt-1.5 border-t border-stone-200 flex items-center justify-between">
+                        <span className="text-[9px] font-mono text-muted-foreground font-semibold">PAPA-9921</span>
+                        <span className="text-[9px] text-foreground font-bold group-hover:underline">Enter →</span>
+                      </div>
                     </button>
                   </div>
                 </div>
@@ -434,8 +506,8 @@ export const AuthScreen: React.FC = () => {
                     <label className="block text-foreground font-bold mb-1">Email Address</label>
                     <input
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
                       placeholder="e.g. user@example.com"
                       className="w-full px-3 py-2 bg-muted/30 border border-input rounded-2xl text-xs focus:ring-2 focus:ring-primary focus:outline-none"
                       required
@@ -522,20 +594,20 @@ export const AuthScreen: React.FC = () => {
 
                       <div>
                         <label className="block text-foreground font-semibold mb-1">
-                          Mother's Pairing Code <span className="text-[10px] text-muted-foreground font-normal">(Optional)</span>
+                          Mother's Pairing Code or Email <span className="text-[10px] text-muted-foreground font-normal">(Optional)</span>
                         </label>
                         <input
                           type="text"
                           value={motherPairingCode}
                           onChange={(e) => setMotherPairingCode(e.target.value)}
-                          placeholder="e.g. MAMA-2026"
-                          className="w-full px-2.5 py-1.5 bg-card border border-input rounded-xl text-xs uppercase font-mono tracking-wider"
+                          placeholder="e.g. MAMA-2026 or siri@bloomnest.com"
+                          className="w-full px-2.5 py-1.5 bg-card border border-input rounded-xl text-xs font-mono tracking-wider"
                         />
                       </div>
                     </div>
 
                     <p className="text-[10px] text-muted-foreground">
-                      * If you don't have the mother's code yet, you can leave it blank and link later. Your account will have its own unique PAPA code.
+                      * You can enter the mother's MAMA code or her registered email to instantly link accounts, or leave blank to link later. Your account receives its own unique PAPA code.
                     </p>
                   </div>
                 )}

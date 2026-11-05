@@ -49,7 +49,7 @@ interface AppContextType {
   isAuthenticated: boolean;
   currentUser: UserAccount | null;
   allAccounts: UserAccount[];
-  login: (email: string, password?: string) => boolean;
+  login: (emailOrCode: string, password?: string) => boolean;
   logout: () => void;
   register: (data: RegisterAccountData) => { success: boolean; message?: string };
   pairPartnerWithMotherCode: (motherCode: string) => { success: boolean; message: string };
@@ -422,7 +422,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [allAccounts, setAllAccounts] = useState<UserAccount[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('bloomnest_accounts');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const existingIds = new Set(parsed.map((a: UserAccount) => a.id));
+            const merged = [...parsed];
+            for (const defAcc of INITIAL_ACCOUNTS) {
+              if (!existingIds.has(defAcc.id)) {
+                merged.push(defAcc);
+              }
+            }
+            return merged;
+          }
+        } catch (e) {}
+      }
     }
     return INITIAL_ACCOUNTS;
   });
@@ -714,17 +728,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Authentication & Multi-Account Functions
-  const login = (email: string, password?: string): boolean => {
-    const found = allAccounts.find(a => a.email.toLowerCase() === email.toLowerCase());
+  const login = (emailOrCode: string, password?: string): boolean => {
+    if (!emailOrCode || !emailOrCode.trim()) return false;
+    const clean = emailOrCode.trim().toLowerCase();
+    const cleanCode = emailOrCode.trim().toUpperCase();
+
+    const found = allAccounts.find(
+      a => a.email.toLowerCase() === clean || (a.uniqueCode && a.uniqueCode.toUpperCase() === cleanCode)
+    );
     if (!found) return false;
 
-    setCurrentUser(found);
+    // If partner has a linked mother, ensure latest profile sync
+    let targetProfile = found.profile;
+    if (found.role === 'partner' && found.partnerLinkedCode) {
+      const linkedMother = allAccounts.find(
+        a => a.role === 'mother' && a.uniqueCode.toUpperCase() === found.partnerLinkedCode?.toUpperCase()
+      );
+      if (linkedMother) {
+        targetProfile = {
+          ...targetProfile,
+          currentGestationalWeek: linkedMother.profile.currentGestationalWeek,
+          estimatedDueDate: linkedMother.profile.estimatedDueDate,
+          babyNickname: linkedMother.profile.babyNickname,
+          partnerProfile: {
+            relationship: 'Expecting Mother',
+            phone: '',
+            ...(targetProfile.partnerProfile || {}),
+            name: linkedMother.name,
+            email: linkedMother.email,
+            pairingCode: linkedMother.uniqueCode,
+            isConnected: true
+          }
+        };
+      }
+    }
+
+    const updatedFound: UserAccount = {
+      ...found,
+      profile: targetProfile
+    };
+
+    setCurrentUser(updatedFound);
     setIsAuthenticated(true);
-    setActiveRole(found.role);
-    setProfile(found.profile);
+    setActiveRole(updatedFound.role);
+    setProfile(targetProfile);
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('bloomnest_auth_session', JSON.stringify(found));
+      localStorage.setItem('bloomnest_auth_session', JSON.stringify(updatedFound));
     }
     return true;
   };
@@ -793,14 +843,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       if (data.motherPairingCode) {
         const cleanInput = data.motherPairingCode.trim().toUpperCase();
+        const cleanEmail = data.motherPairingCode.trim().toLowerCase();
         targetMother = allAccounts.find(
-          a => a.role === 'mother' && a.uniqueCode.toUpperCase() === cleanInput
+          a => a.role === 'mother' && (a.uniqueCode.toUpperCase() === cleanInput || a.email.toLowerCase() === cleanEmail)
         );
 
         if (!targetMother) {
           return {
             success: false,
-            message: `Mother pairing code "${cleanInput}" not found in registered accounts.`
+            message: `Mother pairing code or email "${data.motherPairingCode.trim()}" not found in registered accounts.`
           };
         }
 
@@ -912,8 +963,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     const cleanInput = motherCodeOrId.trim().toUpperCase();
+    const cleanEmail = motherCodeOrId.trim().toLowerCase();
     const targetMother = allAccounts.find(
-      a => a.role === 'mother' && (a.uniqueCode.toUpperCase() === cleanInput || a.id === motherCodeOrId)
+      a => a.role === 'mother' && (a.uniqueCode.toUpperCase() === cleanInput || a.email.toLowerCase() === cleanEmail || a.id === motherCodeOrId)
     );
 
     if (!targetMother) {
