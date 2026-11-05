@@ -1,8 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import { SUPPORTED_LANGUAGES } from '@/data/aiMedicalKnowledge';
+import {
+  getPregnancyMonth,
+  getPregnancyTrimester,
+  calculateFromDueDate
+} from '@/utils/pregnancyCalculations';
 import {
   Heart,
   Calendar,
@@ -40,16 +45,14 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
   const isMother = currentUser?.role === 'mother';
   const isPaired = currentUser?.isPaired;
 
-  const getDaysRemaining = () => {
-    const today = new Date();
-    const edd = new Date(profile.estimatedDueDate);
-    const diffTime = edd.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 0;
-  };
+  const timing = useMemo(() => {
+    return calculateFromDueDate(profile.estimatedDueDate);
+  }, [profile.estimatedDueDate, profile.currentGestationalWeek]);
 
-  const daysLeft = getDaysRemaining();
-  const currentMonth = Math.min(9, Math.ceil(profile.currentGestationalWeek / 4.44));
+  const currentWeek = profile.currentGestationalWeek || timing.gestationalWeek;
+  const currentMonth = getPregnancyMonth(currentWeek);
+  const currentTrimester = getPregnancyTrimester(currentWeek);
+  const daysLeft = timing.daysRemaining;
 
   return (
     <header className="sticky top-0 z-30 glass-panel border-b border-border px-4 lg:px-8 py-3 transition-all">
@@ -76,8 +79,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
         <div className="flex items-center gap-2 md:gap-3 bg-muted/40 px-3.5 py-1.5 rounded-full border border-border shadow-xs text-xs md:text-sm">
           <div className="flex items-center gap-1.5 text-primary font-bold">
             <Heart className="w-3.5 h-3.5 fill-primary" />
-            <span>{t('week')} {profile.currentGestationalWeek}</span>
-            <span className="hidden md:inline font-normal text-muted-foreground">· {t('month')} {currentMonth}</span>
+            <span>{t('week')} {currentWeek}</span>
+            <span className="font-normal text-muted-foreground">· {t('month')} {currentMonth}</span>
+            <span className="hidden sm:inline-block text-[10px] px-1.5 py-0.2 rounded-full bg-primary-soft text-primary font-semibold">T{currentTrimester}</span>
           </div>
           <span className="text-border">|</span>
           <div className="flex items-center gap-1.5 text-accent font-medium">

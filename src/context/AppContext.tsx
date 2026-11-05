@@ -30,6 +30,13 @@ import { EXERCISE_ROUTINES } from '@/data/exerciseData';
 import { BABY_NAMES_DATABASE } from '@/data/babyNamesData';
 import { getTranslation, SupportedLanguageCode } from '@/data/translations';
 import { MULTILINGUAL_AI_RESPONSES, getLocalizedAiGreeting } from '@/data/multilingualAiKnowledge';
+import {
+  calculateFromDueDate,
+  calculateFromLmp,
+  calculateFromWeek,
+  getPregnancyMonth,
+  getPregnancyTrimester
+} from '@/utils/pregnancyCalculations';
 
 export interface ChatMessage {
   id: string;
@@ -779,7 +786,94 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [selectedLanguage, profile, contractions, birthPlan, dailyChecklist, vitals, meals, waterGlasses, cravings, memories, reminders, babyNames, hospitalChecklist, chatMessages]);
 
   const updateProfile = (updated: Partial<UserProfile>) => {
-    setProfile(prev => ({ ...prev, ...updated }));
+    let gestationalWeek = updated.currentGestationalWeek ?? profile.currentGestationalWeek;
+    let estimatedDueDate = updated.estimatedDueDate ?? profile.estimatedDueDate;
+    let lastMenstrualPeriod = updated.lastMenstrualPeriod ?? profile.lastMenstrualPeriod;
+
+    // Check if due date, LMP, or gestational week was modified, and dynamically calculate the rest
+    if (updated.estimatedDueDate && updated.estimatedDueDate !== profile.estimatedDueDate) {
+      const timing = calculateFromDueDate(updated.estimatedDueDate);
+      gestationalWeek = timing.gestationalWeek;
+      estimatedDueDate = timing.estimatedDueDate;
+      lastMenstrualPeriod = timing.lastMenstrualPeriod;
+    } else if (updated.lastMenstrualPeriod && updated.lastMenstrualPeriod !== profile.lastMenstrualPeriod) {
+      const timing = calculateFromLmp(updated.lastMenstrualPeriod);
+      gestationalWeek = timing.gestationalWeek;
+      estimatedDueDate = timing.estimatedDueDate;
+      lastMenstrualPeriod = timing.lastMenstrualPeriod;
+    } else if (
+      updated.currentGestationalWeek !== undefined &&
+      updated.currentGestationalWeek !== profile.currentGestationalWeek
+    ) {
+      const timing = calculateFromWeek(updated.currentGestationalWeek);
+      gestationalWeek = timing.gestationalWeek;
+      estimatedDueDate = timing.estimatedDueDate;
+      lastMenstrualPeriod = timing.lastMenstrualPeriod;
+    }
+
+    const mergedProfile: UserProfile = {
+      ...profile,
+      ...updated,
+      currentGestationalWeek: gestationalWeek,
+      estimatedDueDate,
+      lastMenstrualPeriod
+    };
+
+    setProfile(mergedProfile);
+
+    // Sync active session user
+    setCurrentUser(prevUser => {
+      if (!prevUser) return null;
+      return {
+        ...prevUser,
+        profile: mergedProfile
+      };
+    });
+
+    // Sync allAccounts so updates reflect across partner views, switching, and reloads
+    setAllAccounts(prevAccounts => {
+      return prevAccounts.map(acc => {
+        if (currentUser && acc.id === currentUser.id) {
+          return {
+            ...acc,
+            profile: mergedProfile
+          };
+        }
+        // If current user is a mother, sync any partner linked to her account
+        if (
+          currentUser &&
+          currentUser.role === 'mother' &&
+          acc.role === 'partner' &&
+          acc.partnerLinkedCode === currentUser.uniqueCode
+        ) {
+          return {
+            ...acc,
+            profile: {
+              ...acc.profile,
+              currentGestationalWeek: gestationalWeek,
+              estimatedDueDate,
+              lastMenstrualPeriod,
+              babyNickname: mergedProfile.babyNickname
+            }
+          };
+        }
+        return acc;
+      });
+    });
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bloomnest_profile', JSON.stringify(mergedProfile));
+      const session = localStorage.getItem('bloomnest_auth_session');
+      if (session) {
+        try {
+          const parsed = JSON.parse(session);
+          localStorage.setItem(
+            'bloomnest_auth_session',
+            JSON.stringify({ ...parsed, profile: mergedProfile })
+          );
+        } catch {}
+      }
+    }
   };
 
   // Authentication & Multi-Account Functions
@@ -878,13 +972,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     if (data.role === 'mother') {
       const uniqueCode = `MAMA-${Math.floor(1000 + Math.random() * 9000)}`;
+      const gestWeek = data.gestationalWeek || 24;
+      const timing = calculateFromWeek(gestWeek);
       const newMotherProfile: UserProfile = {
         ...INITIAL_PROFILE,
         id: `usr_mother_${Date.now()}`,
         name: data.name,
         email: data.email,
         role: 'mother',
-        currentGestationalWeek: data.gestationalWeek || 24,
+        currentGestationalWeek: timing.gestationalWeek,
+        estimatedDueDate: timing.estimatedDueDate,
+        lastMenstrualPeriod: timing.lastMenstrualPeriod,
         dietaryPreference: data.dietaryPreference || 'vegetarian',
         partnerProfile: {
           name: '',
@@ -1312,11 +1410,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const completeOnboarding = (data: Partial<UserProfile>) => {
-    setProfile(prev => ({
-      ...prev,
+    updateProfile({
       ...data,
       onboardingCompleted: true
-    }));
+    });
     setIsOnboardingOpen(false);
   };
 

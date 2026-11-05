@@ -1,10 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { WEEKS_DATA, MONTHS_DATA } from '@/data/pregnancyJourneyData';
 import { calculateMaternalNutritionTargets } from '@/data/nutritionData';
 import { FetalWeeklyHero } from '@/components/dashboard/FetalWeeklyHero';
+import {
+  getPregnancyMonth,
+  getPregnancyTrimester,
+  calculateFromDueDate
+} from '@/utils/pregnancyCalculations';
 import {
   Heart,
   Calendar,
@@ -64,19 +69,17 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
   const [manualMotherCode, setManualMotherCode] = useState('');
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [selectedTrackerWeek, setSelectedTrackerWeek] = useState(profile.currentGestationalWeek);
+  const [selectedTrackerWeek, setSelectedTrackerWeek] = useState(profile.currentGestationalWeek || 24);
 
-  const currentWeek = profile.currentGestationalWeek;
-  const currentMonth = Math.min(9, Math.ceil(currentWeek / 4.44));
+  useEffect(() => {
+    setSelectedTrackerWeek(profile.currentGestationalWeek || 24);
+  }, [profile.currentGestationalWeek]);
+
+  const currentWeek = profile.currentGestationalWeek || 24;
+  const currentMonth = getPregnancyMonth(currentWeek);
+  const currentTrimester = getPregnancyTrimester(currentWeek);
+  const daysRemaining = calculateFromDueDate(profile.estimatedDueDate).daysRemaining;
   const weekInfo = WEEKS_DATA.find(w => w.week === selectedTrackerWeek) || WEEKS_DATA[selectedTrackerWeek - 1] || WEEKS_DATA[0];
-
-  const getDaysRemaining = () => {
-    const today = new Date();
-    const edd = new Date(profile.estimatedDueDate);
-    const diff = edd.getTime() - today.getTime();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  };
-  const daysRemaining = getDaysRemaining();
 
   const clinicalRda = useMemo(() => {
     return calculateMaternalNutritionTargets(

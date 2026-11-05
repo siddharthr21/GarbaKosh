@@ -3,6 +3,13 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
+  calculateFromDueDate,
+  calculateFromLmp,
+  calculateFromWeek,
+  getPregnancyMonth,
+  getPregnancyTrimester
+} from '@/utils/pregnancyCalculations';
+import {
   Heart,
   Calendar,
   Sparkles,
@@ -37,12 +44,39 @@ export const OnboardingModal: React.FC = () => {
   const [language, setLanguage] = useState(profile.partnerProfile?.pairingCode ? 'en-US' : 'en-US');
 
   // Step 2: Pregnancy Details
-  const [calcMethod, setCalcMethod] = useState<'due_date' | 'lmp'>('due_date');
+  const [calcMethod, setCalcMethod] = useState<'due_date' | 'lmp' | 'week'>('due_date');
   const [dueDate, setDueDate] = useState(profile.estimatedDueDate);
   const [lmpDate, setLmpDate] = useState(profile.lastMenstrualPeriod);
+  const [gestationalWeek, setGestationalWeek] = useState(profile.currentGestationalWeek || 24);
   const [isFirstPregnancy, setIsFirstPregnancy] = useState(profile.isFirstPregnancy ?? true);
   const [numberOfBabies, setNumberOfBabies] = useState(profile.numberOfBabies || 1);
   const [babyNickname, setBabyNickname] = useState(profile.babyNickname || 'Little Bean');
+
+  const handleDueDateChange = (val: string) => {
+    setDueDate(val);
+    if (val) {
+      const timing = calculateFromDueDate(val);
+      setGestationalWeek(timing.gestationalWeek);
+      setLmpDate(timing.lastMenstrualPeriod);
+    }
+  };
+
+  const handleLmpChange = (val: string) => {
+    setLmpDate(val);
+    if (val) {
+      const timing = calculateFromLmp(val);
+      setDueDate(timing.estimatedDueDate);
+      setGestationalWeek(timing.gestationalWeek);
+    }
+  };
+
+  const handleWeekChange = (w: number) => {
+    const clamped = Math.max(1, Math.min(40, w));
+    setGestationalWeek(clamped);
+    const timing = calculateFromWeek(clamped);
+    setDueDate(timing.estimatedDueDate);
+    setLmpDate(timing.lastMenstrualPeriod);
+  };
 
   // Step 3: Health Preferences
   const [dietaryPref, setDietaryPref] = useState(profile.dietaryPreference);
@@ -74,6 +108,7 @@ export const OnboardingModal: React.FC = () => {
       age: Number(age) || 29,
       dietaryPreference: dietaryPref,
       allergies,
+      currentGestationalWeek: gestationalWeek,
       estimatedDueDate: dueDate,
       lastMenstrualPeriod: lmpDate,
       isFirstPregnancy,
@@ -212,54 +247,94 @@ export const OnboardingModal: React.FC = () => {
             <div className="space-y-4 animate-in fade-in">
               <h3 className="text-sm font-bold text-foreground">2. Pregnancy Details & Gestational Timing</h3>
 
+              {/* Live Timing Preview Banner */}
+              <div className="p-3 rounded-2xl bg-gradient-to-r from-primary-soft/60 to-accent-soft/40 border border-primary/20 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🌸</span>
+                  <div>
+                    <span className="font-bold text-foreground">Week {gestationalWeek} · Month {getPregnancyMonth(gestationalWeek)}</span>
+                    <p className="text-[10px] text-muted-foreground">Trimester {getPregnancyTrimester(gestationalWeek)} · {calculateFromDueDate(dueDate).daysRemaining} days until Due Date ({dueDate})</p>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-3">
-                <div className="flex gap-2">
+                <div className="flex gap-2 text-xs">
                   <button
                     type="button"
                     onClick={() => setCalcMethod('due_date')}
-                    className={`flex-1 py-1.5 rounded-xl border font-semibold ${
-                      calcMethod === 'due_date' ? 'bg-primary text-white border-primary' : 'bg-muted/40 border-border'
+                    className={`flex-1 py-1.5 rounded-xl border font-semibold cursor-pointer ${
+                      calcMethod === 'due_date' ? 'bg-primary text-white border-primary' : 'bg-muted/40 border-border text-muted-foreground'
                     }`}
                   >
-                    I Know My Due Date
+                    Due Date
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCalcMethod('week')}
+                    className={`flex-1 py-1.5 rounded-xl border font-semibold cursor-pointer ${
+                      calcMethod === 'week' ? 'bg-primary text-white border-primary' : 'bg-muted/40 border-border text-muted-foreground'
+                    }`}
+                  >
+                    Select Week
                   </button>
                   <button
                     type="button"
                     onClick={() => setCalcMethod('lmp')}
-                    className={`flex-1 py-1.5 rounded-xl border font-semibold ${
-                      calcMethod === 'lmp' ? 'bg-primary text-white border-primary' : 'bg-muted/40 border-border'
+                    className={`flex-1 py-1.5 rounded-xl border font-semibold cursor-pointer ${
+                      calcMethod === 'lmp' ? 'bg-primary text-white border-primary' : 'bg-muted/40 border-border text-muted-foreground'
                     }`}
                   >
-                    Calculate From Last Period (LMP)
+                    LMP Period
                   </button>
                 </div>
 
-                {calcMethod === 'due_date' ? (
+                {calcMethod === 'week' && (
+                  <div className="p-3 rounded-xl bg-muted/20 border border-border space-y-1.5">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-foreground">Gestational Week:</span>
+                      <span className="font-extrabold text-primary text-sm">Week {gestationalWeek}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={1}
+                      max={40}
+                      value={gestationalWeek}
+                      onChange={e => handleWeekChange(Number(e.target.value))}
+                      className="w-full accent-primary cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
+                      <span>Wk 1</span>
+                      <span>Wk 13</span>
+                      <span>Wk 27</span>
+                      <span>Wk 40</span>
+                    </div>
+                  </div>
+                )}
+
+                {calcMethod === 'due_date' && (
                   <div>
                     <label className="block text-foreground font-semibold mb-1">Estimated Due Date (EDD)</label>
                     <input
                       type="date"
                       value={dueDate}
-                      onChange={e => setDueDate(e.target.value)}
+                      onChange={e => handleDueDateChange(e.target.value)}
                       className="w-full px-3 py-2 bg-muted/30 border border-input rounded-xl text-xs"
                     />
+                    <p className="text-[10px] text-muted-foreground mt-1">Calculates your gestational week, month, and trimester automatically.</p>
                   </div>
-                ) : (
+                )}
+
+                {calcMethod === 'lmp' && (
                   <div>
                     <label className="block text-foreground font-semibold mb-1">First Day of Last Menstrual Period (LMP)</label>
                     <input
                       type="date"
                       value={lmpDate}
-                      onChange={e => {
-                        setLmpDate(e.target.value);
-                        const d = new Date(e.target.value);
-                        if (!isNaN(d.getTime())) {
-                          d.setDate(d.getDate() + 280);
-                          setDueDate(d.toISOString().split('T')[0]);
-                        }
-                      }}
+                      onChange={e => handleLmpChange(e.target.value)}
                       className="w-full px-3 py-2 bg-muted/30 border border-input rounded-xl text-xs"
                     />
+                    <p className="text-[10px] text-muted-foreground mt-1">Calculates your Due Date (+280 days), current week, and month.</p>
                   </div>
                 )}
 

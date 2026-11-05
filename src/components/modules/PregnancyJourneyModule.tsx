@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { MONTHS_DATA, WEEKS_DATA } from '@/data/pregnancyJourneyData';
+import { getPregnancyMonth } from '@/utils/pregnancyCalculations';
 import {
   Sparkles,
   Calendar,
@@ -26,12 +27,18 @@ import {
 
 export const PregnancyJourneyModule: React.FC = () => {
   const { profile, t } = useApp();
-  const currentMotherMonth = Math.min(9, Math.ceil(profile.currentGestationalWeek / 4.44));
+  const currentMotherMonth = getPregnancyMonth(profile.currentGestationalWeek || 24);
   
   // View mode switcher: 40-week biometric timeline vs 9-month in-depth guide
   const [viewMode, setViewMode] = useState<'weeks' | 'months'>('weeks');
   const [selectedWeekNum, setSelectedWeekNum] = useState<number>(profile.currentGestationalWeek || 24);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(currentMotherMonth - 1);
+
+  useEffect(() => {
+    const wk = profile.currentGestationalWeek || 24;
+    setSelectedWeekNum(wk);
+    setSelectedMonthIndex(getPregnancyMonth(wk) - 1);
+  }, [profile.currentGestationalWeek]);
 
   const activeWeek = WEEKS_DATA.find(w => w.week === selectedWeekNum) || WEEKS_DATA[selectedWeekNum - 1] || WEEKS_DATA[0];
   const activeMonth = MONTHS_DATA[selectedMonthIndex] || MONTHS_DATA[0];

@@ -71,6 +71,78 @@
   box-shadow: 0 10px 30px -5px rgba(47, 52, 48, 0.12);
 }
 
+/* Fetal Floating, Womb Pulsing, and Heartbeat Keyframes */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.8deg);
+  }
+}
+
+@keyframes wombPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes fetalHeartbeat {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  14% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+  28% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  42% {
+    transform: scale(1.22);
+    opacity: 0.95;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}
+
+@keyframes rippleWave {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.animate-fetal-float {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-womb-pulse {
+  animation: wombPulse 4s ease-in-out infinite;
+}
+
+.animate-fetal-heart {
+  animation: fetalHeartbeat 0.85s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.animate-ripple {
+  animation: rippleWave 1.2s cubic-bezier(0, 0.2, 0.8, 1) forwards;
+}
+
 /* Delicate scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

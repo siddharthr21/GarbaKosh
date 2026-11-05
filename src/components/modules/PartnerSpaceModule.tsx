@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { calculateFromDueDate } from '@/utils/pregnancyCalculations';
 import {
   HeartHandshake,
   Users,
@@ -136,14 +137,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
   };
 
   const week = profile.currentGestationalWeek || 24;
-
-  const getDaysRemaining = () => {
-    const today = new Date();
-    const edd = new Date(profile.estimatedDueDate || '2027-02-16');
-    const diffTime = edd.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 0;
-  };
+  const daysRemaining = calculateFromDueDate(profile.estimatedDueDate || '2027-02-16').daysRemaining;
 
   // Garbkosh Trimester-Adaptive Partner Mission
   const getPartnerWeeklyMission = (currentWeek: number) => {
@@ -496,7 +490,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
               Connected with {motherName}
             </h2>
             <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
-              Week {week} · {getDaysRemaining()} days to estimated due date. Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders.
+              Week {week} · {daysRemaining} days to estimated due date. Both accounts share milestones, hospital bag items, shortlisted baby names, and doctor reminders.
             </p>
 
             <div className="flex flex-wrap items-center gap-2.5 pt-2">

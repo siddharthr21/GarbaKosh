@@ -1,7 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import {
+  calculateFromDueDate,
+  calculateFromLmp,
+  calculateFromWeek,
+  getPregnancyMonth,
+  getPregnancyTrimester
+} from '@/utils/pregnancyCalculations';
 import {
   ShieldCheck,
   Heart,
@@ -51,9 +58,42 @@ export const SettingsModule: React.FC = () => {
   // Pregnancy Form State
   const [dueDate, setDueDate] = useState(profile.estimatedDueDate);
   const [lmpDate, setLmpDate] = useState(profile.lastMenstrualPeriod);
+  const [gestationalWeek, setGestationalWeek] = useState(profile.currentGestationalWeek || 24);
   const [babyNickname, setBabyNickname] = useState(profile.babyNickname || 'Little Bean');
   const [numberOfBabies, setNumberOfBabies] = useState(profile.numberOfBabies || 1);
   const [isFirstPregnancy, setIsFirstPregnancy] = useState(profile.isFirstPregnancy ?? true);
+
+  useEffect(() => {
+    setDueDate(profile.estimatedDueDate);
+    setLmpDate(profile.lastMenstrualPeriod);
+    setGestationalWeek(profile.currentGestationalWeek || 24);
+  }, [profile.estimatedDueDate, profile.lastMenstrualPeriod, profile.currentGestationalWeek]);
+
+  const handleDueDateChange = (newDueDate: string) => {
+    setDueDate(newDueDate);
+    if (newDueDate) {
+      const timing = calculateFromDueDate(newDueDate);
+      setGestationalWeek(timing.gestationalWeek);
+      setLmpDate(timing.lastMenstrualPeriod);
+    }
+  };
+
+  const handleLmpChange = (newLmp: string) => {
+    setLmpDate(newLmp);
+    if (newLmp) {
+      const timing = calculateFromLmp(newLmp);
+      setDueDate(timing.estimatedDueDate);
+      setGestationalWeek(timing.gestationalWeek);
+    }
+  };
+
+  const handleWeekChange = (newWeek: number) => {
+    const clamped = Math.max(1, Math.min(40, newWeek));
+    setGestationalWeek(clamped);
+    const timing = calculateFromWeek(clamped);
+    setDueDate(timing.estimatedDueDate);
+    setLmpDate(timing.lastMenstrualPeriod);
+  };
 
   // Health Preferences State
   const [dietaryPref, setDietaryPref] = useState(profile.dietaryPreference);
@@ -128,11 +168,12 @@ export const SettingsModule: React.FC = () => {
     updateProfile({
       estimatedDueDate: dueDate,
       lastMenstrualPeriod: lmpDate,
+      currentGestationalWeek: Number(gestationalWeek) || 24,
       babyNickname,
       numberOfBabies,
       isFirstPregnancy
     });
-    alert('Pregnancy timeline updated!');
+    alert('Pregnancy timeline updated! Gestational dates, week, and month are now synchronized.');
   };
 
   const handleSaveHealth = (e: React.FormEvent) => {
@@ -512,18 +553,66 @@ export const SettingsModule: React.FC = () => {
       {/* ======================================================== */}
       {activeSettingsTab === 'pregnancy' && (
         <form onSubmit={handleSavePregnancy} className="bg-card rounded-4xl p-6 md:p-8 border border-border shadow-card space-y-4 animate-in fade-in text-xs">
-          <h2 className="text-xl font-serif font-bold text-foreground">Pregnancy Timeline</h2>
-          <p className="text-muted-foreground">Adjust due dates and gestational calculation milestones.</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-serif font-bold text-foreground">Pregnancy Timeline & Gestational Timing</h2>
+              <p className="text-muted-foreground">Adjust due dates, gestational weeks, or LMP to synchronize dates and months across your sanctuary.</p>
+            </div>
+          </div>
+
+          {/* Live Progress Banner */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-primary-soft/60 to-accent-soft/40 border border-primary/20 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🌸</span>
+              <div>
+                <div className="font-bold text-sm text-foreground">
+                  Week {gestationalWeek} · Month {getPregnancyMonth(gestationalWeek)}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  Trimester {getPregnancyTrimester(gestationalWeek)} · {calculateFromDueDate(dueDate).daysRemaining} days remaining until Due Date
+                </div>
+              </div>
+            </div>
+            <div className="text-[11px] font-mono px-3 py-1 rounded-xl bg-white border border-border font-bold text-foreground">
+              EDD: {dueDate}
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            {/* Direct Gestational Week Scrubber */}
+            <div className="sm:col-span-2 p-3.5 rounded-2xl bg-muted/20 border border-border space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <span>Current Gestational Week:</span>
+                  <span className="text-primary font-extrabold text-sm">Week {gestationalWeek}</span>
+                </label>
+                <span className="text-[10px] text-muted-foreground">Month {getPregnancyMonth(gestationalWeek)}</span>
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={40}
+                value={gestationalWeek}
+                onChange={e => handleWeekChange(Number(e.target.value))}
+                className="w-full accent-primary cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
+                <span>Wk 1</span>
+                <span>Wk 13 (T1)</span>
+                <span>Wk 27 (T2)</span>
+                <span>Wk 40 (Term)</span>
+              </div>
+            </div>
+
             <div>
               <label className="block text-foreground font-semibold mb-1">Estimated Due Date (EDD)</label>
               <input
                 type="date"
                 value={dueDate}
-                onChange={e => setDueDate(e.target.value)}
+                onChange={e => handleDueDateChange(e.target.value)}
                 className="w-full px-3 py-2 bg-muted/30 border border-input rounded-xl"
               />
+              <p className="text-[10px] text-muted-foreground mt-1">Changing Due Date automatically recalculates your week & month.</p>
             </div>
 
             <div>
@@ -531,9 +620,10 @@ export const SettingsModule: React.FC = () => {
               <input
                 type="date"
                 value={lmpDate}
-                onChange={e => setLmpDate(e.target.value)}
+                onChange={e => handleLmpChange(e.target.value)}
                 className="w-full px-3 py-2 bg-muted/30 border border-input rounded-xl"
               />
+              <p className="text-[10px] text-muted-foreground mt-1">Changing LMP automatically recalculates EDD, week & month.</p>
             </div>
 
             <div>
@@ -562,9 +652,9 @@ export const SettingsModule: React.FC = () => {
           <div className="pt-3 flex justify-end">
             <button
               type="submit"
-              className="px-5 py-2 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold"
+              className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold cursor-pointer transition-all shadow-xs"
             >
-              Update Pregnancy
+              Update Pregnancy & Sync Dates
             </button>
           </div>
         </form>
