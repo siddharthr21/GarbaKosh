@@ -123,12 +123,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-4 pb-2 flex items-center justify-between border-b border-border/60 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-serif font-black text-lg shadow-xs">
-              M
+              G
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <h1 className="text-base font-serif font-bold text-foreground leading-tight">
-                  Matrena
+                  GrabSathi
                 </h1>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-accent/15 text-accent font-bold">
                   BloomNest

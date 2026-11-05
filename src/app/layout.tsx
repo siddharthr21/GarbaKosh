@@ -4,7 +4,7 @@ import { AppProvider } from '@/context/AppContext';
 import { EmergencyModal } from '@/components/modals/EmergencyModal';
 
 export const metadata: Metadata = {
-  title: 'BloomNest · Pregnancy & Parenthood Companion',
+  title: 'GrabSathi · Pregnancy & Parenthood Companion',
   description: 'Every heartbeat, every milestone, every moment — together. An AI-powered pregnancy and parenthood platform for expecting mothers, fathers, and couples.',
 };
 

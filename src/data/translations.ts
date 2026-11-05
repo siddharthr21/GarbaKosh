@@ -7,7 +7,7 @@ export interface TranslationDictionary {
 export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> = {
   'en-US': {
     // Brand & App
-    appName: 'BloomNest',
+    appName: 'GrabSathi',
     maternalSanctuary: 'MATERNAL SANCTUARY',
     tagline: 'Every heartbeat, every milestone, every moment — together.',
     week: 'Week',
@@ -296,7 +296,7 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     resetDemo: 'Reset Demo State',
 
     // Auth Screen
-    authWelcome: 'Welcome to BloomNest',
+    authWelcome: 'Welcome to GrabSathi',
     authSubtitle: 'Every heartbeat, every milestone, every moment — together.',
     signInTab: 'Sign In',
     createAccountTab: 'Create Account',
