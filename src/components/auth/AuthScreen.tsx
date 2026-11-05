@@ -131,7 +131,7 @@ export const AuthScreen: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-xl font-serif font-bold text-white tracking-wide">
-                    GrabSathi
+                    GarbhSarthi
                   </h1>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/15 text-stone-200 font-bold uppercase tracking-wider">
                     BloomNest
@@ -624,7 +624,7 @@ export const AuthScreen: React.FC = () => {
 
           {/* Bottom Security Disclaimers */}
           <div className="pt-6 mt-6 border-t border-border flex items-center justify-between text-[11px] text-muted-foreground">
-            <span>GrabSathi Secure Vault v2.4</span>
+            <span>GarbhSarthi Secure Vault v2.4</span>
             <span className="flex items-center gap-1 text-primary font-semibold">
               <ShieldCheck className="w-3.5 h-3.5" />
               Protected by Caregiver Permission Protocol

@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Sidebar with all BloomNest & Matrena features */}
+      {/* Sidebar with all GarbhSarthi & BloomNest features */}
       <aside
         className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-card border-r border-border flex flex-col transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shrink-0 shadow-soft lg:shadow-none ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
@@ -128,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div>
               <div className="flex items-center gap-1.5">
                 <h1 className="text-base font-serif font-bold text-foreground leading-tight">
-                  GrabSathi
+                  GarbhSarthi
                 </h1>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-accent/15 text-accent font-bold">
                   BloomNest

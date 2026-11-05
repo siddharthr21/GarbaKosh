@@ -1,7 +1,7 @@
-# GrabSathi 🌸
+# GarbhSarthi 🌸
 > **Every heartbeat, every milestone, every moment — together.**
 
-**GrabSathi** (GarbaKosh / BloomNest) is a comprehensive, clinically informed, AI-powered pregnancy and parenthood web platform designed for expecting mothers, supportive partners, and growing families. Built with Next.js 14, TypeScript, Tailwind CSS, and powered by ultra-fast Groq Cloud LPU AI inference.
+**GarbhSarthi** (GarbaKosh / BloomNest) is a comprehensive, clinically informed, AI-powered pregnancy and parenthood web platform designed for expecting mothers, supportive partners, and growing families. Built with Next.js 14, TypeScript, Tailwind CSS, and powered by ultra-fast Groq Cloud LPU AI inference.
 
 ---
 
