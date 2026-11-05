@@ -271,6 +271,7 @@ export interface BabyNameItem {
   meaning: string;
   pronunciation: string;
   culturalContext: string;
+  style?: string;
   isFavorite: boolean;
   isShortlisted: boolean;
   motherVote: number;
@@ -310,7 +311,7 @@ export interface BabyShowerPlan {
   guestCount: number;
   tasks: { id: string; title: string; completed: boolean; category: string }[];
   guests: { id: string; name: string; rsvp: 'attending' | 'declined' | 'pending'; gift?: string }[];
-  registryItems: { id: string; name: string; link: string; claimedBy?: string }[];
+  registryItems: { id: string; name: string; link?: string; claimedBy?: string; priceEst?: number; category?: string }[];
 }
 
 export interface HospitalChecklistItem {

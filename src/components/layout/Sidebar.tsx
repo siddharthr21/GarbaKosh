@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useApp } from '@/context/AppContext';
+import { SUPPORTED_LANGUAGES } from '@/data/aiMedicalKnowledge';
 import {
   Home,
   Milestone,
@@ -238,6 +239,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <span className="truncate text-left text-[11px]">{t('emergencyProtocol')}</span>
           </button>
+        </div>
+
+        {/* Language Selector */}
+        <div className="px-3 py-1.5 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40">
+          <div className="flex items-center gap-1.5 font-medium">
+            <Globe className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[11px]">{t('language', 'Language')}</span>
+          </div>
+          <select
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="text-[11px] bg-card hover:bg-muted/40 text-foreground border border-input rounded-lg px-2 py-0.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary font-medium"
+            aria-label="Choose Language"
+          >
+            {SUPPORTED_LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.native}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Bottom User Card (Exact match to photo: s siri / Mother with Live Toggle) */}

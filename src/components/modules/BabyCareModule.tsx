@@ -14,7 +14,8 @@ import {
   Heart,
   Droplet,
   BookOpen,
-  Calendar
+  Calendar,
+  Trash2
 } from 'lucide-react';
 
 const VACCINATION_ROADMAP = [
@@ -27,7 +28,7 @@ const VACCINATION_ROADMAP = [
 ];
 
 export const BabyCareModule: React.FC = () => {
-  const { babyActivities, addBabyActivity, t } = useApp();
+  const { babyActivities, addBabyActivity, deleteBabyActivity, t } = useApp();
 
   const [activeType, setActiveType] = useState<'breastfeeding' | 'bottle' | 'sleep' | 'diaper-wet' | 'diaper-dirty'>('breastfeeding');
   const [durationMins, setDurationMins] = useState('20');
@@ -198,7 +199,17 @@ export const BabyCareModule: React.FC = () => {
                   </div>
                 </div>
 
-                <span className="text-[10px] font-mono text-gray-400 font-semibold">{act.time}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono text-gray-400 font-semibold">{act.time}</span>
+                  <button
+                    onClick={() => deleteBabyActivity(act.id)}
+                    title="Delete entry"
+                    aria-label="Delete entry"
+                    className="p-1 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

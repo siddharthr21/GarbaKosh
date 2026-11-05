@@ -34,6 +34,23 @@ export const LittleMomentsModule: React.FC = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [type, setType] = useState<'ultrasound' | 'belly-bump' | 'lab-report' | 'milestone'>('ultrasound');
 
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 8 * 1024 * 1024) {
+        alert('Image exceeds 8MB. Please choose a smaller photo.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setImageUrl(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -337,15 +354,54 @@ export const LittleMomentsModule: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-gray-700 font-semibold mb-1">{t('Image URL', 'Image URL')}</label>
+              {/* Photo Upload & Preview */}
+              <div className="space-y-2">
+                <label className="block text-gray-700 font-semibold mb-1">
+                  Upload Ultrasound Scan or Bump Photo:
+                </label>
+                
+                <div className="flex items-center gap-3">
+                  <label className="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold border border-purple-200 cursor-pointer text-xs flex items-center gap-1.5 transition-colors shadow-2xs">
+                    <ImageIcon className="w-4 h-4 text-purple-600" />
+                    <span>Choose Photo from Device</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <span className="text-[11px] text-gray-400">or paste image URL</span>
+                </div>
+
                 <input
                   type="text"
-                  value={imageUrl}
-                  onChange={e => setImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/... (or leave blank for sample scan)"
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl"
+                  value={imageUrl.startsWith('data:') ? '[Device Photo Selected ✓]' : imageUrl}
+                  onChange={e => {
+                    if (!imageUrl.startsWith('data:')) setImageUrl(e.target.value);
+                  }}
+                  placeholder="https://... (or choose file from device above)"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono"
                 />
+
+                {imageUrl && (
+                  <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-purple-300 shadow-sm mt-1">
+                    <img
+                      src={imageUrl}
+                      alt="Upload Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl('')}
+                      className="absolute top-1 right-1 w-5 h-5 bg-black/70 hover:bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px] cursor-pointer"
+                      title="Remove image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>

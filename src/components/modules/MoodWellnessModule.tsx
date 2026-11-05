@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   Smile,
@@ -34,10 +34,37 @@ export const MoodWellnessModule: React.FC = () => {
   const [activeAffirmationIdx, setActiveAffirmationIdx] = useState(0);
   const [justLogged, setJustLogged] = useState(false);
 
-  // Guided Breathing Coach
+  // Guided Breathing Coach (4-7-8 Relaxation)
   const [breathPhase, setBreathPhase] = useState<'Inhale' | 'Hold' | 'Exhale'>('Inhale');
   const [isBreathingCoach, setIsBreathingCoach] = useState(false);
   const [breathCount, setBreathCount] = useState(4);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isBreathingCoach) {
+      interval = setInterval(() => {
+        setBreathCount(prev => {
+          if (prev <= 1) {
+            if (breathPhase === 'Inhale') {
+              setBreathPhase('Hold');
+              return 7;
+            } else if (breathPhase === 'Hold') {
+              setBreathPhase('Exhale');
+              return 8;
+            } else {
+              setBreathPhase('Inhale');
+              return 4;
+            }
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setBreathPhase('Inhale');
+      setBreathCount(4);
+    }
+    return () => clearInterval(interval);
+  }, [isBreathingCoach, breathPhase]);
 
   const handleSubmitMood = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +123,55 @@ export const MoodWellnessModule: React.FC = () => {
         >
           {t('New Affirmation', 'New Affirmation')} ✨
         </button>
+      </div>
+
+      {/* Guided 4-7-8 Breathing Sanctuary */}
+      <div className="bg-gradient-to-r from-teal-50 via-cyan-50 to-indigo-50 rounded-3xl p-6 border border-teal-200/70 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 max-w-lg">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-[11px] font-bold">
+            <Wind className="w-3.5 h-3.5" />
+            <span>4-7-8 Maternal Calming Breathwork</span>
+          </div>
+          <h3 className="text-base font-bold text-gray-900">
+            Guided Vagal Nerve Relaxation
+          </h3>
+          <p className="text-xs text-gray-600 leading-relaxed">
+            Inhale gently through your nose (4s), hold with peaceful calm (7s), and release softly through your mouth (8s). Calms elevated heart rate and soothes maternal nervous system.
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center gap-3 shrink-0">
+          <div
+            className={`w-28 h-28 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-1000 ${
+              !isBreathingCoach
+                ? 'bg-white border-teal-300 text-teal-700 shadow-sm'
+                : breathPhase === 'Inhale'
+                ? 'scale-110 bg-teal-500 border-teal-300 text-white shadow-xl shadow-teal-200'
+                : breathPhase === 'Hold'
+                ? 'scale-110 bg-indigo-500 border-indigo-300 text-white shadow-xl shadow-indigo-200'
+                : 'scale-90 bg-rose-400 border-rose-300 text-white shadow-md'
+            }`}
+          >
+            <span className="text-xs font-black uppercase tracking-wider">
+              {isBreathingCoach ? breathPhase : 'Ready'}
+            </span>
+            <span className="text-2xl font-black">
+              {isBreathingCoach ? breathCount : '🌸'}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsBreathingCoach(!isBreathingCoach)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+              isBreathingCoach
+                ? 'bg-rose-500 hover:bg-rose-600 text-white'
+                : 'bg-teal-600 hover:bg-teal-700 text-white'
+            }`}
+          >
+            {isBreathingCoach ? 'Pause Breathing' : 'Start 4-7-8 Breathwork'}
+          </button>
+        </div>
       </div>
 
       {/* Check-In Grid: Daily Mood Form & Emotional Journal */}

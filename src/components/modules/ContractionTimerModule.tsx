@@ -53,7 +53,8 @@ export const ContractionTimerModule: React.FC = () => {
       if (contractions.length > 0) {
         const lastSurgeStart = new Date(contractions[0].startTime);
         const diffMs = startTime.getTime() - lastSurgeStart.getTime();
-        intervalMinutes = Math.max(1, Math.round(diffMs / (1000 * 60)));
+        const diffMins = diffMs / (1000 * 60);
+        intervalMinutes = Number(Math.max(0.1, diffMins).toFixed(1));
       }
 
       addContraction({

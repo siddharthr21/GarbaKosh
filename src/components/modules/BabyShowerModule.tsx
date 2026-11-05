@@ -29,12 +29,16 @@ export const BabyShowerModule: React.FC = () => {
     addShowerTask,
     addShowerGuest,
     updateGuestRsvp,
+    addShowerRegistryItem,
+    toggleClaimRegistryItem,
     profile,
     t
   } = useApp();
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newGuestName, setNewGuestName] = useState('');
+  const [newRegistryName, setNewRegistryName] = useState('');
+  const [newRegistryPrice, setNewRegistryPrice] = useState('1499');
   const [copiedInvite, setCopiedInvite] = useState(false);
 
   // Edit details state
@@ -445,12 +449,14 @@ export const BabyShowerModule: React.FC = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
               <Gift className="w-4 h-4 text-rose-500" />
-              Gift Registry
+              Gift Registry & Wishlist
             </h3>
-            <span className="text-xs text-rose-600 font-bold">Curated Wishlist</span>
+            <span className="text-xs text-rose-600 font-bold">
+              {babyShower.registryItems.filter(i => i.claimedBy).length}/{babyShower.registryItems.length} Claimed
+            </span>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
             {babyShower.registryItems.map(item => (
               <div
                 key={item.id}
@@ -459,18 +465,58 @@ export const BabyShowerModule: React.FC = () => {
                 <div>
                   <h4 className="font-bold text-gray-900">{item.name}</h4>
                   <span className="text-[10px] text-gray-500">
+                    {item.priceEst ? `₹${item.priceEst.toLocaleString('en-IN')} · ` : ''}
                     {item.claimedBy ? `Claimed by ${item.claimedBy} 🎁` : 'Available to gift'}
                   </span>
                 </div>
 
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                  item.claimedBy ? 'bg-emerald-100 text-emerald-800' : 'bg-blush-100 text-blush-800'
-                }`}>
-                  {item.claimedBy ? 'Claimed' : 'Open'}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => toggleClaimRegistryItem(item.id)}
+                  className={`px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer ${
+                    item.claimedBy
+                      ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'
+                      : 'bg-primary-soft hover:bg-primary/20 text-primary border border-primary/30'
+                  }`}
+                  title="Click to toggle gift claim status"
+                >
+                  {item.claimedBy ? '✓ Claimed' : '+ Claim Gift'}
+                </button>
               </div>
             ))}
           </div>
+
+          {/* Add Registry Wishlist Item */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!newRegistryName.trim()) return;
+              addShowerRegistryItem(newRegistryName.trim(), Number(newRegistryPrice) || 999);
+              setNewRegistryName('');
+            }}
+            className="flex gap-2 pt-2 border-t border-gray-100"
+          >
+            <input
+              type="text"
+              value={newRegistryName}
+              onChange={e => setNewRegistryName(e.target.value)}
+              placeholder="Add wishlist item (e.g. Organic Cotton Swaddle)..."
+              className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
+            />
+            <input
+              type="number"
+              value={newRegistryPrice}
+              onChange={e => setNewRegistryPrice(e.target.value)}
+              placeholder="₹"
+              className="w-20 px-2 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-center"
+            />
+            <button
+              type="submit"
+              className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shrink-0 cursor-pointer"
+            >
+              Add Gift
+            </button>
+          </form>
         </div>
       </div>
     </div>

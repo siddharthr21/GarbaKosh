@@ -68,10 +68,12 @@ export const BabyNamesModule: React.FC = () => {
 
     const matchesGender = selectedGender === 'all' || item.gender === selectedGender;
     const matchesOrigin = selectedOrigin === 'all' || item.origin.toLowerCase().includes(selectedOrigin.toLowerCase());
+    const matchesStyle = selectedStyle === 'all' || (item.style && item.style.toLowerCase().includes(selectedStyle.toLowerCase()));
 
-    if (activeTab === 'favorites') return item.isFavorite && matchesSearch && matchesGender && matchesOrigin;
-    if (activeTab === 'shortlist') return item.isShortlisted && matchesSearch && matchesGender && matchesOrigin;
-    return matchesSearch && matchesGender && matchesOrigin;
+    const matchesAll = matchesSearch && matchesGender && matchesOrigin && matchesStyle;
+    if (activeTab === 'favorites') return item.isFavorite && matchesAll;
+    if (activeTab === 'shortlist') return item.isShortlisted && matchesAll;
+    return matchesAll;
   });
 
   return (
@@ -229,7 +231,7 @@ export const BabyNamesModule: React.FC = () => {
         </div>
 
         {/* Search input & drop-downs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
             <input
@@ -258,13 +260,27 @@ export const BabyNamesModule: React.FC = () => {
             <select
               value={selectedOrigin}
               onChange={e => setSelectedOrigin(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none cursor-pointer"
             >
               <option value="all">All Origins & Languages</option>
               <option value="sanskrit">Sanskrit Classics</option>
               <option value="hindi">Hindi & Northern</option>
               <option value="tamil">Tamil & Southern</option>
               <option value="arabic">Arabic & Persian</option>
+            </select>
+          </div>
+
+          <div>
+            <select
+              value={selectedStyle}
+              onChange={e => setSelectedStyle(e.target.value)}
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none cursor-pointer"
+            >
+              <option value="all">All Styles</option>
+              <option value="modern">Modern & Trendy</option>
+              <option value="traditional">Traditional Heritage</option>
+              <option value="sanskrit">Sanskrit Classic</option>
+              <option value="royal">Royal & Regal</option>
             </select>
           </div>
         </div>

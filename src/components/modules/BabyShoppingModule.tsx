@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 
 export const BabyShoppingModule: React.FC = () => {
-  const { t } = useApp();
+  const { addShowerRegistryItem, t } = useApp();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [wishlist, setWishlist] = useState<string[]>(['p1', 'p4', 'p9']);
@@ -75,9 +75,10 @@ export const BabyShoppingModule: React.FC = () => {
     );
   };
 
-  const handleAddToRegistry = (name: string, e?: React.MouseEvent) => {
+  const handleAddToRegistry = (name: string, priceInr = 999, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setAddedNotice(`Added "${name}" to your baby registry checklist!`);
+    addShowerRegistryItem(name, priceInr);
+    setAddedNotice(`Added "${name}" to your baby shower wishlist registry!`);
     setTimeout(() => setAddedNotice(null), 3000);
   };
 
@@ -470,7 +471,7 @@ export const BabyShoppingModule: React.FC = () => {
                   {/* Add to Registry / Wishlist Button */}
                   <button
                     type="button"
-                    onClick={(e) => handleAddToRegistry(prod.name, e)}
+                    onClick={(e) => handleAddToRegistry(prod.name, prod.priceInr, e)}
                     className="py-2 bg-gray-900 hover:bg-black text-white rounded-xl text-[11px] font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
                   >
                     <CartIcon className="w-3 h-3" />
@@ -641,7 +642,7 @@ export const BabyShoppingModule: React.FC = () => {
 
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleAddToRegistry(selectedProductModal.name)}
+                        onClick={() => handleAddToRegistry(selectedProductModal.name, selectedProductModal.priceInr)}
                         className="flex-1 py-2.5 bg-gray-900 hover:bg-black text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
                       >
                         <CartIcon className="w-4 h-4 text-amber-400" />

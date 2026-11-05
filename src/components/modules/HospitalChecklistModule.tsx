@@ -17,14 +17,24 @@ import {
 } from 'lucide-react';
 
 export const HospitalChecklistModule: React.FC = () => {
-  const { hospitalChecklist, toggleHospitalItem, addHospitalItem, profile, t } = useApp();
+  const {
+    hospitalChecklist,
+    toggleHospitalItem,
+    addHospitalItem,
+    birthPlan,
+    updateBirthPlanNotes,
+    profile,
+    t
+  } = useApp();
 
   const [activeCategory, setActiveCategory] = useState<'all' | 'mother' | 'baby' | 'partner'>('all');
   const [newItemTitle, setNewItemTitle] = useState('');
   const [newItemCat, setNewItemCat] = useState<'mother' | 'baby' | 'partner'>('mother');
   const [birthPlanNotes, setBirthPlanNotes] = useState(
+    birthPlan.specialNotes ||
     '1. Preferred birthing companion: Rohan (Husband).\n2. Environment: Dim warm lighting, low lavender music.\n3. Pain management: Breathing techniques first, open to epidural if labor stalls.\n4. Immediate postpartum: Delayed cord clamping (1-2 mins) and immediate uninterrupted skin-to-skin.'
   );
+  const [notesSavedNotice, setNotesSavedNotice] = useState(false);
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,10 +219,17 @@ export const HospitalChecklistModule: React.FC = () => {
           className="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs text-gray-800 leading-relaxed font-mono focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
 
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] text-emerald-600 font-bold">
+            {notesSavedNotice ? '✓ Saved and synchronized with Birth Plan preferences!' : ''}
+          </span>
           <button
-            onClick={() => alert('Birth preferences saved locally!')}
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-colors"
+            onClick={() => {
+              updateBirthPlanNotes(birthPlanNotes);
+              setNotesSavedNotice(true);
+              setTimeout(() => setNotesSavedNotice(false), 3000);
+            }}
+            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
           >
             Save Preferences
           </button>

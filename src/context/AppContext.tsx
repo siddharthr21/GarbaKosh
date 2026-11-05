@@ -140,6 +140,8 @@ interface AppContextType {
   addShowerTask: (title: string, category: string) => void;
   addShowerGuest: (name: string) => void;
   updateGuestRsvp: (id: string, rsvp: 'attending' | 'declined' | 'pending') => void;
+  addShowerRegistryItem: (name: string, priceEst?: number) => void;
+  toggleClaimRegistryItem: (id: string, claimedBy?: string) => void;
   
   // Hospital Bag Checklist
   hospitalChecklist: HospitalChecklistItem[];
@@ -151,6 +153,7 @@ interface AppContextType {
   addPostpartumLog: (log: Omit<PostpartumLog, 'id' | 'date'>) => void;
   babyActivities: BabyActivityLog[];
   addBabyActivity: (activity: Omit<BabyActivityLog, 'id' | 'date'>) => void;
+  deleteBabyActivity: (id: string) => void;
   
   // Bloom AI
   chatMessages: ChatMessage[];
@@ -1368,6 +1371,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (record.weightKg) {
       setProfile(prev => ({ ...prev, currentWeightKg: record.weightKg }));
     }
+
+    // Clinical Safety Check: Gestational Hypertension / Preeclampsia threshold (140/90 mmHg)
+    if (record.bloodPressureSys >= 140 || record.bloodPressureDia >= 90) {
+      triggerEmergencyModal(
+        `ELEVATED BLOOD PRESSURE DETECTED (${record.bloodPressureSys}/${record.bloodPressureDia} mmHg). A reading of 140/90 mmHg or higher during pregnancy requires urgent clinical evaluation for gestational hypertension or preeclampsia. Please rest on your left side and contact Dr. ${profile.doctorInfo.name} or your maternity emergency triage (${profile.doctorInfo.emergencyContact}) immediately.`
+      );
+    }
   };
 
   const addMealItem = (meal: Omit<MealItem, 'id'>) => {
@@ -1611,6 +1621,47 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const addShowerRegistryItem = (name: string, priceEst = 999) => {
+    setBabyShower(prev => {
+      const newItem = {
+        id: `reg-${Date.now()}`,
+        name,
+        category: 'Essentials',
+        priceEst,
+        link: ''
+      };
+      const updated = {
+        ...prev,
+        registryItems: [...prev.registryItems, newItem]
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  const toggleClaimRegistryItem = (id: string, claimedBy?: string) => {
+    setBabyShower(prev => {
+      const updated = {
+        ...prev,
+        registryItems: prev.registryItems.map(item => {
+          if (item.id === id) {
+            return {
+              ...item,
+              claimedBy: item.claimedBy ? undefined : (claimedBy || currentUser?.name || 'Auntie Sunita')
+            };
+          }
+          return item;
+        })
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bloomnest_babyshower', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
   const toggleHospitalItem = (id: string) => {
     setHospitalChecklist(prev =>
       prev.map(item => (item.id === id ? { ...item, packed: !item.packed } : item))
@@ -1649,6 +1700,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       date: new Date().toISOString().split('T')[0]
     };
     setBabyActivities(prev => [newAct, ...prev]);
+  };
+
+  const deleteBabyActivity = (id: string) => {
+    setBabyActivities(prev => prev.filter(act => act.id !== id));
   };
 
   const triggerEmergencyModal = (reason: string) => {
@@ -1958,6 +2013,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addShowerTask,
         addShowerGuest,
         updateGuestRsvp,
+        addShowerRegistryItem,
+        toggleClaimRegistryItem,
         hospitalChecklist,
         toggleHospitalItem,
         addHospitalItem,
@@ -1965,6 +2022,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addPostpartumLog,
         babyActivities,
         addBabyActivity,
+        deleteBabyActivity,
         chatMessages,
         sendUserMessage,
         clearChat,
