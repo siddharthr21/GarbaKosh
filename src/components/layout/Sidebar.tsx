@@ -115,12 +115,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar with all BloomNest & Matrena features */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-card border-r border-border flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-soft lg:shadow-none ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-card border-r border-border flex flex-col transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shrink-0 shadow-soft lg:shadow-none ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
-        <div className="p-4 pb-2 flex items-center justify-between border-b border-border/60">
+        <div className="p-4 pb-2 flex items-center justify-between border-b border-border/60 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-serif font-black text-lg shadow-xs">
               M
@@ -150,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Multi-Language Quick Selector (Matching photo: 🌐 EN | ಕನ್ನಡ | हिंदी | தமிழ்) */}
-        <div className="mx-3 mt-2.5 mb-1.5 p-1 rounded-2xl bg-muted/40 border border-border flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
+        <div className="mx-3 mt-2.5 mb-1.5 p-1 rounded-2xl bg-muted/40 border border-border flex items-center justify-between text-[11px] font-semibold text-muted-foreground shrink-0">
           <div className="flex items-center gap-1 pl-2">
             <Globe className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-[10px] text-muted-foreground/80">{t('lang')}</span>
@@ -229,10 +229,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Emergency Protocol Guidance Card */}
-        <div className="px-3 py-2 border-t border-border/60">
+        <div className="px-3 py-2 border-t border-border/60 shrink-0">
           <button
             onClick={() => triggerEmergencyModal('Maternal red-flag warning: If bleeding, severe pain, or reduced movements occur, seek emergency care.')}
-            className="w-full py-2 px-2.5 rounded-xl bg-semantic-danger/10 hover:bg-semantic-danger/20 border border-semantic-danger/30 text-xs font-bold text-semantic-danger flex items-center gap-2 transition-all"
+            className="w-full py-2 px-2.5 rounded-xl bg-semantic-danger/10 hover:bg-semantic-danger/20 border border-semantic-danger/30 text-xs font-bold text-semantic-danger flex items-center gap-2 transition-all cursor-pointer"
           >
             <div className="w-5 h-5 rounded-full bg-semantic-danger text-white flex items-center justify-center text-[10px] font-black shrink-0">
               !
@@ -242,7 +242,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Language Selector */}
-        <div className="px-3 py-1.5 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40">
+        <div className="px-3 py-1.5 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40 shrink-0">
           <div className="flex items-center gap-1.5 font-medium">
             <Globe className="w-3.5 h-3.5 text-primary" />
             <span className="text-[11px]">{t('language', 'Language')}</span>
@@ -262,7 +262,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Bottom User Card (Exact match to photo: s siri / Mother with Live Toggle) */}
-        <div className="p-3 mx-2 mb-2 border-t border-border flex flex-col gap-2 bg-muted/20 rounded-2xl">
+        <div className="p-3 mx-2 mb-2 border-t border-border flex flex-col gap-2 bg-muted/20 rounded-2xl shrink-0">
           <div className="flex items-center justify-between">
             <div
               onClick={() => { setActiveTab('settings'); onCloseMobile(); }}

@@ -245,7 +245,7 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 px-4 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer hover:scale-105 group border border-white/20"
+          className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-40 px-4 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer hover:scale-105 group border border-white/20"
           title="Open Bloom AI Assistant"
         >
           <div className="relative">
@@ -259,7 +259,7 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
 
       {/* Floating Chat Drawer Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[92vw] sm:w-[420px] h-[580px] bg-white rounded-3xl shadow-2xl border border-blush-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 w-[92vw] sm:w-[420px] h-[580px] max-h-[82vh] bg-white rounded-3xl shadow-2xl border border-blush-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-200">
           {/* Drawer Header */}
           <div className="p-4 bg-gradient-to-r from-cream-100 via-blush-50 to-lavender-50 border-b border-blush-100 flex items-center justify-between">
             <div className="flex items-center gap-2.5">

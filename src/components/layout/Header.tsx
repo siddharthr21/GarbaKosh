@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileSidebar, activeTab
 
   return (
     <header className="sticky top-0 z-30 glass-panel border-b border-border px-4 lg:px-8 py-3 transition-all">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 max-w-7xl mx-auto w-full">
         {/* Left: Mobile toggle & Title breadcrumb */}
         <div className="flex items-center gap-3">
           <button
