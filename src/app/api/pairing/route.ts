@@ -1,19 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pairingService } from '@/services/pairingService';
+import { INITIAL_ACCOUNTS } from '@/data/initialAccounts';
 import { UserAccount } from '@/types';
 
 // Helper to simulate session/account extraction from request
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { partnerAccount, targetMotherAccount } = body as {
-      partnerAccount: UserAccount;
-      targetMotherAccount: UserAccount;
-    };
+    let partnerAccount = body.partnerAccount as UserAccount | undefined;
+    let targetMotherAccount = body.targetMotherAccount as UserAccount | undefined;
+
+    if (!partnerAccount && body.partnerId) {
+      partnerAccount = INITIAL_ACCOUNTS.find(a => a.id === body.partnerId);
+    }
+    if (!targetMotherAccount && body.motherCode) {
+      targetMotherAccount = INITIAL_ACCOUNTS.find(
+        a => a.uniqueCode.toUpperCase() === String(body.motherCode).toUpperCase() || a.id === body.motherCode
+      );
+    }
 
     if (!partnerAccount || !targetMotherAccount) {
       return NextResponse.json(
-        { success: false, message: 'Missing partner or mother account details.' },
+        { success: false, message: 'Invalid or missing partner or mother account details.' },
         { status: 400 }
       );
     }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pairingService } from '@/services/pairingService';
+import { INITIAL_ACCOUNTS } from '@/data/initialAccounts';
 
 export async function GET(req: NextRequest) {
   try {
@@ -8,7 +9,7 @@ export async function GET(req: NextRequest) {
 
     // Simulated account store lookup
     const allAccountsStr = req.headers.get('x-bloomnest-accounts');
-    const allAccounts = allAccountsStr ? JSON.parse(allAccountsStr) : [];
+    const allAccounts = allAccountsStr ? JSON.parse(allAccountsStr) : INITIAL_ACCOUNTS;
 
     const availableMothers = pairingService.getAvailableMothers(allAccounts, partnerId);
     return NextResponse.json({ success: true, availableMothers });
