@@ -754,14 +754,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               className="w-full py-2.5 bg-primary-soft hover:bg-primary-soft/80 text-primary rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Ask Bloom AI questions for next doctor visit</span>
+              <span>Ask GarbhSarthi AI questions for next doctor visit</span>
             </button>
           </div>
 
           {/* Complete Suite Feature Shortcuts */}
           <div className="bg-card rounded-4xl p-5 border border-border shadow-soft space-y-3">
             <h3 className="text-xs font-serif font-bold uppercase tracking-wider text-muted-foreground">
-              All BloomNest Maternal Modules
+              All GarbhSarthi Maternal Modules
             </h3>
 
             <div className="grid grid-cols-2 gap-2 text-xs">

@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Sidebar with all GarbhSarthi & BloomNest features */}
+      {/* Sidebar with all GarbhSarthi features */}
       <aside
         className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-card border-r border-border flex flex-col transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shrink-0 shadow-soft lg:shadow-none ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
@@ -130,8 +130,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <h1 className="text-base font-serif font-bold text-foreground leading-tight">
                   GarbhSarthi
                 </h1>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-accent/15 text-accent font-bold">
-                  BloomNest
+                <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-primary/10 text-primary font-bold">
+                  Care Suite
                 </span>
               </div>
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">

@@ -45,7 +45,7 @@ export const EmergencyModal: React.FC = () => {
           <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
             <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <p>
-              <strong>Clinical Protocol:</strong> Never wait for symptoms to worsen. BloomNest cannot provide diagnosis or physical clinical care. Proceed to your hospital triage immediately.
+              <strong>Clinical Protocol:</strong> Never wait for symptoms to worsen. GarbhSarthi cannot provide diagnosis or physical clinical care. Proceed to your hospital triage immediately.
             </p>
           </div>
 

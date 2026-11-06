@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { WEEKS_DATA, WeekData } from '@/data/pregnancyJourneyData';
 import {
@@ -8,22 +8,21 @@ import {
   getPregnancyTrimester
 } from '@/utils/pregnancyCalculations';
 import {
-  Play,
-  Pause,
-  RotateCcw,
-  FastForward,
-  Sparkles,
-  CheckCircle2,
-  Heart,
-  Scale,
-  Ruler,
-  Volume2,
+  Calendar,
   ChevronLeft,
   ChevronRight,
-  Baby,
+  Sparkles,
+  CheckCircle2,
+  Scale,
+  Ruler,
+  Brain,
+  Eye,
   Activity,
-  Zap,
-  Info
+  Layers,
+  Info,
+  Apple,
+  ShieldCheck,
+  Compass
 } from 'lucide-react';
 
 interface FetalWeeklyHeroProps {
@@ -32,82 +31,420 @@ interface FetalWeeklyHeroProps {
   onSelectWeek?: (week: number) => void;
 }
 
-// Evolutionary Epochs based on clinical embryology & popular pregnancy references (Flo, BabyCenter, Ovia)
-export interface EvolutionaryEpoch {
-  id: string;
-  name: string;
-  subtitle: string;
-  weekStart: number;
-  weekEnd: number;
-  emoji: string;
-  keyEvolution: string;
+// International Carnegie & Clinical Developmental Stages (Reference: Open Embryology & Fetal Development Standards)
+export interface FetalEvolutionReference {
+  week: number;
+  carnegieStage: string;
+  epochName: string;
+  growthFactor: string;
+  brainNervousSystem: string;
+  cardiovascularVisceral: string;
+  sensoryCraniofacial: string;
+  pulmonaryMusculoskeletal: string;
 }
 
-export const EVOLUTIONARY_EPOCHS: EvolutionaryEpoch[] = [
-  {
-    id: 'germinal',
-    name: 'Germinal',
-    subtitle: 'Blastocyst Cleavage',
-    weekStart: 1,
-    weekEnd: 3,
-    emoji: '🥚',
-    keyEvolution: 'Mitotic cleavage from zygote to 100-cell blastocyst and uterine implantation.'
+export const FETAL_EVOLUTION_STANDARDS: Record<number, FetalEvolutionReference> = {
+  1: {
+    week: 1,
+    carnegieStage: 'Pre-Embryonic: Follicular Maturation',
+    epochName: 'Cycle Preparation',
+    growthFactor: '1x (Oocyte baseline)',
+    brainNervousSystem: 'Maternal hormonal cues trigger oocyte meiosis within the dominant graafian follicle.',
+    cardiovascularVisceral: 'Uterine spiral arteries undergo initial vascular remodeling under estrogenic influence.',
+    sensoryCraniofacial: 'Genetic chromosomal complement prepared in maternal gamete.',
+    pulmonaryMusculoskeletal: 'Endometrial functional layer regenerates to prepare receptive nidus.'
   },
-  {
-    id: 'embryo-tube',
-    name: 'Embryogenesis',
-    subtitle: 'Heartbeat Tube',
-    weekStart: 4,
-    weekEnd: 7,
-    emoji: '💓',
-    keyEvolution: 'Neural tube closes; primitive tubular heart initiates circulation at 110–160 BPM.'
+  2: {
+    week: 2,
+    carnegieStage: 'Carnegie Stage 1: Fertilization & Zygote',
+    epochName: 'Fertilization & Cleavage',
+    growthFactor: '1.2x (Zygote formation)',
+    brainNervousSystem: 'Totipotent genetic blueprint established with 46 homologous chromosomes.',
+    cardiovascularVisceral: 'Zygote begins mitotic cleavage while traveling through fallopian ampulla.',
+    sensoryCraniofacial: 'Cellular differentiation initiates; blastomeres divide without cytoplasmic growth.',
+    pulmonaryMusculoskeletal: 'ZP3 glycoprotein in zona pellucida prevents polyspermy.'
   },
-  {
-    id: 'organogenesis',
-    name: 'Early Fetus',
-    subtitle: 'Digits & Face',
-    weekStart: 8,
-    weekEnd: 13,
-    emoji: '👶',
-    keyEvolution: 'Webbed paddle hands separate into distinct fingers & toes; delicate facial profile emerges.'
+  3: {
+    week: 3,
+    carnegieStage: 'Carnegie Stage 3–5: Blastocyst & Implantation',
+    epochName: 'Blastocyst Implantation',
+    growthFactor: '5x (Trophoblast expansion)',
+    brainNervousSystem: 'Primitive embryonic disc forms epiblast and hypoblast lineages; primitive streak emerges.',
+    cardiovascularVisceral: 'Syncytiotrophoblast invades maternal decidua, initiating primordial uteroplacental lacunae.',
+    sensoryCraniofacial: 'Gastrulation establishes the three primary germ layers: ectoderm, mesoderm, and endoderm.',
+    pulmonaryMusculoskeletal: 'Extraembryonic mesoderm lines the exocoelomic cavity; yolk sac forms.'
   },
-  {
-    id: 'quickening',
-    name: 'Quickening',
-    subtitle: 'Kicks & Reflexes',
-    weekStart: 14,
-    weekEnd: 21,
-    emoji: '🦵',
-    keyEvolution: 'First maternal flutters felt; thumb-sucking reflex develops; fine lanugo hair coats skin.'
+  4: {
+    week: 4,
+    carnegieStage: 'Carnegie Stage 10–12: Neural Tube & Somites',
+    epochName: 'Neural Tube Closure',
+    growthFactor: '50x (Primitive axis)',
+    brainNervousSystem: 'Neural groove deepens and fuses to form the primary neural tube (precursor of brain & spinal cord).',
+    cardiovascularVisceral: 'Endocardial tubes fuse into a single primitive cardiac tube; blood circulation begins.',
+    sensoryCraniofacial: 'Optic and otic placodes (precursors of retinas and inner ears) emerge on the head fold.',
+    pulmonaryMusculoskeletal: 'Somites align longitudinally in paired segments along the dorsal axis.'
   },
-  {
-    id: 'auditory-viability',
-    name: 'Viability',
-    subtitle: 'Hearing & Eyelids',
-    weekStart: 22,
-    weekEnd: 27,
-    emoji: '👂',
-    keyEvolution: 'Eyelids unseal; baby hears mother’s voice & music; alveolar surfactant production begins.'
+  5: {
+    week: 5,
+    carnegieStage: 'Carnegie Stage 13–15: C-Curve Embryogenesis',
+    epochName: 'C-Curved Embryo',
+    growthFactor: '150x',
+    brainNervousSystem: 'Prosencephalon, mesencephalon, and rhombencephalon primary brain vesicles demarcate.',
+    cardiovascularVisceral: 'Bulbus cordis and ventricle undergo primitive cardiac looping; vitelline circulation active.',
+    sensoryCraniofacial: 'Pharyngeal (branchial) arches 1 to 4 form; primitive mouth (stomodeum) indents.',
+    pulmonaryMusculoskeletal: 'Upper limb buds appear as small paddle-like lateral swellings on the torso.'
   },
-  {
-    id: 'brain-fat',
-    name: 'Maturation',
-    subtitle: 'REM Sleep & Adipose',
-    weekStart: 28,
-    weekEnd: 34,
-    emoji: '🧠',
-    keyEvolution: 'Subcutaneous fat accumulation smooths wrinkles; intense neural synaptogenesis; REM dreams.'
+  6: {
+    week: 6,
+    carnegieStage: 'Carnegie Stage 16–17: Organogenesis',
+    epochName: 'Organ System Formation',
+    growthFactor: '500x',
+    brainNervousSystem: 'Cerebral hemispheres expand rapidly; cephalic flexure produces distinct head tilt.',
+    cardiovascularVisceral: 'Interatrial and interventricular septa begin partitioning internal cardiac chambers.',
+    sensoryCraniofacial: 'Retinal pigment accumulates in optic cups; primitive lens pits form distinct dark spots.',
+    pulmonaryMusculoskeletal: 'Digital rays faintly appear in upper paddle buds; lower limb buds sprout.'
   },
-  {
-    id: 'full-term',
-    name: 'Full Term',
-    subtitle: 'Ready for Birth',
-    weekStart: 35,
-    weekEnd: 40,
-    emoji: '🍼',
-    keyEvolution: 'Lungs mature completely; maternal antibodies transfer; cephalic vertex descent for delivery.'
+  7: {
+    week: 7,
+    carnegieStage: 'Carnegie Stage 18–19: Cranial Expansion',
+    epochName: 'Digit Outgrowth',
+    growthFactor: '1,000x',
+    brainNervousSystem: 'Neurogenesis accelerates; neuroblasts migrate along radial glial scaffolding.',
+    cardiovascularVisceral: 'Primitive aortic arches remodel into permanent carotid and systemic vessels; liver produces RBCs.',
+    sensoryCraniofacial: 'Eyelid folds form over developing corneas; auricular hillocks coalesce into outer ear pinnae.',
+    pulmonaryMusculoskeletal: 'Elbow and wrist joints clearly differentiate; hands brought toward midline.'
+  },
+  8: {
+    week: 8,
+    carnegieStage: 'Carnegie Stage 20–23: End of Embryonic Period',
+    epochName: 'Embryo to Fetus Transition',
+    growthFactor: '2,500x',
+    brainNervousSystem: 'Peripheral nervous system connects to early muscle groups; involuntary reflexive twitches occur.',
+    cardiovascularVisceral: 'Four distinct cardiac chambers, mitral and tricuspid valves established; physiological gut herniation occurs.',
+    sensoryCraniofacial: 'Digits fully separate as apoptosis removes interdigital webbing; primitive nose tip formed.',
+    pulmonaryMusculoskeletal: 'Embryonic caudal tail fully regresses; chondrification centers lay cartilage bone templates.'
+  },
+  9: {
+    week: 9,
+    carnegieStage: 'Early Fetal Period: Cephalic Refinement',
+    epochName: 'Fetal Transition',
+    growthFactor: '4,000x',
+    brainNervousSystem: 'Brain electrical activity detectable; cerebral cortex initiates early cellular stratification.',
+    cardiovascularVisceral: 'Fetal circulation routes oxygenated blood through ductus venosus directly to inferior vena cava.',
+    sensoryCraniofacial: 'Eyelids fuse shut to shield delicate optical corneas; external ear pinnae migrate upwards.',
+    pulmonaryMusculoskeletal: 'Early ossification begins in clavicle and mandible; knees bend and tiny toes separate.'
+  },
+  10: {
+    week: 10,
+    carnegieStage: 'Fetal Period: Vital Organ Function',
+    epochName: 'Organ Functionality',
+    growthFactor: '7,000x',
+    brainNervousSystem: 'Synaptic connections multiply; cranial nerves coordinate early swallowing reflex.',
+    cardiovascularVisceral: 'Kidneys begin producing dilute urine, contributing to the amniotic fluid reservoir.',
+    sensoryCraniofacial: 'Tooth buds for all 20 deciduous baby teeth embed deeply within the maxillary and mandibular arches.',
+    pulmonaryMusculoskeletal: 'Intestines complete rotation and retract from the umbilical cord back into the abdominal cavity.'
+  },
+  11: {
+    week: 11,
+    carnegieStage: 'Fetal Period: Longitudinal Stretch',
+    epochName: 'Rapid Growth',
+    growthFactor: '12,000x',
+    brainNervousSystem: 'Spinal cord reaches full length of vertebral column; cerebellar hemispheres expand.',
+    cardiovascularVisceral: 'Liver accounts for 10% of total fetal weight, actively synthesizing plasma proteins and bile.',
+    sensoryCraniofacial: 'Iris stroma differentiates; taste buds form along the papillae of the tongue.',
+    pulmonaryMusculoskeletal: 'Diaphragm completes fusion, separating thoracic and abdominal cavities.'
+  },
+  12: {
+    week: 12,
+    carnegieStage: 'First Trimester Culmination',
+    epochName: 'First Trimester Completion',
+    growthFactor: '20,000x',
+    brainNervousSystem: 'Corpus callosum begins bridging left and right cerebral hemispheres; grasp reflex appears.',
+    cardiovascularVisceral: 'Spleen assumes hematopoiesis; placenta fully assumes hormonal progesterone production.',
+    sensoryCraniofacial: 'Facial profile shows distinct human proportions: forehead, bridge of nose, and philtrum.',
+    pulmonaryMusculoskeletal: 'Nail beds appear on fingertips and toes; fetal skeletal cartilage progressively calcifies.'
+  },
+  13: {
+    week: 13,
+    carnegieStage: 'Second Trimester Gateway',
+    epochName: 'Tissue Specialization',
+    growthFactor: '30,000x',
+    brainNervousSystem: 'Sensory pathways route toward the thalamus; vocal cords complete differentiation in larynx.',
+    cardiovascularVisceral: 'Thyroid gland begins synthesizing thyroxine, regulating metabolic growth.',
+    sensoryCraniofacial: 'Unique epidermal ridges (individual fingerprints) etch permanently into fingertips.',
+    pulmonaryMusculoskeletal: 'Bone marrow begins producing leukocyte precursors; ribs encase thoracic organs.'
+  },
+  14: {
+    week: 14,
+    carnegieStage: 'Neuromuscular Integration',
+    epochName: 'Active Reflexes',
+    growthFactor: '45,000x',
+    brainNervousSystem: 'Brain impulses trigger facial squinting, frowning, and grimacing practice movements.',
+    cardiovascularVisceral: 'Cardiovascular system circulates up to 30 liters of blood daily through the placenta.',
+    sensoryCraniofacial: 'Fine lanugo hair covers the scalp and shoulders, anchoring protective vernix caseosa.',
+    pulmonaryMusculoskeletal: 'Neck elongates, elevating chin off the chest; arms reach proportional length to body.'
+  },
+  15: {
+    week: 15,
+    carnegieStage: 'Sensory Transduction',
+    epochName: 'Light Sensitivity',
+    growthFactor: '60,000x',
+    brainNervousSystem: 'Peripheral myelin sheaths begin wrapping around peripheral nerve fibers for rapid conduction.',
+    cardiovascularVisceral: 'Pancreatic islet cells produce insulin to metabolize circulating maternal glucose.',
+    sensoryCraniofacial: 'Photoreceptors differentiate; fetus senses bright external light filtered through abdominal wall.',
+    pulmonaryMusculoskeletal: 'Legs lengthen and now exceed arm length; joints articulate fluidly in amniotic fluid.'
+  },
+  16: {
+    week: 16,
+    carnegieStage: 'Quickening Window',
+    epochName: 'Quickening Readiness',
+    growthFactor: '85,000x',
+    brainNervousSystem: 'Auditory ossicles (malleus, incus, stapes) in middle ear initiate calcification.',
+    cardiovascularVisceral: 'Fetal heart volume doubles; vascular capillary networks saturate subcutaneous tissue.',
+    sensoryCraniofacial: 'Eyes demonstrate slow conjugate tracking movements behind closed fused lids.',
+    pulmonaryMusculoskeletal: 'Coordinated kicks, somersaults, and thumb-sucking occur continuously in the womb.'
+  },
+  17: {
+    week: 17,
+    carnegieStage: 'Adipose Differentiation',
+    epochName: 'Brown Fat Deposition',
+    growthFactor: '110,000x',
+    brainNervousSystem: 'Myelination of spinal tracts accelerates; cerebral cortex begins laminar organization.',
+    cardiovascularVisceral: 'Umbilical cord thickens with gelatinous Wharton jelly, preventing vessel compression.',
+    sensoryCraniofacial: 'Sweat glands develop across the dermal palmar and plantar surfaces.',
+    pulmonaryMusculoskeletal: 'Brown adipose tissue (BAT) accumulates around neck, chest, and kidneys for thermoregulation.'
+  },
+  18: {
+    week: 18,
+    carnegieStage: 'Auditory Awakening',
+    epochName: 'Acoustic Perception',
+    growthFactor: '140,000x',
+    brainNervousSystem: 'Cochlea reaches adult size; acoustic nerve impulses transmit external sounds to temporal cortex.',
+    cardiovascularVisceral: 'Fetal blood pressure regulation centers mature within the medulla oblongata.',
+    sensoryCraniofacial: 'Baby clearly hears mother’s heartbeat, digestive sounds, and muffled maternal voice.',
+    pulmonaryMusculoskeletal: 'Ossification of inner ear bones allows bone-conducted acoustic vibration.'
+  },
+  19: {
+    week: 19,
+    carnegieStage: 'Vernix Caseosa Synthesis',
+    epochName: 'Vernix Shield',
+    growthFactor: '180,000x',
+    brainNervousSystem: 'Sensory cortex regions for smell, taste, hearing, vision, and touch specialize.',
+    cardiovascularVisceral: 'Renal output increases to ~10ml/hour of sterile urine back into the amniotic pool.',
+    sensoryCraniofacial: 'Scalp hair follicles develop distinct growth patterns and whorls.',
+    pulmonaryMusculoskeletal: 'Cheesy, lipid-rich vernix caseosa coats entire skin surface, preventing maceration in amniotic fluid.'
+  },
+  20: {
+    week: 20,
+    carnegieStage: 'Mid-Pregnancy Milestone (50%)',
+    epochName: 'Halfway Milestone',
+    growthFactor: '230,000x',
+    brainNervousSystem: 'Motor neurons establish mature neuromuscular junctions with skeletal muscle fibers.',
+    cardiovascularVisceral: 'Level II anatomical scan visualizes four chambers, outflow tracts, and kidney parenchyma.',
+    sensoryCraniofacial: 'Eyebrows and eyelashes emerge along the orbital margins.',
+    pulmonaryMusculoskeletal: 'Definite maternal sensation of fetal movements (quickening) reliably noted.'
+  },
+  21: {
+    week: 21,
+    carnegieStage: 'Digestive Maturation',
+    epochName: 'Amniotic Swallowing',
+    growthFactor: '280,000x',
+    brainNervousSystem: 'Sleep-wake cycles emerge; periods of quiet sleep alternate with active movement.',
+    cardiovascularVisceral: 'Bone marrow assumes primary role in erythrocyte (red blood cell) production.',
+    sensoryCraniofacial: 'Baby swallows amniotic fluid daily, extracting water, electrolytes, and saccharides.',
+    pulmonaryMusculoskeletal: 'Lower digestive tract begins accumulating meconium (amniotic debris and bile).'
+  },
+  22: {
+    week: 22,
+    carnegieStage: 'Craniofacial Perfection',
+    epochName: 'Sensory Integration',
+    growthFactor: '340,000x',
+    brainNervousSystem: 'Limbic system structures (hippocampus, amygdala) mature, initiating primitive emotional memory.',
+    cardiovascularVisceral: 'Liver metabolizes bilirubin; spleen maintains immunological filtration.',
+    sensoryCraniofacial: 'Facial contours match newborn appearance; lips, philtrum, and nose bridges fully defined.',
+    pulmonaryMusculoskeletal: 'Grip reflex strengthens; baby grasps umbilical cord and opposite hand.'
+  },
+  23: {
+    week: 23,
+    carnegieStage: 'Inner Ear Balance',
+    epochName: 'Vestibular Maturation',
+    growthFactor: '400,000x',
+    brainNervousSystem: 'Vestibular system in inner ear senses maternal movement, posture, and spatial orientation.',
+    cardiovascularVisceral: 'Pulmonary blood vessel branches multiply throughout lung parenchyma.',
+    sensoryCraniofacial: 'Skin remains translucent pink due to dense capillary networks beneath the dermis.',
+    pulmonaryMusculoskeletal: 'Fetus startled by loud external percussive sounds exhibits Moro reflex.'
+  },
+  24: {
+    week: 24,
+    carnegieStage: 'Viability Threshold Milestone',
+    epochName: 'Viability Gateway',
+    growthFactor: '480,000x',
+    brainNervousSystem: 'Brain weight increases fourfold; cortical surface begins grooving into primitive sulci and gyri.',
+    cardiovascularVisceral: 'Capillary beds expand around terminal pulmonary sacs for prospective gas exchange.',
+    sensoryCraniofacial: 'Taste buds fully functional; baby swallows more in response to sweet amniotic flavors.',
+    pulmonaryMusculoskeletal: 'Type II pneumocytes in lungs begin synthesizing pulmonary surfactant (dipalmitoylphosphatidylcholine).'
+  },
+  25: {
+    week: 25,
+    carnegieStage: 'Capillary Network Maturation',
+    epochName: 'Capillary Expansion',
+    growthFactor: '560,000x',
+    brainNervousSystem: 'Spinal reflex pathways fully functional; withdrawal reflex to noxious tactile stimulus present.',
+    cardiovascularVisceral: 'Blood vessel walls thicken and develop muscular tunica media for blood pressure control.',
+    sensoryCraniofacial: 'Vocal cords fully developed; practice breathing motions cause silent amniotic fluid movement.',
+    pulmonaryMusculoskeletal: 'Spinal structures, including 33 vertebrae, ligaments, and vertebral discs, align.'
+  },
+  26: {
+    week: 26,
+    carnegieStage: 'Eyelid Separation Milestone',
+    epochName: 'Eyes Open',
+    growthFactor: '650,000x',
+    brainNervousSystem: 'Optic nerve pathways establish cortical connections in the occipital visual cortex.',
+    cardiovascularVisceral: 'Pulmonary surfactant production increases steadily within prospective alveolar air spaces.',
+    sensoryCraniofacial: 'Eyelids unseal and open for the first time; blinking reflex actively operational.',
+    pulmonaryMusculoskeletal: 'Regular rhythmic practice breathing movements train intercostal and diaphragmatic muscles.'
+  },
+  27: {
+    week: 27,
+    carnegieStage: 'Second Trimester Culmination',
+    epochName: 'Trimester 2 Gateway',
+    growthFactor: '750,000x',
+    brainNervousSystem: 'Brain surface exhibits complex secondary convolutions; REM (rapid eye movement) sleep registered.',
+    cardiovascularVisceral: 'Cardiac autonomic regulation demonstrates accelerations with fetal body movements.',
+    sensoryCraniofacial: 'Baby recognizes and rhythmically responds to parents’ familiar voices and soothing music.',
+    pulmonaryMusculoskeletal: 'Fetal hiccups occur frequently as the diaphragm spasms during practice breathing.'
+  },
+  28: {
+    week: 28,
+    carnegieStage: 'Third Trimester Milestone',
+    epochName: 'Third Trimester Gateway',
+    growthFactor: '870,000x',
+    brainNervousSystem: 'Billions of new synaptic connections form daily; brain mass expands exponentially.',
+    cardiovascularVisceral: 'Body temperature regulation centers in hypothalamus initiate autonomic control.',
+    sensoryCraniofacial: 'Eye pupils dilate and constrict in response to light variations through the uterine wall.',
+    pulmonaryMusculoskeletal: 'Fetal weight surpasses 1.0 kg; adipose fat begins smoothing skin creases.'
+  },
+  29: {
+    week: 29,
+    carnegieStage: 'Rapid Skeletal Mineralization',
+    epochName: 'Calcium Deposition',
+    growthFactor: '1,000,000x',
+    brainNervousSystem: 'Cerebral cortex assumes control over basic body functions from brainstem centers.',
+    cardiovascularVisceral: 'Red blood cell production shifts almost entirely to the bone marrow.',
+    sensoryCraniofacial: 'Hair on scalp thickens; eyes blink frequently during active wakeful periods.',
+    pulmonaryMusculoskeletal: 'Fetus absorbs ~250mg of maternal elemental calcium daily into hardening bones.'
+  },
+  30: {
+    week: 30,
+    carnegieStage: 'Amniotic Volume Peak',
+    epochName: 'Surfactant Maturation',
+    growthFactor: '1,150,000x',
+    brainNervousSystem: 'Brain shows distinct adult-like EEG brainwave patterns between deep and active REM sleep.',
+    cardiovascularVisceral: 'Amniotic fluid volume reaches its biological peak (~800ml), cushioned for fetal movement.',
+    sensoryCraniofacial: 'Toenails grow to the edges of the nail beds; eyebrow contours distinct.',
+    pulmonaryMusculoskeletal: 'Subcutaneous white fat increases to 8% of total body weight, insulating internal organs.'
+  },
+  31: {
+    week: 31,
+    carnegieStage: 'Neurological Processing',
+    epochName: 'Sensory Processing',
+    growthFactor: '1,300,000x',
+    brainNervousSystem: 'All 5 primary senses functional; baby tracks sound sources with head turns.',
+    cardiovascularVisceral: 'Kidneys excrete up to 500ml of sterile urine daily into amniotic fluid.',
+    sensoryCraniofacial: 'Lanugo hair begins shedding from face and shoulders into the amniotic fluid.',
+    pulmonaryMusculoskeletal: 'Reproductive organs complete descent (testes in males; ovaries at pelvic brim in females).'
+  },
+  32: {
+    week: 32,
+    carnegieStage: 'Vertex Presentation Transition',
+    epochName: 'Cephalic Turning',
+    growthFactor: '1,500,000x',
+    brainNervousSystem: 'Thermoregulation circuits refine; baby practices sustained thermal homeostasis.',
+    cardiovascularVisceral: 'Placental transfer of maternal immunoglobulin G (IgG) antibodies accelerates for newborn immunity.',
+    sensoryCraniofacial: 'Fingernails extend past the fingertips; skin transitions from translucent red to soft opaque pink.',
+    pulmonaryMusculoskeletal: 'Majority of babies settle into the cephalic (head-down) vertex presentation.'
+  },
+  33: {
+    week: 33,
+    carnegieStage: 'Immune Shield Transfer',
+    epochName: 'Maternal Immunity',
+    growthFactor: '1,700,000x',
+    brainNervousSystem: 'Cranial bones (frontal, parietal, occipital) remain pliable with unossified sutures and fontanelles.',
+    cardiovascularVisceral: 'Amniotic fluid begins gradual physiological resorption as fetus occupies majority of uterine cavity.',
+    sensoryCraniofacial: 'Pupillary light reflex fully coordinated; baby turns toward sustained light sources.',
+    pulmonaryMusculoskeletal: 'Active kicks give way to strong rolling and stretching movements against uterine wall.'
+  },
+  34: {
+    week: 34,
+    carnegieStage: 'Surfactant Critical Mass',
+    epochName: 'Surfactant Milestone',
+    growthFactor: '1,900,000x',
+    brainNervousSystem: 'Central nervous system sufficiently mature that neonatal outcomes closely mirror full-term infants.',
+    cardiovascularVisceral: 'Lecithin/sphingomyelin (L/S) ratio in amniotic fluid approaches 2.0 (predictive of lung maturity).',
+    sensoryCraniofacial: 'Vernix coating reaches maximum thickness, shielding skin from prolonged moisture.',
+    pulmonaryMusculoskeletal: 'Skeleton fully calcified; skull remains flexible to facilitate pelvic birth canal passage.'
+  },
+  35: {
+    week: 35,
+    carnegieStage: 'Late Preterm Maturation',
+    epochName: 'Adipose Storage',
+    growthFactor: '2,100,000x',
+    brainNervousSystem: 'Cerebral cortex undergoes dense synaptogenesis; reflexes (rooting, suckling, swallowing) integrated.',
+    cardiovascularVisceral: 'Kidneys fully functional; liver stores glycogen and iron reserves for immediate postpartum life.',
+    sensoryCraniofacial: 'Cheeks plump up with buccal fat pads (Bichat fat pads) designed for active breastfeeding latch.',
+    pulmonaryMusculoskeletal: 'Body fat increases to ~15% of total mass, filling out skin folds and limbs.'
+  },
+  36: {
+    week: 36,
+    carnegieStage: 'Late Preterm Gateway',
+    epochName: 'Pelvic Engagement',
+    growthFactor: '2,300,000x',
+    brainNervousSystem: 'Coordinated suck-swallow-breathe sequence practiced during amniotic fluid intake.',
+    cardiovascularVisceral: 'Immune antibody titers against pertussis, tetanus, and influenza reach peak maternal transfer.',
+    sensoryCraniofacial: 'Facial profile smooth and round; ear cartilage stiffens with springy recoil.',
+    pulmonaryMusculoskeletal: 'Fetal head descends into maternal pelvic brim (lightening), easing maternal diaphragmatic pressure.'
+  },
+  37: {
+    week: 37,
+    carnegieStage: 'Early Term Milestone',
+    epochName: 'Early Term Status',
+    growthFactor: '2,500,000x',
+    brainNervousSystem: 'Sleep cycles well organized into 40-minute rhythms; alertness states present.',
+    cardiovascularVisceral: 'Lungs synthesize sufficient surfactant to support spontaneous ambient air breathing without collapse.',
+    sensoryCraniofacial: 'Lanugo hair almost completely shed, leaving smooth skin with vernix in skin creases.',
+    pulmonaryMusculoskeletal: 'Grasp reflex firm; infant capable of supporting significant fraction of body weight.'
+  },
+  38: {
+    week: 38,
+    carnegieStage: 'Full Term Maturation',
+    epochName: 'Full Term Readiness',
+    growthFactor: '2,700,000x',
+    brainNervousSystem: 'Brain growth continues at 1% per day; respiratory neural centers ready for first independent breath.',
+    cardiovascularVisceral: 'Circulatory shunts (ductus arteriosus, foramen ovale) ready for immediate pressure-mediated closure at birth.',
+    sensoryCraniofacial: 'Vocal cords strong, ready for the first vigorous newborn cry.',
+    pulmonaryMusculoskeletal: 'Meconium packed securely within the colon, ready for first postpartum evacuation.'
+  },
+  39: {
+    week: 39,
+    carnegieStage: 'Full Term Peak',
+    epochName: 'Optimal Maturity',
+    growthFactor: '2,900,000x',
+    brainNervousSystem: 'Brain and nervous system completely prepared for external atmospheric sensory input.',
+    cardiovascularVisceral: 'Adrenal glands produce surging catecholamines in response to Braxton Hicks surges.',
+    sensoryCraniofacial: 'Plump facial cheeks with thick buccal pads ensure powerful latch for breastfeeding.',
+    pulmonaryMusculoskeletal: 'Average weight reaches 3.2–3.4 kg; head fully engaged in maternal pelvis.'
+  },
+  40: {
+    week: 40,
+    carnegieStage: 'Full Term Completion / EDD',
+    epochName: 'Birthday Milestone',
+    growthFactor: '3,200,000x',
+    brainNervousSystem: 'Full complement of 100 billion neurons formed and ready for external neonatal development.',
+    cardiovascularVisceral: 'Umbilical cord vessels and placenta prepared for postpartum separation.',
+    sensoryCraniofacial: 'Soft, pink, fully formed newborn ready to gaze, hear parents, and bond skin-to-skin.',
+    pulmonaryMusculoskeletal: 'Lungs fully primed to take the monumental first breath of atmospheric air.'
   }
-];
+};
 
 export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
   currentGestationalWeek,
@@ -116,44 +453,14 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
 }) => {
   const { updateProfile } = useApp();
   const [selectedWeek, setSelectedWeek] = useState<number>(currentGestationalWeek || 24);
-  const [selectedDayIndex, setSelectedDayIndex] = useState<number>(3); // 0 = Mon, 3 = Thu, etc.
-  const [isKicking, setIsKicking] = useState<boolean>(false);
-  const [kickNotice, setKickNotice] = useState<string | null>(null);
+  const [selectedDayIndex, setSelectedDayIndex] = useState<number>(3); // 0 = Mon, 3 = Thu
 
-  // =========================================================================
-  // EVOLUTION TIMELAPSE PLAYER STATE
-  // Allows user to click "Play Evolution" and watch the baby morph smoothly
-  // across all 40 weeks of gestation at adjustable speeds (1x, 2x, 4x)
-  // =========================================================================
-  const [isPlayingEvolution, setIsPlayingEvolution] = useState<boolean>(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState<1 | 2 | 4>(1);
-
-  // Sync state if currentGestationalWeek changes (e.g. from user profile or onboarding)
+  // Sync state if currentGestationalWeek changes (e.g. settings updated)
   useEffect(() => {
     if (currentGestationalWeek && currentGestationalWeek >= 1 && currentGestationalWeek <= 40) {
       setSelectedWeek(currentGestationalWeek);
     }
   }, [currentGestationalWeek]);
-
-  // Evolution Timelapse auto-play interval timer
-  useEffect(() => {
-    if (!isPlayingEvolution) return;
-
-    // Speeds: 1x = 1200ms, 2x = 600ms, 4x = 280ms
-    const intervalMs = playbackSpeed === 1 ? 1200 : playbackSpeed === 2 ? 600 : 280;
-
-    const timer = setInterval(() => {
-      setSelectedWeek((prev) => {
-        if (prev >= 40) {
-          // Loop back to week 1 for seamless continuous timelapse
-          return 1;
-        }
-        return prev + 1;
-      });
-    }, intervalMs);
-
-    return () => clearInterval(timer);
-  }, [isPlayingEvolution, playbackSpeed]);
 
   const handleWeekChange = (newWeek: number) => {
     const clamped = Math.max(1, Math.min(40, newWeek));
@@ -161,41 +468,9 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
     if (onSelectWeek) onSelectWeek(clamped);
   };
 
-  const togglePlayEvolution = () => {
-    setIsPlayingEvolution((prev) => !prev);
-  };
-
-  const restartEvolution = () => {
-    setSelectedWeek(1);
-    setIsPlayingEvolution(true);
-  };
-
-  const jumpToMyWeek = () => {
-    setIsPlayingEvolution(false);
-    setSelectedWeek(currentGestationalWeek || 24);
-  };
-
   // 1-Click Update of Mother's actual current week
   const handleSetAsCurrentWeek = () => {
     updateProfile({ currentGestationalWeek: selectedWeek });
-  };
-
-  // Interactive kick reaction
-  const triggerBabyKick = () => {
-    setIsKicking(true);
-    const msgs = [
-      `Baby gave a gentle flutter at Week ${selectedWeek}! ✨`,
-      `Baby rolled happily in the amniotic waters! 🌸`,
-      `Baby felt your warm touch! Quickening motion detected 💕`,
-      `Active little kick registered! 👶`
-    ];
-    setKickNotice(msgs[Math.floor(Math.random() * msgs.length)]);
-    setTimeout(() => {
-      setIsKicking(false);
-    }, 1200);
-    setTimeout(() => {
-      setKickNotice(null);
-    }, 3500);
   };
 
   // Comprehensive weekly clinical data for all 40 weeks
@@ -207,37 +482,29 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
     );
   }, [selectedWeek]);
 
-  // Current active evolutionary epoch
-  const activeEpoch = useMemo(() => {
+  // Carnegie & clinical embryological data
+  const evolutionRef = useMemo(() => {
     return (
-      EVOLUTIONARY_EPOCHS.find(
-        (epoch) => selectedWeek >= epoch.weekStart && selectedWeek <= epoch.weekEnd
-      ) || EVOLUTIONARY_EPOCHS[0]
+      FETAL_EVOLUTION_STANDARDS[selectedWeek] ||
+      FETAL_EVOLUTION_STANDARDS[24]
     );
   }, [selectedWeek]);
 
-  // Dynamic clinical fetal heart rate (BPM) based on gestational age
-  const fetalBpm = useMemo(() => {
-    if (selectedWeek <= 4) return null; // Pre-heartbeat
-    if (selectedWeek <= 7) return 110 + (selectedWeek - 4) * 15; // 125 to 155 bpm
-    if (selectedWeek <= 10) return 165 - (selectedWeek - 8) * 3; // 165 to 160 bpm
-    if (selectedWeek <= 20) return 155 - (selectedWeek - 10) * 1; // 155 to 145 bpm
-    if (selectedWeek <= 30) return 145 - (selectedWeek - 20) * 0.7; // 145 to 138 bpm
-    return Math.round(135 - (selectedWeek - 30) * 0.5); // 135 to 130 bpm
-  }, [selectedWeek]);
+  // Trimester & Month
+  const selectedMonth = getPregnancyMonth(selectedWeek);
+  const selectedTrimester = getPregnancyTrimester(selectedWeek);
 
-  // Biological growth multiplier relative to conception (Week 1 ~0.001g to Week 40 ~3500g)
-  const growthMultiplier = useMemo(() => {
-    if (selectedWeek <= 3) return '1x (Fertilized Zygote)';
-    if (selectedWeek <= 6) return '100x Growth';
-    if (selectedWeek <= 9) return '500x Growth';
-    if (selectedWeek <= 12) return '1,400x Growth';
-    if (selectedWeek <= 16) return '10,000x Growth';
-    if (selectedWeek <= 20) return '30,000x Growth';
-    if (selectedWeek <= 24) return '60,000x Growth';
-    if (selectedWeek <= 28) return '100,000x Growth';
-    if (selectedWeek <= 34) return '200,000x Growth';
-    return '350,000x Full Growth';
+  // Biological stage category for high-definition anatomical depiction
+  const biologicalStage = useMemo(() => {
+    if (selectedWeek <= 3) return 'germinal';
+    if (selectedWeek <= 5) return 'early-embryo';
+    if (selectedWeek <= 7) return 'organogenesis-embryo';
+    if (selectedWeek <= 9) return 'late-embryo';
+    if (selectedWeek <= 13) return 'early-fetus';
+    if (selectedWeek <= 21) return 'mid-fetus';
+    if (selectedWeek <= 27) return 'viable-fetus';
+    if (selectedWeek <= 34) return 'maturing-fetus';
+    return 'full-term';
   }, [selectedWeek]);
 
   // Calculate calendar days for this week based on EDD or baseline reference
@@ -269,192 +536,105 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
   }, [selectedWeek, currentGestationalWeek]);
 
   const activeDay = weekCalendarData[selectedDayIndex] || weekCalendarData[3];
-  const selectedMonth = getPregnancyMonth(selectedWeek);
-  const selectedTrimester = getPregnancyTrimester(selectedWeek);
-
-  // Biological stage category for SVG styling and evolutionary morphing
-  const biologicalStage = useMemo(() => {
-    if (selectedWeek <= 3) return 'germinal';
-    if (selectedWeek <= 5) return 'early-embryo';
-    if (selectedWeek <= 7) return 'heartbeat-embryo';
-    if (selectedWeek <= 9) return 'curled-embryo';
-    if (selectedWeek <= 13) return 'tiny-human';
-    if (selectedWeek <= 21) return 'active-fetus';
-    if (selectedWeek <= 27) return 'developed-fetus';
-    if (selectedWeek <= 34) return 'third-trimester';
-    return 'full-term';
-  }, [selectedWeek]);
-
-  // Thematic illustration type for "Tips for you Mom"
-  const illustrationType = useMemo(() => {
-    if (selectedWeek <= 7 || (selectedWeek >= 28 && selectedWeek <= 33)) return 'yoga-rest';
-    if (selectedWeek >= 8 && selectedWeek <= 15) return 'healthy-meal';
-    return 'hydration-vitamins';
-  }, [selectedWeek]);
-
-  // Progress percentage across 40 weeks
   const progressPercent = Math.round((selectedWeek / 40) * 100);
 
   return (
     <div className="w-full max-w-5xl mx-auto rounded-4xl bg-card border border-border shadow-card overflow-hidden transition-all duration-300">
       {/* ========================================================= */}
-      {/* 1. TOP TIMELAPSE & EVOLUTION CONTROL BAR                  */}
-      {/* Interactive controls: Play Evolution, Speed, Restart      */}
+      {/* 1. CLINICAL EVOLUTION HEADER & TRIMESTER SELECTOR         */}
+      {/* Clean, calm, professional medical reference bar           */}
       {/* ========================================================= */}
       <div className="bg-stone-900 text-stone-100 px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-3 border-b border-stone-800">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-white shadow-xs">
-            <Sparkles className="w-4 h-4 animate-spin" style={{ animationDuration: '9s' }} />
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shadow-xs">
+            <Compass className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-serif font-bold text-amber-200 uppercase tracking-wider">
-                Fetal Evolution Timelapse
+              <span className="text-xs font-serif font-bold text-stone-100 uppercase tracking-wider">
+                Fetal Evolution & Developmental Reference
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold">
-                {progressPercent}% Complete
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary-soft font-mono font-bold">
+                Week {selectedWeek} of 40 ({progressPercent}%)
               </span>
             </div>
             <p className="text-[11px] text-stone-400">
-              Watch your baby evolve across 40 weeks • Online Embryology Reference
+              {evolutionRef.carnegieStage} • Hadlock & WHO Clinical Standards
             </p>
           </div>
         </div>
 
-        {/* Playback Controls */}
-        <div className="flex items-center gap-2">
-          {/* Restart from W1 */}
+        {/* Trimester Jump Badges */}
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
-            onClick={restartEvolution}
-            className="p-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white transition-all text-xs cursor-pointer flex items-center gap-1"
-            title="Restart evolution from Week 1"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[11px]">Wk 1</span>
-          </button>
-
-          {/* Main Play / Pause Evolution Button */}
-          <button
-            type="button"
-            onClick={togglePlayEvolution}
-            className={`px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all shadow-md cursor-pointer ${
-              isPlayingEvolution
-                ? 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
-                : 'bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white'
+            onClick={() => handleWeekChange(8)}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              selectedTrimester === 1
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40'
+                : 'text-stone-400 hover:text-stone-200'
             }`}
-            title={isPlayingEvolution ? 'Pause Evolution Timelapse' : 'Play Evolution Timelapse'}
           >
-            {isPlayingEvolution ? (
-              <>
-                <Pause className="w-3.5 h-3.5 fill-white" />
-                <span>Pause Evolution</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3.5 h-3.5 fill-white" />
-                <span>Play Evolution</span>
-              </>
-            )}
+            Trimester 1
           </button>
 
-          {/* Speed Toggle Pills */}
-          <div className="flex items-center bg-stone-800 rounded-lg p-0.5 border border-stone-700 text-[11px] font-bold">
-            {([1, 2, 4] as const).map((spd) => (
-              <button
-                key={spd}
-                type="button"
-                onClick={() => setPlaybackSpeed(spd)}
-                className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
-                  playbackSpeed === spd
-                    ? 'bg-amber-500 text-stone-950 shadow-xs'
-                    : 'text-stone-400 hover:text-stone-200'
-                }`}
-                title={`Timelapse speed: ${spd}x`}
-              >
-                {spd}x
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={() => handleWeekChange(20)}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              selectedTrimester === 2
+                ? 'bg-primary/20 text-primary-soft border border-primary/40'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            Trimester 2
+          </button>
 
-          {/* Jump to current week */}
-          {selectedWeek !== currentGestationalWeek && (
-            <button
-              type="button"
-              onClick={jumpToMyWeek}
-              className="hidden md:flex items-center gap-1 px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-amber-300 hover:text-amber-200 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border border-stone-700"
-              title="Return to your actual gestational week"
-            >
-              <span>My Wk {currentGestationalWeek}</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => handleWeekChange(34)}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              selectedTrimester === 3
+                ? 'bg-rose-500/20 text-rose-300 border border-rose-400/40'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            Trimester 3
+          </button>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 2. EVOLUTIONARY EPOCHS HORIZONTAL TABS                    */}
-      {/* Quick-jump milestones (Germinal, Embryo, Digits, etc.)    */}
+      {/* 2. CALM MATERNAL PEACH HERO SECTION                       */}
+      {/* Featuring Anatomical Illustration without heartbeat/anim  */}
       {/* ========================================================= */}
-      <div className="bg-stone-950/80 px-2 py-2 overflow-x-auto no-scrollbar border-b border-stone-800/60 flex items-center gap-1.5 sm:justify-center">
-        {EVOLUTIONARY_EPOCHS.map((epoch) => {
-          const isEpochActive = activeEpoch.id === epoch.id;
-          return (
-            <button
-              key={epoch.id}
-              type="button"
-              onClick={() => handleWeekChange(epoch.weekStart)}
-              className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
-                isEpochActive
-                  ? 'bg-gradient-to-r from-amber-500/90 to-rose-500/90 text-white shadow-sm ring-1 ring-amber-400'
-                  : 'bg-stone-800/60 hover:bg-stone-800 text-stone-300 hover:text-white'
-              }`}
-              title={`${epoch.name} (Weeks ${epoch.weekStart}–${epoch.weekEnd}): ${epoch.keyEvolution}`}
-            >
-              <span className="text-xs">{epoch.emoji}</span>
-              <span className="font-semibold">{epoch.name}</span>
-              <span className="text-[10px] opacity-75 font-mono">
-                {epoch.weekStart}–{epoch.weekEnd}w
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ========================================================= */}
-      {/* 3. WARM PEACH HERO SECTION WITH ORGANIC CURVE            */}
-      {/* ========================================================= */}
-      <div className="relative bg-gradient-to-b from-[#FDE8D4] via-[#F8DAC3] to-[#FCEEE1] pt-5 pb-2 px-4 sm:px-8 text-stone-900 overflow-hidden">
-        {/* Ambient subtle glow circles in background */}
-        <div className="absolute -top-12 -left-12 w-48 h-48 bg-white/40 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute top-1/4 -right-12 w-56 h-56 bg-amber-100/50 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Top Header Bar: Date & Month Pill on Left & Navigation Chevrons on Right */}
+      <div className="relative bg-gradient-to-b from-[#FDF3E7] via-[#F9EAD9] to-[#FFF9F3] pt-5 pb-3 px-4 sm:px-8 text-stone-900 overflow-hidden">
+        {/* Top Header Bar: Date pill & Navigation arrows */}
         <div className="relative z-10 flex items-center justify-between gap-3 mb-3">
-          {/* Date pill with calendar icon and current month */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md border border-white/60 shadow-xs text-xs font-semibold text-stone-800">
+          {/* Date pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 backdrop-blur-md border border-white/60 shadow-xs text-xs font-semibold text-stone-800">
             <span className="text-amber-800 text-sm">📅</span>
             <span>
               {activeDay.dateNumber} {activeDay.monthName}
             </span>
             <span className="text-stone-400">·</span>
             <span className="text-primary font-bold">Month {selectedMonth}</span>
-            <span className="hidden md:inline text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
-              T{selectedTrimester}
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
+              Trimester {selectedTrimester}
             </span>
           </div>
 
-          {/* Quick interactive week switcher & Arrow navigation */}
+          {/* Quick Week Selectors */}
           <div className="flex items-center gap-1.5">
-            {/* Quick Pills for 4, 8, 12, 20, 28, 36, 40 */}
             <div className="hidden sm:flex items-center gap-1 bg-white/60 p-1 rounded-full border border-white/60 backdrop-blur-sm mr-1">
-              {[4, 8, 12, 20, 28, 36, 40].map((wk) => (
+              {[4, 8, 12, 16, 20, 24, 28, 32, 36, 40].map((wk) => (
                 <button
                   key={wk}
                   type="button"
                   onClick={() => handleWeekChange(wk)}
                   className={`px-2 py-0.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                     selectedWeek === wk
-                      ? 'bg-white text-stone-900 shadow-xs ring-1 ring-amber-300'
+                      ? 'bg-stone-900 text-white shadow-xs'
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
@@ -463,7 +643,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
               ))}
             </div>
 
-            {/* Previous Week */}
+            {/* Prev Week */}
             <button
               type="button"
               onClick={() => handleWeekChange(selectedWeek - 1)}
@@ -499,7 +679,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                 type="button"
                 onClick={() => setSelectedDayIndex(idx)}
                 className={`py-1 px-1 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer ${
-                  isSelected ? 'bg-white/50 backdrop-blur-xs shadow-xs' : 'hover:bg-white/20'
+                  isSelected ? 'bg-white/60 backdrop-blur-xs shadow-xs' : 'hover:bg-white/20'
                 }`}
               >
                 <span className="text-[10px] font-semibold text-stone-500 uppercase tracking-tight">
@@ -514,15 +694,14 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                   <div
                     className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       isSelected
-                        ? 'bg-white text-stone-900 shadow-xs ring-1 ring-stone-300'
+                        ? 'bg-stone-900 text-white shadow-xs'
                         : 'text-stone-700'
                     }`}
                   >
                     {item.dateNumber}
                   </div>
-
                   {isSelected && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-700 mt-0.5" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-800 mt-0.5" />
                   )}
                 </div>
               </button>
@@ -531,77 +710,36 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
         </div>
 
         {/* ========================================================= */}
-        {/* DYNAMIC ANIMATED BABY SANCTUARY CANVAS                    */}
-        {/* Morphs biologically for each evolutionary stage 1 to 40   */}
+        {/* STATIC HIGH-DEFINITION ANATOMICAL DEVELOPMENT VIEW        */}
+        {/* Calm, medically grounded, beautiful in utero illustration */}
         {/* ========================================================= */}
-        <div className="relative z-10 flex flex-col items-center justify-center py-2">
-          {/* Active Evolutionary Milestone Pill */}
-          <div className="mb-2 flex flex-wrap items-center justify-center gap-2">
-            {/* Heartbeat / Cellular state */}
-            {fetalBpm ? (
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/85 backdrop-blur-md border border-rose-200 text-rose-700 text-xs font-bold shadow-2xs">
-                <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500 animate-pulse" />
-                <span>{Math.round(fetalBpm)} BPM Fetal Heartbeat</span>
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/85 backdrop-blur-md border border-amber-200 text-amber-800 text-xs font-bold shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-spin" style={{ animationDuration: '8s' }} />
-                <span>Cellular Cleavage & Implantation</span>
-              </div>
-            )}
-
-            {/* Growth multiplier badge */}
-            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100/90 text-amber-900 text-xs font-semibold border border-amber-200/80 shadow-2xs">
-              <Zap className="w-3 h-3 text-amber-600" />
-              <span>{growthMultiplier}</span>
-            </div>
+        <div className="relative z-10 flex flex-col items-center justify-center py-3">
+          {/* Developmental Landmark Pill */}
+          <div className="mb-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-amber-200 text-amber-900 text-xs font-bold shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <span>{evolutionRef.epochName}</span>
+            <span className="text-stone-300">·</span>
+            <span className="text-stone-600 font-normal">{evolutionRef.growthFactor}</span>
           </div>
 
-          {/* Interactive Baby Canvas Wrapper */}
-          <div
-            onClick={triggerBabyKick}
-            className="relative flex items-center justify-center min-h-[175px] sm:min-h-[215px] cursor-pointer group select-none"
-            title="Click or tap to feel a gentle baby kick!"
-          >
-            {/* Womb Pulsing Aura */}
-            <div className="absolute w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-gradient-to-tr from-amber-200/40 via-rose-100/50 to-orange-100/30 blur-xl animate-womb-pulse pointer-events-none" />
+          {/* Calm Anatomical In Utero Container */}
+          <div className="relative flex items-center justify-center min-h-[175px] sm:min-h-[200px] select-none my-1">
+            {/* Soft ambient womb halo (static, calm) */}
+            <div className="absolute w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-gradient-to-tr from-amber-100/60 via-rose-50/70 to-orange-100/50 blur-xl pointer-events-none" />
 
-            {/* Ripple Wave on Kick Interaction */}
-            {isKicking && (
-              <div className="absolute w-32 h-32 rounded-full border-2 border-rose-400/80 animate-ripple pointer-events-none" />
-            )}
+            {/* Soft ground shadow */}
+            <div className="absolute bottom-1 w-36 h-4 bg-amber-900/10 rounded-full blur-md" />
 
-            {/* Auditory sensory waves for weeks 22-27 */}
-            {selectedWeek >= 22 && selectedWeek <= 27 && (
-              <div className="absolute w-40 h-40 rounded-full border border-sky-300/40 animate-soundwave pointer-events-none" />
-            )}
-
-            {/* Ambient soft shadow underneath baby */}
-            <div className="absolute bottom-1 w-36 h-5 bg-amber-900/10 rounded-full blur-md" />
-
-            {/* Floating Animated Fetal Illustration with smooth morphing */}
-            <div
-              className={`transition-all duration-500 ease-out animate-fetal-float ${
-                isKicking ? 'scale-110' : 'group-hover:scale-105'
-              }`}
-            >
-              <AnimatedFetalVisualizer
+            {/* Anatomical Developmental Visualizer */}
+            <div className="relative transition-all duration-300">
+              <ClinicalAnatomicalVisualizer
                 week={selectedWeek}
                 stage={biologicalStage}
-                hasHeartbeat={Boolean(fetalBpm)}
-                isKicking={isKicking}
               />
             </div>
           </div>
 
-          {/* Kick Toast Feedback */}
-          {kickNotice && (
-            <div className="mt-1 px-3 py-1 bg-white/90 text-rose-800 text-xs font-bold rounded-full shadow-xs border border-rose-200 animate-in fade-in slide-in-from-bottom-2">
-              {kickNotice}
-            </div>
-          )}
-
-          {/* Centered Week Title & Biometrics Bar */}
+          {/* Week Title & Clinical Biometrics */}
           <div className="mt-2 text-center space-y-1">
             <h2 className="text-xl sm:text-2xl font-serif font-black text-stone-800 tracking-tight flex items-center justify-center gap-2">
               <span>Week {selectedWeek}</span>
@@ -610,93 +748,125 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
               </span>
             </h2>
 
-            {/* Fetal Biometric Badges (Length & Weight) */}
+            {/* Biometric Badges (Length & Weight) */}
             <div className="flex items-center justify-center gap-3 text-xs font-semibold text-stone-700">
-              <span className="flex items-center gap-1 bg-white/60 px-2.5 py-0.5 rounded-full border border-white/40">
-                <Ruler className="w-3 h-3 text-primary" />
+              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-white/60 shadow-2xs">
+                <Ruler className="w-3.5 h-3.5 text-primary" />
                 <span>
                   {currentWeekData.babyLengthCm < 1
-                    ? `${(currentWeekData.babyLengthCm * 10).toFixed(1)} mm`
-                    : `${currentWeekData.babyLengthCm} cm`}
+                    ? `${(currentWeekData.babyLengthCm * 10).toFixed(1)} mm CRL`
+                    : `${currentWeekData.babyLengthCm} cm CHL`}
                 </span>
               </span>
 
-              <span className="flex items-center gap-1 bg-white/60 px-2.5 py-0.5 rounded-full border border-white/40">
-                <Scale className="w-3 h-3 text-accent" />
+              <span className="flex items-center gap-1.5 bg-white/70 px-3 py-1 rounded-full border border-white/60 shadow-2xs">
+                <Scale className="w-3.5 h-3.5 text-accent" />
                 <span>
                   {currentWeekData.babyWeightG >= 1000
-                    ? `${(currentWeekData.babyWeightG / 1000).toFixed(2)} kg`
-                    : `${currentWeekData.babyWeightG} g`}
+                    ? `${(currentWeekData.babyWeightG / 1000).toFixed(2)} kg EFW`
+                    : `${currentWeekData.babyWeightG} g EFW`}
                 </span>
               </span>
             </div>
           </div>
         </div>
 
-        {/* Organic Curved Wave Transition Dip into lower card section */}
+        {/* Organic transition dip */}
         <div className="w-full overflow-hidden leading-none mt-2 -mb-2">
           <svg
             viewBox="0 0 1200 120"
             preserveAspectRatio="none"
-            className="relative block w-full h-8 sm:h-12 fill-card"
+            className="relative block w-full h-7 sm:h-10 fill-card"
           >
-            <path d="M0,0 C300,90 900,90 1200,0 L1200,120 L0,120 Z" />
+            <path d="M0,0 C300,80 900,80 1200,0 L1200,120 L0,120 Z" />
           </svg>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 4. LOWER SECTION: EVOLUTION CARDS & INTERACTIVE SCRUBBER */}
+      {/* 3. FOUR BIOLOGICAL SYSTEMS EVOLUTION MATRIX               */}
+      {/* Clear anatomical breakdown based on embryology reference  */}
       {/* ========================================================= */}
       <div className="p-4 sm:p-6 space-y-4 bg-card">
-        {/* CARD 1: "Evolutionary Leap This Week" */}
-        <div className="p-5 rounded-3xl bg-[#FFF9F3] border border-[#F5DECC] shadow-xs space-y-2 transition-all">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm sm:text-base font-serif font-bold text-[#8A5A38] flex items-center gap-2">
-              <span>{activeEpoch.emoji}</span>
-              <span>{currentWeekData.headline || `Baby at ${selectedWeek} Weeks`}</span>
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm sm:text-base font-serif font-bold text-foreground flex items-center gap-2">
+              <Layers className="w-4 h-4 text-primary" />
+              <span>Anatomical Systems Evolved in Week {selectedWeek}</span>
             </h3>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold uppercase">
-              {activeEpoch.name} Epoch
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted font-mono font-semibold text-muted-foreground">
+              Carnegie Reference
             </span>
           </div>
 
-          <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-normal">
-            {currentWeekData.babyDevelopment}
-          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            {/* System 1: Brain & Nervous System */}
+            <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/70 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                <Brain className="w-3.5 h-3.5 text-amber-700" />
+                <span>Brain & Nervous System</span>
+              </div>
+              <p className="text-stone-700 leading-relaxed font-normal">
+                {evolutionRef.brainNervousSystem}
+              </p>
+            </div>
 
-          <div className="pt-2 border-t border-amber-200/60 flex items-center gap-2 text-xs text-stone-600">
-            <Info className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-            <span className="font-medium">
-              <strong className="text-amber-900">Evolutionary Landmark:</strong> {activeEpoch.keyEvolution}
-            </span>
+            {/* System 2: Cardiovascular & Internal Organs */}
+            <div className="p-3.5 rounded-2xl bg-rose-50/60 border border-rose-200/70 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-rose-900">
+                <Activity className="w-3.5 h-3.5 text-rose-700" />
+                <span>Cardiovascular & Visceral Organs</span>
+              </div>
+              <p className="text-stone-700 leading-relaxed font-normal">
+                {evolutionRef.cardiovascularVisceral}
+              </p>
+            </div>
+
+            {/* System 3: Sensory & Craniofacial Architecture */}
+            <div className="p-3.5 rounded-2xl bg-sky-50/60 border border-sky-200/70 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-sky-900">
+                <Eye className="w-3.5 h-3.5 text-sky-700" />
+                <span>Sensory & Craniofacial Development</span>
+              </div>
+              <p className="text-stone-700 leading-relaxed font-normal">
+                {evolutionRef.sensoryCraniofacial}
+              </p>
+            </div>
+
+            {/* System 4: Pulmonary & Musculoskeletal */}
+            <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/70 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-emerald-900">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Pulmonary & Musculoskeletal</span>
+              </div>
+              <p className="text-stone-700 leading-relaxed font-normal">
+                {evolutionRef.pulmonaryMusculoskeletal}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* CARD 2: "Tips for you Mom" */}
-        <div className="p-5 rounded-3xl bg-gradient-to-r from-[#F2F1FD] via-[#F5F4FE] to-[#F8F7FF] border border-[#E0DEFD] shadow-xs flex items-center justify-between gap-4 transition-all">
-          <div className="space-y-1.5 max-w-lg">
-            <h4 className="text-xs sm:text-sm font-bold text-[#5E59B3] tracking-wide flex items-center gap-1.5">
-              <span>Tips for you Mom</span>
-              <span className="text-[10px] font-normal text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
-                Trimester {selectedTrimester}
-              </span>
+        {/* Weekly Clinical Advice Card */}
+        <div className="p-4 rounded-3xl bg-[#FFF9F3] border border-[#F5DECC] shadow-xs space-y-1.5">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs sm:text-sm font-serif font-bold text-[#8A5A38] flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-amber-700" />
+              <span>Clinical Advice for Mother • Trimester {selectedTrimester}</span>
             </h4>
-            <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
-              {currentWeekData.weeklyAdvice || currentWeekData.nutritionTip || currentWeekData.safeExerciseTip}
-            </p>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold uppercase">
+              Month {selectedMonth}
+            </span>
           </div>
-
-          <div className="shrink-0">
-            <ThematicTipGraphic type={illustrationType} />
-          </div>
+          <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
+            {currentWeekData.weeklyAdvice || currentWeekData.nutritionTip || currentWeekData.safeExerciseTip}
+          </p>
         </div>
 
-        {/* Quick Week Scrubber Bar with Evolution Timeline */}
+        {/* Quick Week Scrubber Bar (Clean, smooth 1–40 slider) */}
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border/50 text-xs">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Select any pregnancy week (1 - 40):</span>
+            <span>Select gestational week (1 to 40):</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -736,33 +906,21 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
 };
 
 // =====================================================================
-// ANIMATED FETAL VISUALIZER (HIGH-FIDELITY EVOLUTIONARY REFERENCE)
-// Models the true embryological & fetal morphological transition:
-// 1. Germinal: 100-cell blastocyst cleavage & zona pellucida (W1-3)
-// 2. Early Embryo: C-curve neural fold with yolk sac & cardiac tube (W4-5)
-// 3. Heartbeat Embryo: Prominent head, pharyngeal arches & 150 bpm heart (W6-7)
-// 4. Curled Embryo: Digit rays separating, bending elbows & knee buds (W8-9)
-// 5. Tiny Human: Distinct button nose, facial profile & ribcage (W10-13)
-// 6. Active Fetus: Thumb sucking, kicking legs & amniotic ripples (W14-21)
-// 7. Developed Fetus: Unsealed eyelids, eyelashes & hearing waves (W22-27)
-// 8. Third Trimester: Subcutaneous fat smoothing & chubby cheeks (W28-34)
-// 9. Full Term: Plump newborn vertex position ready for birth (W35-40)
+// CLINICAL ANATOMICAL VISUALIZER (CALM, ACCURATE, STATIC EMBRYOLOGY)
+// Renders serene, medical-grade SVG illustrations of each developmental
+// stage without artificial heartbeat throbbing or pulsing animations.
 // =====================================================================
-interface AnimatedFetalVisualizerProps {
+interface ClinicalAnatomicalVisualizerProps {
   week: number;
   stage: string;
-  hasHeartbeat: boolean;
-  isKicking: boolean;
 }
 
-const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
+const ClinicalAnatomicalVisualizer: React.FC<ClinicalAnatomicalVisualizerProps> = ({
   week,
-  stage,
-  hasHeartbeat,
-  isKicking
+  stage
 }) => {
-  // Continuous smooth scaling factor: from 0.72 in week 1 to 1.18 in week 40
-  const scale = 0.72 + (week / 40) * 0.46;
+  // Proportional scale factor based on gestational age
+  const scale = 0.74 + (week / 40) * 0.42;
 
   // 1. WEEKS 1 to 3: The Germinal Blastocyst (Cellular cleavage & implantation)
   if (stage === 'germinal') {
@@ -770,113 +928,93 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700 animate-cleavage-shimmer"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="blastocystSphere" cx="45%" cy="40%" r="55%">
+          <radialGradient id="blastocystSphereClean" cx="45%" cy="40%" r="55%">
             <stop offset="0%" stopColor="#FFFFFF" />
             <stop offset="35%" stopColor="#FFEBD6" />
             <stop offset="70%" stopColor="#F5C498" />
             <stop offset="100%" stopColor="#D98A55" />
           </radialGradient>
-          <radialGradient id="innerCells" cx="50%" cy="50%" r="50%">
+          <radialGradient id="innerCellsClean" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#FFD39B" />
             <stop offset="100%" stopColor="#C46E35" />
           </radialGradient>
         </defs>
 
-        {/* Translucent zona pellucida protective outer membrane */}
-        <circle
-          cx="80"
-          cy="80"
-          r="46"
-          fill="none"
-          stroke="#E6A672"
-          strokeWidth="1.5"
-          strokeDasharray="4 2"
-          opacity="0.65"
-        />
-        <circle cx="80" cy="80" r="42" fill="url(#blastocystSphere)" opacity="0.9" />
+        {/* Zona pellucida protective shell */}
+        <circle cx="80" cy="80" r="46" fill="none" stroke="#E6A672" strokeWidth="1.5" strokeDasharray="4 2" opacity="0.65" />
+        <circle cx="80" cy="80" r="42" fill="url(#blastocystSphereClean)" opacity="0.9" />
 
-        {/* Rapidly dividing blastomeres (Inner Cell Mass) */}
-        <circle cx="70" cy="70" r="14" fill="url(#innerCells)" opacity="0.88" />
-        <circle cx="90" cy="72" r="12" fill="url(#innerCells)" opacity="0.88" />
-        <circle cx="78" cy="88" r="13" fill="url(#innerCells)" opacity="0.88" />
-        <circle cx="88" cy="86" r="11" fill="url(#innerCells)" opacity="0.85" />
-        <circle cx="68" cy="84" r="10" fill="url(#innerCells)" opacity="0.8" />
+        {/* Dividing blastomeres */}
+        <circle cx="70" cy="70" r="14" fill="url(#innerCellsClean)" opacity="0.88" />
+        <circle cx="90" cy="72" r="12" fill="url(#innerCellsClean)" opacity="0.88" />
+        <circle cx="78" cy="88" r="13" fill="url(#innerCellsClean)" opacity="0.88" />
+        <circle cx="88" cy="86" r="11" fill="url(#innerCellsClean)" opacity="0.85" />
+        <circle cx="68" cy="84" r="10" fill="url(#innerCellsClean)" opacity="0.8" />
 
-        {/* Active genetic cleavage nucleus glow */}
-        <circle cx="78" cy="78" r="4.5" fill="#FF5E57" opacity="0.95" className="animate-pulse" />
-        <circle cx="78" cy="78" r="8" fill="#FF5E57" opacity="0.25" className="animate-ping" />
+        {/* Nucleus */}
+        <circle cx="78" cy="78" r="4.5" fill="#E65A4B" opacity="0.85" />
       </svg>
     );
   }
 
-  // 2. WEEKS 4 to 5: Early C-Curve Embryo & Yolk Sac with Primitive Cardiac Tube
+  // 2. WEEKS 4 to 5: Early C-Curve Embryo & Yolk Sac
   if (stage === 'early-embryo') {
     return (
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="embryoGrad4" cx="45%" cy="40%" r="55%">
+          <radialGradient id="embryoGradClean4" cx="45%" cy="40%" r="55%">
             <stop offset="0%" stopColor="#FFF4E6" />
             <stop offset="40%" stopColor="#F8D3B0" />
             <stop offset="75%" stopColor="#DE9E6E" />
             <stop offset="100%" stopColor="#AB6033" />
           </radialGradient>
-          <radialGradient id="yolkSac4" cx="50%" cy="50%" r="50%">
+          <radialGradient id="yolkSacClean4" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#FFFDF7" stopOpacity="0.85" />
             <stop offset="80%" stopColor="#F5D7B3" stopOpacity="0.4" />
             <stop offset="100%" stopColor="#DB9F6B" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* Translucent Yolk Sac providing early nourishment */}
-        <circle
-          cx="104"
-          cy="98"
-          r="28"
-          fill="url(#yolkSac4)"
-          stroke="#E4B484"
-          strokeWidth="1.2"
-          strokeDasharray="3 3"
-          opacity="0.85"
-        />
+        {/* Translucent Yolk Sac */}
+        <circle cx="104" cy="98" r="28" fill="url(#yolkSacClean4)" stroke="#E4B484" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.85" />
 
-        {/* Curled Embryo Body C-Shape with dorsal neural tube */}
+        {/* C-Shape Curled Embryo Body */}
         <path
           d="M62,48 C85,34 108,50 102,76 C96,98 80,112 64,112 C48,112 40,94 48,80 C54,68 66,70 70,80 C74,88 68,96 60,94"
-          fill="url(#embryoGrad4)"
+          fill="url(#embryoGradClean4)"
           stroke="#BA7440"
           strokeWidth="1.4"
           strokeLinecap="round"
         />
 
-        {/* Somite segmentation lines along spine */}
+        {/* Somites (segmentation marks) */}
         <path d="M72,52 L76,55" stroke="#BA7440" strokeWidth="1" opacity="0.6" />
         <path d="M78,58 L82,62" stroke="#BA7440" strokeWidth="1" opacity="0.6" />
         <path d="M84,66 L88,71" stroke="#BA7440" strokeWidth="1" opacity="0.6" />
 
-        {/* Primordial cardiac heart tube pulsing */}
-        <circle cx="76" cy="74" r="4" fill="#E65A4B" opacity="0.95" className="animate-fetal-heart" />
-        <circle cx="76" cy="74" r="8" fill="#E65A4B" opacity="0.25" className="animate-ping" />
+        {/* Primitive cardiac tube center */}
+        <circle cx="76" cy="74" r="3.5" fill="#E65A4B" opacity="0.85" />
       </svg>
     );
   }
 
-  // 3. WEEKS 6 to 7: Heartbeat Embryo with Limb Buds & Prominent Head
-  if (stage === 'heartbeat-embryo') {
+  // 3. WEEKS 6 to 7: Organogenesis Embryo with Limb Buds & Prominent Head
+  if (stage === 'organogenesis-embryo') {
     return (
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="bodyGrad6" cx="40%" cy="30%" r="65%">
+          <radialGradient id="bodyGradClean6" cx="40%" cy="30%" r="65%">
             <stop offset="0%" stopColor="#FFF7EC" />
             <stop offset="30%" stopColor="#F7D4B2" />
             <stop offset="70%" stopColor="#DC9C6E" />
@@ -887,40 +1025,36 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
         {/* Curled embryonic spine */}
         <path
           d="M74,36 C98,34 116,54 112,82 C108,106 88,124 68,124 C50,124 42,110 46,94 C50,80 62,78 70,86 C76,92 72,102 62,102"
-          fill="url(#bodyGrad6)"
+          fill="url(#bodyGradClean6)"
           stroke="#B56E3F"
           strokeWidth="1.2"
         />
 
-        {/* Prominent embryonic head and brain cavity */}
-        <circle cx="74" cy="48" r="21" fill="url(#bodyGrad6)" stroke="#B56E3F" strokeWidth="1" />
+        {/* Large embryonic cranial head */}
+        <circle cx="74" cy="48" r="21" fill="url(#bodyGradClean6)" stroke="#B56E3F" strokeWidth="1" />
 
-        {/* Developing optic eye placode / dark retinal pigment spot */}
+        {/* Retinal optic pigment placode */}
         <circle cx="64" cy="50" r="3.2" fill="#5A3219" opacity="0.8" />
 
-        {/* Branchial pharyngeal grooves */}
-        <path d="M66,60 Q70,62 72,60" stroke="#B56E3F" strokeWidth="1" fill="none" opacity="0.7" />
-
-        {/* Emerging paddle-like arm bud */}
+        {/* Paddle-like arm bud */}
         <path d="M72,70 C64,74 62,82 68,85" stroke="#B56E3F" strokeWidth="2.8" strokeLinecap="round" fill="none" />
 
-        {/* Fast pulsing 150+ BPM embryonic heart */}
-        <circle cx="82" cy="74" r="5" fill="#EF4444" className="animate-fetal-heart" />
-        <circle cx="82" cy="74" r="9" fill="#EF4444" opacity="0.3" className="animate-ping" />
+        {/* Thoracic cardiac prominence */}
+        <circle cx="82" cy="74" r="4.5" fill="#E65A4B" opacity="0.85" />
       </svg>
     );
   }
 
-  // 4. WEEKS 8 to 9: Curled Early Fetus with Separating Digits & Bending Joints
-  if (stage === 'curled-embryo') {
+  // 4. WEEKS 8 to 9: Late Embryonic Period (Webbed digits separating)
+  if (stage === 'late-embryo') {
     return (
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="bodyGrad8" cx="38%" cy="28%" r="65%">
+          <radialGradient id="bodyGradClean8" cx="38%" cy="28%" r="65%">
             <stop offset="0%" stopColor="#FFF8EE" />
             <stop offset="30%" stopColor="#F9D7B7" />
             <stop offset="70%" stopColor="#DC9E70" />
@@ -931,42 +1065,38 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
         {/* Curled back & body */}
         <path
           d="M78,35 C104,35 118,56 114,82 C110,108 92,126 70,126 C52,126 44,112 48,96 C50,84 62,80 72,88 C80,95 78,106 68,106"
-          fill="url(#bodyGrad8)"
+          fill="url(#bodyGradClean8)"
           stroke="#BA7442"
           strokeWidth="1.2"
         />
 
-        {/* Developing head with forehead curvature */}
-        <circle cx="76" cy="50" r="23" fill="url(#bodyGrad8)" stroke="#BA7442" strokeWidth="1" />
+        {/* Head */}
+        <circle cx="76" cy="50" r="23" fill="url(#bodyGradClean8)" stroke="#BA7442" strokeWidth="1" />
 
-        {/* Closed eye slit with translucent eyelid fold */}
+        {/* Fused eyelid fold */}
         <ellipse cx="66" cy="52" rx="2.8" ry="3.8" fill="#5F3419" opacity="0.65" />
 
-        {/* Arm bending at elbow with hand brought towards chest */}
+        {/* Arm with separating fingers brought to chest */}
         <path d="M72,70 C62,74 60,82 66,86 C72,89 76,82 76,75" fill="#F8D6B4" stroke="#BA7442" strokeWidth="1" />
-        {/* Tiny digit paddle rays */}
         <circle cx="64" cy="85" r="2.2" fill="#FFE2C6" />
         <circle cx="67" cy="87" r="2" fill="#FFE2C6" />
 
-        {/* Folded leg and foot bud */}
+        {/* Folded knee and foot bud */}
         <path d="M88,102 C82,106 72,112 68,108 C64,104 70,96 78,96" fill="#DE9D6E" stroke="#BA7442" strokeWidth="1" />
-
-        {/* Pulsing heart inside chest */}
-        <circle cx="80" cy="74" r="4.5" fill="#E11D48" className="animate-fetal-heart" />
       </svg>
     );
   }
 
-  // 5. WEEKS 10 to 13: The Tiny Human (Facial profile, nose, separated fingers)
-  if (stage === 'tiny-human') {
+  // 5. WEEKS 10 to 13: Early Fetus (Facial profile & ribs)
+  if (stage === 'early-fetus') {
     return (
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="bodyGrad10" cx="38%" cy="28%" r="65%">
+          <radialGradient id="bodyGradClean10" cx="38%" cy="28%" r="65%">
             <stop offset="0%" stopColor="#FFF9F1" />
             <stop offset="35%" stopColor="#FADBC0" />
             <stop offset="70%" stopColor="#DC9E72" />
@@ -974,57 +1104,52 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
           </radialGradient>
         </defs>
 
-        {/* Spine curvature with delicate ribs */}
+        {/* Spine curvature */}
         <path
           d="M76,45 C98,42 114,60 110,88 C106,112 90,130 68,130 C50,130 42,116 46,100 C50,85 64,84 74,92 C80,98 76,108 66,108"
-          fill="url(#bodyGrad10)"
+          fill="url(#bodyGradClean10)"
           stroke="#B56E3F"
           strokeWidth="1.2"
         />
 
-        {/* Translucent rib silhouettes */}
-        <path d="M82,72 Q88,74 94,72" stroke="#BA7442" strokeWidth="0.8" opacity="0.45" />
-        <path d="M82,78 Q88,80 94,78" stroke="#BA7442" strokeWidth="0.8" opacity="0.45" />
-        <path d="M80,84 Q86,86 92,84" stroke="#BA7442" strokeWidth="0.8" opacity="0.45" />
+        {/* Delicate rib silhouettes */}
+        <path d="M82,72 Q88,74 94,72" stroke="#BA7442" strokeWidth="0.8" opacity="0.4" />
+        <path d="M82,78 Q88,80 94,78" stroke="#BA7442" strokeWidth="0.8" opacity="0.4" />
+        <path d="M80,84 Q86,86 92,84" stroke="#BA7442" strokeWidth="0.8" opacity="0.4" />
 
-        {/* Profile head with distinct nose and chin button */}
+        {/* Face profile with nose and chin button */}
         <path
           d="M62,35 C68,26 84,24 94,32 C104,40 102,56 94,64 C86,72 74,70 66,62 C60,56 58,42 62,35 Z"
-          fill="url(#bodyGrad10)"
+          fill="url(#bodyGradClean10)"
           stroke="#B56E3F"
           strokeWidth="1"
         />
 
-        {/* Closed peaceful eye slit */}
+        {/* Closed eye slit */}
         <path d="M68,48 Q72,52 76,49" stroke="#663618" strokeWidth="1.2" fill="none" opacity="0.8" />
-
-        {/* Rosy cheek bloom */}
         <circle cx="76" cy="56" r="4.5" fill="#E87C65" opacity="0.35" />
 
-        {/* Arms and separated delicate fingers */}
+        {/* Arms and hands */}
         <path d="M78,68 C72,70 65,76 68,82 C71,86 78,85 82,78 Z" fill="#FADBC0" stroke="#B56E3F" strokeWidth="1" />
         <circle cx="70" cy="80" r="3.2" fill="#FFF0DE" stroke="#B56E3F" strokeWidth="0.8" />
 
         {/* Legs and feet */}
         <path d="M84,105 C78,110 68,116 62,110 C58,104 66,95 76,96 Z" fill="#DC9E72" stroke="#B56E3F" strokeWidth="1" />
         <circle cx="64" cy="112" r="3.5" fill="#FADBC0" stroke="#B56E3F" strokeWidth="0.8" />
-
-        {/* Active Heartbeat */}
-        <circle cx="80" cy="74" r="4.2" fill="#F43F5E" className="animate-fetal-heart" />
       </svg>
     );
   }
 
-  // 6. WEEKS 14 to 21: Active & Thumb-Sucking Fetus (Quickening & Hair)
-  if (stage === 'active-fetus') {
+  // 6. WEEKS 14 to 21: Mid Fetus (Quickening & Thumb-sucking pose)
+  if (stage === 'mid-fetus') {
     return (
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="activeFetusGrad" cx="38%" cy="28%" r="65%">
+          <radialGradient id="midFetusGradClean" cx="38%" cy="28%" r="65%">
             <stop offset="0%" stopColor="#FFF9F2" />
             <stop offset="35%" stopColor="#F9DCBF" />
             <stop offset="70%" stopColor="#D99C70" />
@@ -1035,46 +1160,40 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
         {/* Spine and body */}
         <path
           d="M76,40 C100,36 118,56 114,88 C110,116 92,134 68,134 C48,134 40,118 44,98 C48,80 64,80 75,90 C82,97 78,110 66,110"
-          fill="url(#activeFetusGrad)"
+          fill="url(#midFetusGradClean)"
           stroke="#B56E3F"
           strokeWidth="1.2"
         />
 
-        {/* Baby Head with defined chin */}
-        <circle cx="78" cy="46" r="23" fill="url(#activeFetusGrad)" stroke="#B56E3F" strokeWidth="1" />
+        {/* Head */}
+        <circle cx="78" cy="46" r="23" fill="url(#midFetusGradClean)" stroke="#B56E3F" strokeWidth="1" />
 
-        {/* Closed calm eyelid and subtle eyebrow lanugo */}
+        {/* Closed eyelid and brow */}
         <path d="M68,48 Q72,52 76,49" stroke="#663618" strokeWidth="1.2" fill="none" opacity="0.85" />
         <path d="M68,44 Q72,42 76,44" stroke="#8C4F27" strokeWidth="0.8" fill="none" opacity="0.6" />
-        <path d="M68,56 Q71,58 74,56" stroke="#9C5226" strokeWidth="0.9" fill="none" opacity="0.7" />
-
-        {/* Rosy warm cheek */}
         <circle cx="74" cy="53" r="5" fill="#E87C65" opacity="0.4" />
 
-        {/* Arm reaching with thumb placed right at mouth */}
+        {/* Arm reaching with thumb to mouth */}
         <path d="M78,68 C72,70 64,74 65,80 C68,84 76,82 82,76 Z" fill="#F9DCBF" stroke="#B56E3F" strokeWidth="1" />
         <circle cx="66" cy="78" r="3.8" fill="#FFF2E2" stroke="#B56E3F" strokeWidth="0.8" />
 
-        {/* Bent active kicking legs */}
+        {/* Legs and feet */}
         <path d="M86,106 C80,112 68,118 62,112 C58,106 68,96 78,98 Z" fill="#D99C70" stroke="#B56E3F" strokeWidth="1" />
         <ellipse cx="64" cy="114" rx="4.8" ry="3.8" fill="#F9DCBF" stroke="#B56E3F" strokeWidth="0.8" />
-
-        {/* Steady Heartbeat Pulse */}
-        <circle cx="82" cy="74" r="4.4" fill="#E11D48" className="animate-fetal-heart" />
       </svg>
     );
   }
 
-  // 7. WEEKS 22 to 27: The Developed Fetus (Unsealed eyelids, hearing acoustic waves)
-  if (stage === 'developed-fetus') {
+  // 7. WEEKS 22 to 27: Viable Fetus (Eyelids unsealed, lashes, hearing)
+  if (stage === 'viable-fetus') {
     return (
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="devFetusGrad" cx="38%" cy="28%" r="65%">
+          <radialGradient id="viableFetusGradClean" cx="38%" cy="28%" r="65%">
             <stop offset="0%" stopColor="#FFFBF5" />
             <stop offset="35%" stopColor="#FADEBE" />
             <stop offset="70%" stopColor="#D99A6C" />
@@ -1082,53 +1201,45 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
           </radialGradient>
         </defs>
 
-        {/* Contoured torso */}
+        {/* Torso */}
         <path
           d="M74,38 C98,34 118,52 115,84 C112,114 94,134 70,134 C50,134 40,118 44,98 C48,80 64,80 75,90 C82,97 78,110 66,110"
-          fill="url(#devFetusGrad)"
+          fill="url(#viableFetusGradClean)"
           stroke="#B56E3F"
           strokeWidth="1.2"
         />
 
         {/* Head */}
-        <circle cx="78" cy="46" r="23" fill="url(#devFetusGrad)" stroke="#B56E3F" strokeWidth="1" />
+        <circle cx="78" cy="46" r="23" fill="url(#viableFetusGradClean)" stroke="#B56E3F" strokeWidth="1" />
 
-        {/* Eyelid and tiny delicate eyelashes */}
+        {/* Eyelids and eyelashes */}
         <path d="M68,48 Q72,52 76,49" stroke="#663618" strokeWidth="1.2" fill="none" opacity="0.8" />
         <path d="M67,46 L66,43" stroke="#663618" strokeWidth="0.9" />
         <path d="M71,46 L71,42" stroke="#663618" strokeWidth="0.9" />
         <path d="M75,47 L76,43" stroke="#663618" strokeWidth="0.9" />
-
-        {/* Rosy cheek & vernix highlights */}
         <circle cx="74" cy="53" r="5" fill="#E87C65" opacity="0.4" />
 
         {/* Arms and hands */}
         <path d="M80,68 C74,70 66,77 69,83 C72,87 79,86 84,78 Z" fill="#FADEBE" stroke="#B56E3F" strokeWidth="1" />
         <circle cx="71" cy="80" r="3.5" fill="#FFF2E2" stroke="#B56E3F" strokeWidth="0.8" />
 
-        {/* Plump legs and feet */}
+        {/* Legs and feet */}
         <path d="M86,106 C80,112 68,118 62,112 C58,106 68,96 78,98 Z" fill="#D99A6C" stroke="#B56E3F" strokeWidth="1" />
         <ellipse cx="64" cy="114" rx="4.5" ry="3.5" fill="#FADEBE" stroke="#B56E3F" strokeWidth="0.8" />
-
-        {/* Auditory sound sensory response waves */}
-        <circle cx="78" cy="46" r="28" fill="none" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" opacity="0.4" className="animate-ping" />
-
-        {/* Steady Heartbeat Pulse */}
-        <circle cx="82" cy="74" r="4.2" fill="#E11D48" className="animate-fetal-heart" />
       </svg>
     );
   }
 
-  // 8. WEEKS 28 to 34: Third Trimester Plump Fetus (Fat reserves & REM sleep)
-  if (stage === 'third-trimester') {
+  // 8. WEEKS 28 to 34: Maturing Fetus (Adipose fat deposition, chubby cheeks)
+  if (stage === 'maturing-fetus') {
     return (
       <svg
         viewBox="0 0 160 160"
         style={{ transform: `scale(${scale})` }}
-        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700 animate-chest-breathe"
+        className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
       >
         <defs>
-          <radialGradient id="thirdTriGrad" cx="38%" cy="28%" r="65%">
+          <radialGradient id="maturingFetusGradClean" cx="38%" cy="28%" r="65%">
             <stop offset="0%" stopColor="#FFFDF7" />
             <stop offset="35%" stopColor="#F9DABE" />
             <stop offset="70%" stopColor="#D89768" />
@@ -1136,48 +1247,43 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
           </radialGradient>
         </defs>
 
-        {/* Robust plump fetal body */}
+        {/* Plump body */}
         <path
           d="M74,36 C102,32 122,52 118,86 C114,118 96,136 68,136 C46,136 36,120 42,98 C46,78 64,78 76,88 C84,96 80,110 66,110"
-          fill="url(#thirdTriGrad)"
+          fill="url(#maturingFetusGradClean)"
           stroke="#B56E3F"
           strokeWidth="1.3"
         />
 
-        {/* Round chubby head with scalp hair */}
-        <circle cx="78" cy="46" r="24" fill="url(#thirdTriGrad)" stroke="#B56E3F" strokeWidth="1" />
+        {/* Head with scalp hair */}
+        <circle cx="78" cy="46" r="24" fill="url(#maturingFetusGradClean)" stroke="#B56E3F" strokeWidth="1" />
         <path d="M68,26 Q86,22 96,36" stroke="#9A6139" strokeWidth="1.8" fill="none" opacity="0.8" />
 
-        {/* Peaceful closed eyelid and sweet relaxed smile */}
+        {/* Peaceful facial features */}
         <path d="M68,48 Q72,52 76,49" stroke="#663618" strokeWidth="1.3" fill="none" opacity="0.85" />
         <path d="M68,57 Q72,60 76,57" stroke="#9C5226" strokeWidth="1" fill="none" opacity="0.75" />
-
-        {/* Cute plump rosy cheek */}
         <circle cx="74" cy="54" r="6" fill="#E87C65" opacity="0.45" />
 
-        {/* Chubby arms with wrist rolls */}
+        {/* Chubby arms */}
         <path d="M82,68 C74,70 64,78 68,84 C72,88 80,86 86,78 Z" fill="#F9DABE" stroke="#B56E3F" strokeWidth="1" />
         <circle cx="70" cy="81" r="4" fill="#FFF2E2" stroke="#B56E3F" strokeWidth="0.8" />
 
-        {/* Chubby legs nestled closely together */}
+        {/* Chubby legs */}
         <path d="M88,106 C80,114 66,120 60,112 C56,104 68,94 80,96 Z" fill="#D89768" stroke="#B56E3F" strokeWidth="1" />
         <ellipse cx="62" cy="114" rx="5.2" ry="4.2" fill="#F9DABE" stroke="#B56E3F" strokeWidth="0.8" />
-
-        {/* Strong Steady Heartbeat */}
-        <circle cx="82" cy="74" r="4.6" fill="#BE123C" className="animate-fetal-heart" />
       </svg>
     );
   }
 
-  // 9. WEEKS 35 to 40+: Full Term Ready Baby (Head-down vertex position & full maturation)
+  // 9. WEEKS 35 to 40+: Full Term Ready Baby (Head-down vertex position)
   return (
     <svg
       viewBox="0 0 160 160"
       style={{ transform: `scale(${scale})` }}
-      className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-700 animate-chest-breathe"
+      className="w-32 h-32 sm:w-40 sm:h-40 drop-shadow-md transition-all duration-300"
     >
       <defs>
-        <radialGradient id="fullTermGrad" cx="38%" cy="28%" r="65%">
+        <radialGradient id="fullTermGradClean" cx="38%" cy="28%" r="65%">
           <stop offset="0%" stopColor="#FFFDF8" />
           <stop offset="35%" stopColor="#F9DCBF" />
           <stop offset="70%" stopColor="#DCA479" />
@@ -1188,19 +1294,18 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
       {/* Full-term plump newborn curled head down */}
       <path
         d="M74,36 C102,32 122,52 118,86 C114,118 96,136 68,136 C46,136 36,120 42,98 C46,78 64,78 76,88 C84,96 80,110 66,110"
-        fill="url(#fullTermGrad)"
+        fill="url(#fullTermGradClean)"
         stroke="#B56E3F"
         strokeWidth="1.3"
       />
 
       {/* Head with silky baby hair and vernix fold */}
-      <circle cx="78" cy="46" r="24.5" fill="url(#fullTermGrad)" stroke="#B56E3F" strokeWidth="1" />
+      <circle cx="78" cy="46" r="24.5" fill="url(#fullTermGradClean)" stroke="#B56E3F" strokeWidth="1" />
       <path d="M66,26 Q86,20 98,34" stroke="#8C4F27" strokeWidth="2.2" fill="none" opacity="0.85" />
 
       {/* Serene sleeping face */}
       <path d="M68,48 Q72,52 76,49" stroke="#663618" strokeWidth="1.3" fill="none" opacity="0.85" />
       <path d="M68,57 Q72,60 76,57" stroke="#9C5226" strokeWidth="1.1" fill="none" opacity="0.8" />
-
       <circle cx="74" cy="54" r="6.2" fill="#E87C65" opacity="0.5" />
 
       {/* Plump arms tucked near chin */}
@@ -1210,74 +1315,6 @@ const AnimatedFetalVisualizer: React.FC<AnimatedFetalVisualizerProps> = ({
       {/* Plump legs and feet ready for delivery */}
       <path d="M88,106 C80,114 66,120 60,112 C56,104 68,94 80,96 Z" fill="#DCA479" stroke="#B56E3F" strokeWidth="1" />
       <ellipse cx="62" cy="114" rx="5.4" ry="4.4" fill="#F9DCBF" stroke="#B56E3F" strokeWidth="0.8" />
-
-      {/* Strong, calm term heartbeat */}
-      <circle cx="82" cy="74" r="4.6" fill="#BE123C" className="animate-fetal-heart" />
     </svg>
-  );
-};
-
-// =====================================================================
-// THEMATIC TIP GRAPHIC COMPONENT
-// Beautiful stickers/illustrations for the "Tips for you Mom" card
-// =====================================================================
-interface ThematicTipGraphicProps {
-  type: 'yoga-rest' | 'healthy-meal' | 'hydration-vitamins';
-}
-
-const ThematicTipGraphic: React.FC<ThematicTipGraphicProps> = ({ type }) => {
-  if (type === 'yoga-rest') {
-    return (
-      <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
-        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm">
-          <circle cx="50" cy="50" r="38" fill="#EAE8FC" opacity="0.7" />
-          <rect x="18" y="52" width="10" height="22" rx="3" fill="#38BDF8" opacity="0.85" />
-          <rect x="20" y="47" width="6" height="5" rx="1.5" fill="#0284C7" />
-          <circle cx="58" cy="32" r="10" fill="#FCD34D" opacity="0.3" />
-          <circle cx="58" cy="34" r="7.5" fill="#FBBF24" />
-          <ellipse cx="58" cy="27" rx="4" ry="3.5" fill="#4B3B2B" />
-          <circle cx="58" cy="35" r="5.5" fill="#F8C498" />
-          <path d="M46,47 C50,44 66,44 70,47 L72,62 C72,66 44,66 44,62 Z" fill="#FB7185" />
-          <path d="M40,65 C40,58 76,58 76,65 C76,71 40,71 40,65 Z" fill="#475569" />
-          <circle cx="68" cy="28" r="1.5" fill="#818CF8" />
-          <circle cx="48" cy="24" r="1" fill="#818CF8" />
-        </svg>
-      </div>
-    );
-  }
-
-  if (type === 'healthy-meal') {
-    return (
-      <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
-        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm">
-          <circle cx="50" cy="50" r="38" fill="#EAE8FC" opacity="0.7" />
-          <rect x="22" y="28" width="56" height="44" rx="10" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="2" />
-          <circle cx="36" cy="42" r="7" fill="#4ADE80" />
-          <circle cx="44" cy="38" r="6" fill="#22C55E" />
-          <ellipse cx="60" cy="42" rx="8" ry="6" fill="#D97706" />
-          <circle cx="62" cy="56" r="6" fill="#FEF08A" />
-          <circle cx="62" cy="56" r="3" fill="#F59E0B" />
-          <circle cx="36" cy="56" r="4.5" fill="#EF4444" />
-          <circle cx="46" cy="58" r="4.5" fill="#DC2626" />
-        </svg>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
-      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm">
-        <circle cx="50" cy="50" r="38" fill="#EAE8FC" opacity="0.7" />
-        <rect x="36" y="24" width="16" height="52" rx="4" fill="#E0F2FE" stroke="#38BDF8" strokeWidth="1.8" />
-        <rect x="37" y="40" width="14" height="34" rx="2" fill="#38BDF8" opacity="0.65" />
-        <rect x="40" y="18" width="8" height="6" rx="2" fill="#0284C7" />
-        <rect x="56" y="44" width="18" height="32" rx="5" fill="#F59E0B" stroke="#D97706" strokeWidth="1.5" />
-        <rect x="59" y="38" width="12" height="6" rx="2" fill="#B45309" />
-        <rect x="59" y="52" width="12" height="14" rx="2" fill="#FEF3C7" />
-        <line x1="62" y1="58" x2="68" y2="58" stroke="#D97706" strokeWidth="1.5" />
-        <ellipse cx="28" cy="70" rx="4.5" ry="2.5" fill="#FB923C" transform="rotate(-20 28 70)" />
-        <ellipse cx="32" cy="74" rx="4" ry="2.5" fill="#F43F5E" transform="rotate(30 32 74)" />
-      </svg>
-    </div>
   );
 };

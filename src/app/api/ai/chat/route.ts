@@ -69,7 +69,7 @@ function buildSystemPrompt(params: {
     params.gestationalWeek <= 13 ? '1st Trimester' :
     params.gestationalWeek <= 27 ? '2nd Trimester' : '3rd Trimester';
 
-  return `You are Bloom AI, an intelligent, empathetic, culturally conscious maternal and pediatric health companion for Matrena/BloomNest (GarbaKosh).
+  return `You are GarbhSarthi AI, an intelligent, empathetic, culturally conscious maternal and pediatric health companion for GarbhSarthi (GarbaKosh).
 
 Current Context:
 - Expecting Mother: ${params.motherName}

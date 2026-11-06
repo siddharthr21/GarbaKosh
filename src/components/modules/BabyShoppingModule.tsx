@@ -41,7 +41,7 @@ export const BabyShoppingModule: React.FC = () => {
   // Custom user products stored in localStorage
   const [customProducts, setCustomProducts] = useState<BabyProduct[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_custom_products');
+      const saved = localStorage.getItem('garbhsarthi_custom_products') || localStorage.getItem('bloomnest_custom_products');
       if (saved) {
         try {
           return JSON.parse(saved);
@@ -64,6 +64,7 @@ export const BabyShoppingModule: React.FC = () => {
   // Persist custom products
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      localStorage.setItem('garbhsarthi_custom_products', JSON.stringify(customProducts));
       localStorage.setItem('bloomnest_custom_products', JSON.stringify(customProducts));
     }
   }, [customProducts]);
@@ -84,7 +85,7 @@ export const BabyShoppingModule: React.FC = () => {
 
   const handleShareProduct = (prod: BabyProduct, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    const shareText = `Check out "${prod.name}" by ${prod.brand} (₹${prod.priceInr.toLocaleString('en-IN')}) on BloomNest Shopping!`;
+    const shareText = `Check out "${prod.name}" by ${prod.brand} (₹${prod.priceInr.toLocaleString('en-IN')}) on GarbhSarthi Shopping!`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(`${shareText}\nAmazon: ${prod.amazonUrl}\nFlipkart: ${prod.flipkartUrl}`);
       setAddedNotice('Product link and shopping details copied to clipboard!');

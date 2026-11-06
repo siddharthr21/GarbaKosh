@@ -61,7 +61,7 @@ export const AuthScreen: React.FC = () => {
     const cleanInput = emailOrCode.trim();
     if (!cleanInput) {
       // If user clicks without entering input, seamlessly log in with default evaluation account
-      handleQuickDemoLogin('siri@bloomnest.com', 'Siri Rao');
+      handleQuickDemoLogin('siri@garbhsarthi.com', 'Siri Rao');
       return;
     }
 
@@ -145,7 +145,7 @@ export const AuthScreen: React.FC = () => {
                     GarbhSarthi
                   </h1>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/15 text-stone-200 font-bold uppercase tracking-wider">
-                    BloomNest
+                    Care Suite
                   </span>
                 </div>
                 <p className="text-[10px] uppercase tracking-widest text-[#FAF6EE]/70 font-semibold">
@@ -297,7 +297,7 @@ export const AuthScreen: React.FC = () => {
                         type="text"
                         value={emailOrCode}
                         onChange={(e) => setEmailOrCode(e.target.value)}
-                        placeholder="e.g. siri@bloomnest.com or MAMA-2026"
+                        placeholder="e.g. siri@garbhsarthi.com or MAMA-2026"
                         className="w-full pl-10 pr-3 py-2.5 bg-muted/30 border border-input rounded-2xl text-xs focus:ring-2 focus:ring-primary focus:outline-none font-medium"
                         required
                       />
@@ -361,7 +361,7 @@ export const AuthScreen: React.FC = () => {
                     {/* Mother Profile 1: Paired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('siri@bloomnest.com', 'Siri Rao')}
+                      onClick={() => handleQuickDemoLogin('siri@garbhsarthi.com', 'Siri Rao')}
                       className={`p-3 rounded-2xl bg-primary-soft/60 hover:bg-primary/20 border border-primary/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
                         isLoggingIn === 'Siri Rao' ? 'ring-2 ring-primary bg-primary/20 scale-[0.98]' : ''
                       }`}
@@ -389,7 +389,7 @@ export const AuthScreen: React.FC = () => {
                     {/* Partner Profile 1: Paired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('rohan@bloomnest.com', 'Rohan Rao')}
+                      onClick={() => handleQuickDemoLogin('rohan@garbhsarthi.com', 'Rohan Rao')}
                       className={`p-3 rounded-2xl bg-accent-soft/60 hover:bg-accent/20 border border-accent/30 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
                         isLoggingIn === 'Rohan Rao' ? 'ring-2 ring-accent bg-accent/20 scale-[0.98]' : ''
                       }`}
@@ -417,7 +417,7 @@ export const AuthScreen: React.FC = () => {
                     {/* Mother Profile 2: Unpaired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('priya@bloomnest.com', 'Priya Nair')}
+                      onClick={() => handleQuickDemoLogin('priya@garbhsarthi.com', 'Priya Nair')}
                       className={`p-3 rounded-2xl bg-rose-50/50 hover:bg-rose-100/50 border border-rose-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
                         isLoggingIn === 'Priya Nair' ? 'ring-2 ring-rose-500 bg-rose-100 scale-[0.98]' : ''
                       }`}
@@ -445,7 +445,7 @@ export const AuthScreen: React.FC = () => {
                     {/* Partner Profile 2: Unpaired */}
                     <button
                       type="button"
-                      onClick={() => handleQuickDemoLogin('arjun@bloomnest.com', 'Arjun Mehta')}
+                      onClick={() => handleQuickDemoLogin('arjun@garbhsarthi.com', 'Arjun Mehta')}
                       className={`p-3 rounded-2xl bg-stone-100 hover:bg-stone-200/70 border border-stone-200 text-left transition-all group flex flex-col justify-between cursor-pointer hover:shadow-xs ${
                         isLoggingIn === 'Arjun Mehta' ? 'ring-2 ring-stone-500 bg-stone-200 scale-[0.98]' : ''
                       }`}
@@ -629,7 +629,7 @@ export const AuthScreen: React.FC = () => {
                           type="text"
                           value={motherPairingCode}
                           onChange={(e) => setMotherPairingCode(e.target.value)}
-                          placeholder="e.g. MAMA-2026 or siri@bloomnest.com"
+                          placeholder="e.g. MAMA-2026 or siri@garbhsarthi.com"
                           className="w-full px-2.5 py-1.5 bg-card border border-input rounded-xl text-xs font-mono tracking-wider"
                         />
                       </div>

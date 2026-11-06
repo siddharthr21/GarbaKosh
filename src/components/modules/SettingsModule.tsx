@@ -435,7 +435,7 @@ export const SettingsModule: React.FC = () => {
                 <div className="space-y-0.5">
                   <span className="font-bold block">Strict Maternal Privacy Guarantee</span>
                   <p className="text-[11px] leading-relaxed opacity-90">
-                    Private journal entries, personal Bloom AI chat consultations, and unshared clinical records are <strong>never accessible</strong> to your partner or any third party.
+                    Private journal entries, personal GarbhSarthi AI chat consultations, and unshared clinical records are <strong>never accessible</strong> to your partner or any third party.
                   </p>
                 </div>
               </div>

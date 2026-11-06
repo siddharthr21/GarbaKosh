@@ -257,14 +257,14 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-40 px-4 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer hover:scale-105 group border border-white/20"
-          title="Open Bloom AI Assistant"
+          title="Open GarbhSarthi AI Assistant"
         >
           <div className="relative">
             <Bot className="w-5 h-5" />
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-primary animate-ping" />
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-primary" />
           </div>
-          <span className="font-bold text-xs tracking-wide">Ask Bloom AI 🌸</span>
+          <span className="font-bold text-xs tracking-wide">Ask GarbhSarthi AI 🌸</span>
         </button>
       )}
 
@@ -279,7 +279,7 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-sm text-gray-900">Bloom AI</span>
+                  <span className="font-bold text-sm text-gray-900">GarbhSarthi AI</span>
                   <span className="text-[9px] px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-full font-bold">
                     Week {profile.currentGestationalWeek || 24}
                   </span>
@@ -415,7 +415,7 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
             {isSending && (
               <div className="flex gap-2 items-center text-xs text-gray-500 pl-1">
                 <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                <span>Bloom AI is thinking...</span>
+                <span>GarbhSarthi AI is thinking...</span>
               </div>
             )}
 

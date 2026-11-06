@@ -232,7 +232,7 @@ export const BloomAiModule: React.FC = () => {
       }
     } catch (micErr) {
       console.warn('Microphone permission check failed:', micErr);
-      setMicErrorNotice('Please grant microphone permission in your browser to speak with Bloom AI.');
+      setMicErrorNotice('Please grant microphone permission in your browser to speak with GarbhSarthi AI.');
       return;
     }
 
@@ -474,7 +474,7 @@ export const BloomAiModule: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-gray-900">{t('aiAssistantTitle', 'Bloom AI Pregnancy Companion')}</h1>
+                <h1 className="text-xl font-bold text-gray-900">{t('aiAssistantTitle', 'GarbhSarthi AI Companion')}</h1>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
                   {t('week', 'Week')} {profile.currentGestationalWeek || 24}
                 </span>
@@ -540,7 +540,7 @@ export const BloomAiModule: React.FC = () => {
         <div className="p-3 bg-white/70 rounded-2xl border border-blush-100 text-[11px] text-gray-600 flex items-start gap-2">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            <strong>Clinical Safety Guarantee:</strong> Bloom AI answers are tailored to your 24-week gestation. Emergency red flag detection is active 24/7. Not a substitute for direct OB/GYN physical examination.
+            <strong>Clinical Safety Guarantee:</strong> GarbhSarthi AI answers are tailored to your 24-week gestation. Emergency red flag detection is active 24/7. Not a substitute for direct OB/GYN physical examination.
           </p>
         </div>
       </div>
@@ -753,7 +753,7 @@ export const BloomAiModule: React.FC = () => {
               </div>
               <div className="p-3.5 rounded-2xl bg-muted/40 border border-gray-100 text-xs text-gray-600 flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                <span>Bloom AI is consulting clinical knowledge & evidence-based guidelines...</span>
+                <span>GarbhSarthi AI is consulting clinical knowledge & evidence-based guidelines...</span>
               </div>
             </div>
           )}
@@ -836,7 +836,7 @@ export const BloomAiModule: React.FC = () => {
             )}
 
             <p className="text-xs text-gray-600 leading-relaxed">
-              Bloom AI connects with high-speed <strong>Groq LPU Inference</strong> (sub-second response), <strong>Google Gemini</strong>, or <strong>OpenAI</strong> to provide evidence-based obstetric and pediatric guidance in 6 languages.
+              GarbhSarthi AI connects with high-speed <strong>Groq LPU Inference</strong> (sub-second response), <strong>Google Gemini</strong>, or <strong>OpenAI</strong> to provide evidence-based obstetric and pediatric guidance in 6 languages.
             </p>
 
             {/* Groq API Key Section */}

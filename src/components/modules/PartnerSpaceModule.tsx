@@ -99,7 +99,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
 
   const [partnerChecklist, setPartnerChecklist] = useState<Record<string, boolean>>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_partner_checklist');
+      const saved = localStorage.getItem('garbhsarthi_partner_checklist') || localStorage.getItem('bloomnest_partner_checklist');
       if (saved) try { return JSON.parse(saved); } catch {}
     }
     return {
@@ -116,6 +116,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
     const updated = { ...partnerChecklist, [key]: !partnerChecklist[key] };
     setPartnerChecklist(updated);
     if (typeof window !== 'undefined') {
+      localStorage.setItem('garbhsarthi_partner_checklist', JSON.stringify(updated));
       localStorage.setItem('bloomnest_partner_checklist', JSON.stringify(updated));
     }
   };

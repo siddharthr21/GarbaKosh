@@ -135,7 +135,7 @@ export const OnboardingModal: React.FC = () => {
               <Baby className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-serif font-bold text-foreground">{t('authWelcome', 'Welcome to BloomNest')}</h2>
+              <h2 className="text-lg font-serif font-bold text-foreground">{t('authWelcome', 'Welcome to GarbhSarthi')}</h2>
               <p className="text-xs text-muted-foreground">{t('Personalized Setup', 'Step')} {currentStep} / 4: {t('Personalized Setup', 'Personalized Setup')}</p>
             </div>
           </div>
@@ -458,7 +458,7 @@ export const OnboardingModal: React.FC = () => {
                     className="mt-0.5 rounded text-primary focus:ring-primary"
                   />
                   <span className="leading-relaxed">
-                    <strong>Medical Safety Acknowledgment:</strong> I understand that BloomNest provides evidence-based guidance and emotional support, but does not provide diagnostic care or replace my obstetrician.
+                    <strong>Medical Safety Acknowledgment:</strong> I understand that GarbhSarthi provides evidence-based guidance and emotional support, but does not provide diagnostic care or replace my obstetrician.
                   </span>
                 </label>
               </div>

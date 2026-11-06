@@ -433,11 +433,29 @@ const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
   }
 ];
 
+// Robust dual storage manager for GarbhSarthi with backwards compatibility
+const getStorage = (key: string): string | null => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(`garbhsarthi_${key}`) || localStorage.getItem(`bloomnest_${key}`);
+};
+
+const setStorage = (key: string, val: string): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(`garbhsarthi_${key}`, val);
+  localStorage.setItem(`bloomnest_${key}`, val);
+};
+
+const removeStorage = (key: string): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(`garbhsarthi_${key}`);
+  localStorage.removeItem(`bloomnest_${key}`);
+};
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Accounts Registry & Security State
   const [allAccounts, setAllAccounts] = useState<UserAccount[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_accounts');
+      const saved = getStorage('accounts');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
@@ -463,7 +481,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
     if (typeof window !== 'undefined') {
-      const session = localStorage.getItem('bloomnest_auth_session');
+      const session = getStorage('auth_session');
       if (session) {
         try { return JSON.parse(session); } catch (e) {}
       }
@@ -473,7 +491,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
-      const session = localStorage.getItem('bloomnest_auth_session');
+      const session = getStorage('auth_session');
       return !!session;
     }
     return false;
@@ -481,14 +499,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [profile, setProfile] = useState<UserProfile>(() => {
     if (typeof window !== 'undefined') {
-      const session = localStorage.getItem('bloomnest_auth_session');
+      const session = getStorage('auth_session');
       if (session) {
         try {
           const parsed = JSON.parse(session);
           if (parsed && parsed.profile) return parsed.profile;
         } catch (e) {}
       }
-      const saved = localStorage.getItem('bloomnest_profile');
+      const saved = getStorage('profile');
       if (saved) {
         try { return JSON.parse(saved); } catch (e) { console.error(e); }
       }
@@ -518,7 +536,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [contractions, setContractions] = useState<ContractionRecord[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_contractions');
+      const saved = getStorage('contractions');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_CONTRACTIONS;
@@ -526,7 +544,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [birthPlan, setBirthPlan] = useState<BirthPlanState>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_birthplan');
+      const saved = getStorage('birthplan');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_BIRTH_PLAN;
@@ -534,7 +552,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [dailyChecklist, setDailyChecklist] = useState<DailyChecklistTask[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_checklist');
+      const saved = getStorage('checklist');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_CHECKLIST;
@@ -542,7 +560,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [vitals, setVitals] = useState<VitalRecord[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_vitals');
+      const saved = getStorage('vitals');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_VITALS;
@@ -550,7 +568,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [meals, setMeals] = useState<MealItem[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_meals');
+      const saved = getStorage('meals');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_MEALS;
@@ -558,7 +576,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [waterGlasses, setWaterGlasses] = useState<number>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_water');
+      const saved = getStorage('water');
       if (saved) return Number(saved) || 7;
     }
     return 7;
@@ -566,7 +584,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [cravings, setCravings] = useState<CravingLog[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_cravings');
+      const saved = getStorage('cravings');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_CRAVINGS;
@@ -588,7 +606,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [moodLogs, setMoodLogs] = useState<MoodLog[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_moods');
+      const saved = getStorage('moods');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return [
@@ -600,7 +618,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [memories, setMemories] = useState<MemoryVaultItem[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_memories');
+      const saved = getStorage('memories');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_MEMORIES;
@@ -608,7 +626,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [reminders, setReminders] = useState<ReminderItem[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_reminders');
+      const saved = getStorage('reminders');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_REMINDERS;
@@ -616,7 +634,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [babyNames, setBabyNames] = useState<BabyNameItem[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_babynames');
+      const saved = getStorage('babynames');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_BABY_NAMES;
@@ -624,14 +642,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [babyShower, setBabyShower] = useState<BabyShowerPlan>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_babyshower');
+      const saved = getStorage('babyshower');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_SHOWER_PLAN;
   });
   const [hospitalChecklist, setHospitalChecklist] = useState<HospitalChecklistItem[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_hospital');
+      const saved = getStorage('hospital');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_HOSPITAL_ITEMS;
@@ -661,7 +679,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_chat');
+      const saved = getStorage('chat');
       if (saved) try { return JSON.parse(saved); } catch (e) {}
     }
     return INITIAL_CHAT_MESSAGES;
@@ -669,7 +687,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_language');
+      const saved = getStorage('language');
       if (saved) return saved;
     }
     return 'en-US';
@@ -677,7 +695,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [geminiApiKey, setGeminiApiKeyState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('bloomnest_gemini_api_key') || '';
+      return getStorage('gemini_api_key') || '';
     }
     return '';
   });
@@ -685,13 +703,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setGeminiApiKey = (key: string) => {
     setGeminiApiKeyState(key);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('bloomnest_gemini_api_key', key);
+      setStorage('gemini_api_key', key);
     }
   };
 
   const [openaiApiKey, setOpenaiApiKeyState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('bloomnest_openai_api_key') || '';
+      return getStorage('openai_api_key') || '';
     }
     return '';
   });
@@ -699,13 +717,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setOpenaiApiKey = (key: string) => {
     setOpenaiApiKeyState(key);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('bloomnest_openai_api_key', key);
+      setStorage('openai_api_key', key);
     }
   };
 
   const [groqApiKey, setGroqApiKeyState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('bloomnest_groq_api_key');
+      const saved = getStorage('groq_api_key');
       if (saved) return saved;
     }
     return process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
@@ -714,13 +732,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setGroqApiKey = (key: string) => {
     setGroqApiKeyState(key);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('bloomnest_groq_api_key', key);
+      setStorage('groq_api_key', key);
     }
   };
 
   const [grokApiKey, setGrokApiKeyState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('bloomnest_grok_api_key') || '';
+      return getStorage('grok_api_key') || '';
     }
     return '';
   });
@@ -728,7 +746,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setGrokApiKey = (key: string) => {
     setGrokApiKeyState(key);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('bloomnest_grok_api_key', key);
+      setStorage('grok_api_key', key);
     }
   };
 
@@ -769,20 +787,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Sync to localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem('bloomnest_language', selectedLanguage);
-    localStorage.setItem('bloomnest_profile', JSON.stringify(profile));
-    localStorage.setItem('bloomnest_contractions', JSON.stringify(contractions));
-    localStorage.setItem('bloomnest_birthplan', JSON.stringify(birthPlan));
-    localStorage.setItem('bloomnest_checklist', JSON.stringify(dailyChecklist));
-    localStorage.setItem('bloomnest_vitals', JSON.stringify(vitals));
-    localStorage.setItem('bloomnest_meals', JSON.stringify(meals));
-    localStorage.setItem('bloomnest_water', waterGlasses.toString());
-    localStorage.setItem('bloomnest_cravings', JSON.stringify(cravings));
-    localStorage.setItem('bloomnest_memories', JSON.stringify(memories));
-    localStorage.setItem('bloomnest_reminders', JSON.stringify(reminders));
-    localStorage.setItem('bloomnest_babynames', JSON.stringify(babyNames));
-    localStorage.setItem('bloomnest_hospital', JSON.stringify(hospitalChecklist));
-    localStorage.setItem('bloomnest_chat', JSON.stringify(chatMessages));
+    setStorage('language', selectedLanguage);
+    setStorage('profile', JSON.stringify(profile));
+    setStorage('contractions', JSON.stringify(contractions));
+    setStorage('birthplan', JSON.stringify(birthPlan));
+    setStorage('checklist', JSON.stringify(dailyChecklist));
+    setStorage('vitals', JSON.stringify(vitals));
+    setStorage('meals', JSON.stringify(meals));
+    setStorage('water', waterGlasses.toString());
+    setStorage('cravings', JSON.stringify(cravings));
+    setStorage('memories', JSON.stringify(memories));
+    setStorage('reminders', JSON.stringify(reminders));
+    setStorage('babynames', JSON.stringify(babyNames));
+    setStorage('hospital', JSON.stringify(hospitalChecklist));
+    setStorage('chat', JSON.stringify(chatMessages));
   }, [selectedLanguage, profile, contractions, birthPlan, dailyChecklist, vitals, meals, waterGlasses, cravings, memories, reminders, babyNames, hospitalChecklist, chatMessages]);
 
   const updateProfile = (updated: Partial<UserProfile>) => {
@@ -893,8 +911,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const aName = (a.name || '').toLowerCase();
         const aFirstName = aName.split(' ')[0];
 
-        // 1. Direct email match
+        // 1. Direct email match (with interchangeable @garbhsarthi.com and @bloomnest.com alias)
         if (aEmail === clean) return true;
+        const normClean = clean.replace(/@(garbhsarthi|bloomnest)\.com$/, '');
+        const normAEmail = aEmail.replace(/@(garbhsarthi|bloomnest)\.com$/, '');
+        if (normClean && normAEmail && normClean === normAEmail) return true;
         // 2. Direct unique code match (e.g. MAMA-2026)
         if (aCode === cleanCode) return true;
         // 3. Alphanumeric code match (e.g. mama2026 or papa7140)
@@ -952,7 +973,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setProfile(targetProfile);
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('bloomnest_auth_session', JSON.stringify(updatedFound));
+      setStorage('auth_session', JSON.stringify(updatedFound));
     }
     return true;
   };
@@ -961,7 +982,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCurrentUser(null);
     setIsAuthenticated(false);
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('bloomnest_auth_session');
+      removeStorage('auth_session');
     }
   };
 
@@ -1885,7 +1906,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       assistantMsg = {
         id: `ast-${Date.now()}`,
         sender: 'assistant',
-        text: `⚠️ MEDICAL WARNING: ${warning}\n\nACTION: ${action}\n\n*DISCLAIMER: BloomNest cannot replace direct physical clinical evaluation by Dr. ${profile.doctorInfo.name} or hospital emergency doctors.*`,
+        text: `⚠️ MEDICAL WARNING: ${warning}\n\nACTION: ${action}\n\n*DISCLAIMER: GarbhSarthi cannot replace direct physical clinical evaluation by Dr. ${profile.doctorInfo.name} or hospital emergency doctors.*`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isEmergencyAlert: true,
         emergencyTitle: title,
@@ -1988,7 +2009,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const exportAllDataJson = () => {
     const data = {
       exportedAt: new Date().toISOString(),
-      platform: 'BloomNest Pregnancy & Parenthood Platform (Harmonized with Garbkosh / Nurtura Architecture)',
+      platform: 'GarbhSarthi Maternal & Parenthood Sanctuary (Harmonized with GarbaKosh Architecture)',
       profile,
       contractions,
       birthPlan,
@@ -2010,7 +2031,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `BloomNest_Medical_Health_Export_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `GarbhSarthi_Medical_Health_Export_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

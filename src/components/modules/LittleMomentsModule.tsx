@@ -80,7 +80,7 @@ export const LittleMomentsModule: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `BloomNest_LittleMoments_Scrapbook_${profile.name.replace(/\s+/g, '_')}.json`;
+    a.download = `GarbhSarthi_LittleMoments_Scrapbook_${profile.name.replace(/\s+/g, '_')}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

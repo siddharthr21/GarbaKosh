@@ -743,7 +743,7 @@ export const MONTHS_DATA: MonthData[] = [
     ],
     weeklyTips: [
       "Start prenatal vitamins containing methylfolate or folic acid right away.",
-      "Download BloomNest to begin your personalized health and milestone journal.",
+      "Download GarbhSarthi to begin your personalized health and milestone journal.",
       "Rest whenever your body asks for it; early embryonic cell growth requires massive metabolic energy."
     ]
   },
@@ -812,7 +812,7 @@ export const MONTHS_DATA: MonthData[] = [
     weeklyTips: [
       "Keep a tin of bland crackers on your nightstand to nibble before lifting your head from the pillow.",
       "Switch to a gentle, unscented body wash and natural skincare.",
-      "Invite your partner into BloomNest so they can read weekly symptom explanations and support you empathetically."
+      "Invite your partner into GarbhSarthi so they can read weekly symptom explanations and support you empathetically."
     ]
   },
   {
@@ -874,7 +874,7 @@ export const MONTHS_DATA: MonthData[] = [
     ],
     weeklyTips: [
       "Celebrate completing Trimester 1! Treat yourself to comfortable maternity lounge wear.",
-      "Stay hydrated: keep a designated water bottle nearby and log your daily glasses in BloomNest."
+      "Stay hydrated: keep a designated water bottle nearby and log your daily glasses in GarbhSarthi."
     ]
   },
   {
@@ -936,7 +936,7 @@ export const MONTHS_DATA: MonthData[] = [
     ],
     weeklyTips: [
       "Invest in a supportive pregnancy pillow to position between your knees and behind your back.",
-      "Start shortlisting baby names in the BloomNest AI Baby Name Generator with your partner."
+      "Start shortlisting baby names in the GarbhSarthi AI Baby Name Generator with your partner."
     ]
   },
   {
@@ -995,7 +995,7 @@ export const MONTHS_DATA: MonthData[] = [
       }
     ],
     weeklyTips: [
-      "Upload your Level II ultrasound images directly into BloomNest's Little Moments vault.",
+      "Upload your Level II ultrasound images directly into GarbhSarthi's Little Moments vault.",
       "Place your partner's warm hand on your abdomen after a cold glass of juice when baby is most active."
     ]
   },
@@ -1056,7 +1056,7 @@ export const MONTHS_DATA: MonthData[] = [
       }
     ],
     weeklyTips: [
-      "Start browsing the Baby Shower Planner module in BloomNest to pick your theme and draft your guest list.",
+      "Start browsing the Baby Shower Planner module in GarbhSarthi to pick your theme and draft your guest list.",
       "Use a soft-bristled toothbrush to protect sensitive pregnancy gums."
     ]
   },
@@ -1119,7 +1119,7 @@ export const MONTHS_DATA: MonthData[] = [
       }
     ],
     weeklyTips: [
-      "Use BloomNest's Kick Counter in the Health Tracker module every evening around 8 PM.",
+      "Use GarbhSarthi's Kick Counter in the Health Tracker module every evening around 8 PM.",
       "Take a hospital maternity ward virtual or in-person tour."
     ]
   },
@@ -1180,7 +1180,7 @@ export const MONTHS_DATA: MonthData[] = [
       }
     ],
     weeklyTips: [
-      "Review the BloomNest Hospital Bag Checklist and start gathering items into two suitcases (one for labor, one for baby).",
+      "Review the GarbhSarthi Hospital Bag Checklist and start gathering items into two suitcases (one for labor, one for baby).",
       "Install the infant car seat and get it professionally inspected."
     ]
   },
@@ -1248,7 +1248,7 @@ export const MONTHS_DATA: MonthData[] = [
     ],
     weeklyTips: [
       "Rest as much as humanly possible; your body will run a marathon soon.",
-      "Review your birth preferences and hospital bag with your partner in BloomNest.",
+      "Review your birth preferences and hospital bag with your partner in GarbhSarthi.",
       "Take a deep breath and trust your body's remarkable ability to birth your baby!"
     ]
   }

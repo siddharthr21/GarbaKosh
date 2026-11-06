@@ -4,7 +4,7 @@ import { DEFAULT_SHARING_PERMISSIONS } from '@/services/pairingService';
 export const INITIAL_PROFILE: UserProfile = {
   id: 'usr_mother_siri',
   name: 'Siri Rao',
-  email: 'siri@bloomnest.com',
+  email: 'siri@garbhsarthi.com',
   role: 'mother',
   age: 28,
   heightCm: 163,
@@ -29,14 +29,14 @@ export const INITIAL_PROFILE: UserProfile = {
   currentMedications: ['Prenatal Multivitamin with 400mcg Folic Acid', 'Ferrous Ascorbate (Iron) 100mg', 'Calcium + Vit D3 500mg'],
   doctorInfo: {
     name: 'Dr. Sunita Kulkarni, MD (OB/GYN)',
-    clinic: 'Bloom Women & Fetal Care Center',
+    clinic: 'GarbhSarthi Maternal & Fetal Care Center',
     phone: '+91 98450 12345',
     emergencyContact: '+91 80 4000 9999 (Hospital Triage)',
     adviceNotes: 'Drink 2.5L water daily, stay active with 20m walks, continue iron with citrus.'
   },
   partnerProfile: {
     name: 'Rohan Rao',
-    email: 'rohan@bloomnest.com',
+    email: 'rohan@garbhsarthi.com',
     relationship: 'Husband & Supportive Partner',
     phone: '+91 98450 67890',
     pairingCode: 'MAMA-2026',
@@ -62,7 +62,7 @@ export const INITIAL_PROFILE: UserProfile = {
 export const DEFAULT_MOTHER_ACCOUNT: UserAccount = {
   id: 'usr_mother_siri',
   name: 'Siri Rao',
-  email: 'siri@bloomnest.com',
+  email: 'siri@garbhsarthi.com',
   role: 'mother',
   uniqueCode: 'MAMA-2026',
   partnerLinkedCode: 'PAPA-7140',
@@ -73,7 +73,7 @@ export const DEFAULT_MOTHER_ACCOUNT: UserAccount = {
 export const DEFAULT_PARTNER_ACCOUNT: UserAccount = {
   id: 'usr_partner_rohan',
   name: 'Rohan Rao',
-  email: 'rohan@bloomnest.com',
+  email: 'rohan@garbhsarthi.com',
   role: 'partner',
   uniqueCode: 'PAPA-7140',
   partnerLinkedCode: 'MAMA-2026',
@@ -82,7 +82,7 @@ export const DEFAULT_PARTNER_ACCOUNT: UserAccount = {
     ...INITIAL_PROFILE,
     id: 'usr_partner_rohan',
     name: 'Rohan Rao',
-    email: 'rohan@bloomnest.com',
+    email: 'rohan@garbhsarthi.com',
     role: 'partner'
   }
 };
@@ -90,7 +90,7 @@ export const DEFAULT_PARTNER_ACCOUNT: UserAccount = {
 export const DEFAULT_UNPAIRED_PARTNER_ACCOUNT: UserAccount = {
   id: 'usr_partner_arjun',
   name: 'Arjun Mehta',
-  email: 'arjun@bloomnest.com',
+  email: 'arjun@garbhsarthi.com',
   role: 'partner',
   uniqueCode: 'PAPA-9921',
   partnerLinkedCode: undefined,
@@ -99,7 +99,7 @@ export const DEFAULT_UNPAIRED_PARTNER_ACCOUNT: UserAccount = {
     ...INITIAL_PROFILE,
     id: 'usr_partner_arjun',
     name: 'Arjun Mehta',
-    email: 'arjun@bloomnest.com',
+    email: 'arjun@garbhsarthi.com',
     role: 'partner',
     currentGestationalWeek: 0,
     estimatedDueDate: 'Not Connected',
@@ -117,7 +117,7 @@ export const DEFAULT_UNPAIRED_PARTNER_ACCOUNT: UserAccount = {
 export const DEFAULT_UNPAIRED_MOTHER_PRIYA: UserAccount = {
   id: 'usr_mother_priya',
   name: 'Priya Nair',
-  email: 'priya@bloomnest.com',
+  email: 'priya@garbhsarthi.com',
   role: 'mother',
   uniqueCode: 'MAMA-4819',
   isPaired: false,
@@ -125,7 +125,7 @@ export const DEFAULT_UNPAIRED_MOTHER_PRIYA: UserAccount = {
     ...INITIAL_PROFILE,
     id: 'usr_mother_priya',
     name: 'Priya Nair',
-    email: 'priya@bloomnest.com',
+    email: 'priya@garbhsarthi.com',
     role: 'mother',
     currentGestationalWeek: 20,
     estimatedDueDate: '2027-03-28',
@@ -143,7 +143,7 @@ export const DEFAULT_UNPAIRED_MOTHER_PRIYA: UserAccount = {
 export const DEFAULT_UNPAIRED_MOTHER_DIYA: UserAccount = {
   id: 'usr_mother_diya',
   name: 'Diya Patel',
-  email: 'diya@bloomnest.com',
+  email: 'diya@garbhsarthi.com',
   role: 'mother',
   uniqueCode: 'MAMA-6314',
   isPaired: false,
@@ -151,7 +151,7 @@ export const DEFAULT_UNPAIRED_MOTHER_DIYA: UserAccount = {
     ...INITIAL_PROFILE,
     id: 'usr_mother_diya',
     name: 'Diya Patel',
-    email: 'diya@bloomnest.com',
+    email: 'diya@garbhsarthi.com',
     role: 'mother',
     currentGestationalWeek: 16,
     estimatedDueDate: '2027-04-25',

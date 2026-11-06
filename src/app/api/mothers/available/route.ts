@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const partnerId = searchParams.get('partnerId') || undefined;
 
     // Simulated account store lookup
-    const allAccountsStr = req.headers.get('x-bloomnest-accounts');
+    const allAccountsStr = req.headers.get('x-garbhsarthi-accounts') || req.headers.get('x-bloomnest-accounts');
     const allAccounts = allAccountsStr ? JSON.parse(allAccountsStr) : INITIAL_ACCOUNTS;
 
     const availableMothers = pairingService.getAvailableMothers(allAccounts, partnerId);

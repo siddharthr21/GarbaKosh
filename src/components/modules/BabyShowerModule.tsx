@@ -92,7 +92,7 @@ export const BabyShowerModule: React.FC = () => {
   };
 
   const copyInviteText = () => {
-    const text = `🌸 Join us in celebrating our baby shower / Godh Bharai! 🌸\nHonoring: ${profile.name} & ${profile.partnerProfile?.name || 'Rohan'}\nDate: ${babyShower.eventDate}\nVenue: ${babyShower.venue}\nTheme: ${babyShower.theme}\nRSVP via BloomNest!`;
+    const text = `🌸 Join us in celebrating our baby shower / Godh Bharai! 🌸\nHonoring: ${profile.name} & ${profile.partnerProfile?.name || 'Rohan'}\nDate: ${babyShower.eventDate}\nVenue: ${babyShower.venue}\nTheme: ${babyShower.theme}\nRSVP via GarbhSarthi!`;
     navigator.clipboard.writeText(text);
     setCopiedInvite(true);
     setTimeout(() => setCopiedInvite(false), 2000);
