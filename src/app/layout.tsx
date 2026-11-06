@@ -4,8 +4,12 @@ import { AppProvider } from '@/context/AppContext';
 import { EmergencyModal } from '@/components/modals/EmergencyModal';
 
 export const metadata: Metadata = {
-  title: 'GarbhSarthi · Pregnancy & Parenthood Companion',
-  description: 'Every heartbeat, every milestone, every moment — together. An AI-powered pregnancy and parenthood platform for expecting mothers, fathers, and couples.',
+  title: 'GarbhSarthi · Your Companion Through Pregnancy',
+  description: 'Every heartbeat, every milestone, every moment — together. An AI-powered maternal sanctuary and parenthood platform for expecting mothers, fathers, and couples.',
+  icons: {
+    icon: '/garbhsarthi-logo.jpg',
+    apple: '/garbhsarthi-logo.jpg',
+  }
 };
 
 export default function RootLayout({

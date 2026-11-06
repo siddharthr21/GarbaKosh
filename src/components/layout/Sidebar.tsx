@@ -122,9 +122,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Brand Header */}
         <div className="p-4 pb-2 flex items-center justify-between border-b border-border/60 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center font-serif font-black text-lg shadow-xs">
-              G
-            </div>
+            <img
+              src="/garbhsarthi-logo.jpg"
+              alt="GarbhSarthi Logo"
+              className="w-10 h-10 rounded-2xl object-cover shadow-xs border border-border shrink-0 bg-white"
+            />
             <div>
               <div className="flex items-center gap-1.5">
                 <h1 className="text-base font-serif font-bold text-foreground leading-tight">
@@ -135,7 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">
-                {t('maternalSanctuary')}
+                Your Companion Through Pregnancy
               </p>
             </div>
           </div>

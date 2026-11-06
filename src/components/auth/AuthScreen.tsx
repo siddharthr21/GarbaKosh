@@ -135,10 +135,12 @@ export const AuthScreen: React.FC = () => {
 
           {/* Top Brand Identity */}
           <div className="relative z-10 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-[#7A9A7E] text-white flex items-center justify-center font-serif font-black text-xl shadow-soft">
-                G
-              </div>
+            <div className="flex items-center gap-3.5">
+              <img
+                src="/garbhsarthi-logo.jpg"
+                alt="GarbhSarthi Logo"
+                className="w-14 h-14 rounded-2xl object-cover shadow-soft border border-white/20 bg-white"
+              />
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-xl font-serif font-bold text-white tracking-wide">
@@ -148,8 +150,8 @@ export const AuthScreen: React.FC = () => {
                     Care Suite
                   </span>
                 </div>
-                <p className="text-[10px] uppercase tracking-widest text-[#FAF6EE]/70 font-semibold">
-                  Maternal Sanctuary
+                <p className="text-[10px] uppercase tracking-widest text-[#FAF6EE]/80 font-semibold">
+                  Your Companion Through Pregnancy
                 </p>
               </div>
             </div>
@@ -198,6 +200,23 @@ export const AuthScreen: React.FC = () => {
         {/* Right Col: Interactive Auth Form (7 cols) */}
         <div className="lg:col-span-7 p-6 md:p-10 flex flex-col justify-between bg-card">
           <div className="space-y-6">
+            {/* Mobile Brand Header */}
+            <div className="lg:hidden flex items-center gap-3 pb-4 border-b border-border/60">
+              <img
+                src="/garbhsarthi-logo.jpg"
+                alt="GarbhSarthi Logo"
+                className="w-12 h-12 rounded-2xl object-cover shadow-xs border border-border bg-white"
+              />
+              <div>
+                <h1 className="text-lg font-serif font-bold text-foreground leading-tight">
+                  GarbhSarthi
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  Your Companion Through Pregnancy
+                </p>
+              </div>
+            </div>
+
             {/* Language Quick Selector Bar */}
             <div className="flex items-center justify-between pb-3 border-b border-border/50">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">

@@ -65,11 +65,17 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             onClick={onToggleMobileSidebar}
-            className="lg:hidden p-2 rounded-xl text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="lg:hidden p-1.5 rounded-xl text-foreground hover:bg-muted transition-colors cursor-pointer"
             aria-label="Toggle menu"
           >
             <Menu className="w-5 h-5" />
           </button>
+
+          <img
+            src="/garbhsarthi-logo.jpg"
+            alt="GarbhSarthi Logo"
+            className="w-7 h-7 rounded-xl object-cover lg:hidden border border-border shadow-2xs shrink-0 bg-white"
+          />
 
           {/* Quick Exit / Return to Dashboard Back Button if user is on any other tab */}
           {activeTab !== 'dashboard' && onNavigateTab && (
