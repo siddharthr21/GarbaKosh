@@ -219,7 +219,7 @@ export const BabyShoppingModule: React.FC = () => {
       </div>
 
       {/* Search & Category Filter Controls */}
-      <div className="bg-white rounded-3xl p-5 border border-blush-100 shadow-2xs space-y-4">
+      <div className="bg-white dark:bg-card rounded-3xl p-5 border border-blush-100 dark:border-border shadow-2xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search Box */}
           <div className="relative flex-1 max-w-md">
@@ -320,7 +320,7 @@ export const BabyShoppingModule: React.FC = () => {
             <div
               key={prod.id}
               onClick={() => openProductDetails(prod)}
-              className="bg-white rounded-3xl p-5 border border-blush-100 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between space-y-4 group cursor-pointer hover:border-amber-200"
+              className="bg-white dark:bg-card rounded-3xl p-5 border border-blush-100 dark:border-border shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between space-y-4 group cursor-pointer hover:border-amber-200 dark:hover:border-primary/40"
             >
               <div className="space-y-3">
                 {/* Product Photo Box with fallback and interactive overlay */}
@@ -506,15 +506,15 @@ export const BabyShoppingModule: React.FC = () => {
       {/* Comprehensive Product Details Modal */}
       {selectedProductModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in"
           onClick={() => setSelectedProductModal(null)}
         >
           <div
-            className="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-blush-100 animate-in zoom-in-95 flex flex-col"
+            className="bg-white dark:bg-card rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-blush-100 dark:border-border animate-in zoom-in-95 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div className="sticky top-0 z-20 bg-white/95 dark:bg-card/95 backdrop-blur-md px-6 py-4 border-b border-gray-100 dark:border-border flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-100 text-amber-800">
                   {selectedProductModal.category}
@@ -747,13 +747,13 @@ export const BabyShoppingModule: React.FC = () => {
 
       {/* Add Custom Product Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
           <form
             onSubmit={handleCreateCustomProduct}
-            className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-blush-100 space-y-4 animate-in zoom-in-95 max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-card rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-blush-100 dark:border-border space-y-4 animate-in zoom-in-95 max-h-[90vh] overflow-y-auto"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <h3 className="font-serif font-bold text-gray-900 text-lg">Add Custom Baby Product</h3>
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-border">
+              <h3 className="font-serif font-bold text-gray-900 dark:text-foreground text-lg">Add Custom Baby Product</h3>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}

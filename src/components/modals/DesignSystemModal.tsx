@@ -19,7 +19,7 @@ export const DesignSystemModal: React.FC = () => {
   if (!isDesignSystemOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-md p-4 animate-in fade-in">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/50 backdrop-blur-md p-4 animate-in fade-in">
       <div className="bg-card rounded-4xl max-w-2xl w-full p-6 md:p-8 shadow-card border border-border relative overflow-hidden flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between pb-4 border-b border-border">
           <div className="flex items-center gap-2.5">

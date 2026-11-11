@@ -38,6 +38,253 @@
     --radius: 1rem;
   }
 
+  .dark {
+    /* Night Maternal Sanctuary Palette Tokens */
+    --background: 135 10% 9%;        /* #131614 Deep Night Obsidian */
+    --foreground: 40 25% 94%;        /* #F7F4EC Warm Soft Cream Text */
+
+    --card: 135 8% 13%;              /* #1C211E Deep Elevated Surface */
+    --card-foreground: 40 25% 94%;
+
+    --primary: 127 24% 62%;          /* #85B48A Luminous Soft Sage */
+    --primary-foreground: 135 15% 10%;
+    --primary-hover: 127 26% 54%;
+    --primary-soft: 127 18% 20%;     /* #243527 Tinted Dark Sage */
+
+    --accent: 18 55% 65%;            /* #DB8D6E Warm Terracotta Glow */
+    --accent-foreground: 40 25% 94%;
+    --accent-soft: 18 28% 20%;       /* #38241C Tinted Dark Terracotta */
+
+    --beige: 135 8% 18%;
+    --muted: 135 8% 16%;             /* #232925 Subdued Surface */
+    --muted-foreground: 135 6% 65%;  /* #99A49B Muted Text */
+
+    --border: 135 8% 21%;            /* #2E3730 Subtle Night Borders */
+    --input: 135 8% 21%;
+    --ring: 127 24% 62%;
+
+    /* Semantics */
+    --success: 127 24% 62%;
+    --warning: 39 67% 60%;
+    --danger: 5 60% 60%;
+  }
+
+  /* ==========================================================================
+     NIGHT SANCTUARY: UNIVERSAL DARK MODE HIGH-CONTRAST TYPOGRAPHY & SURFACES
+     Ensures 100% text readability, high contrast, and eliminates invisible letters
+     ========================================================================== */
+  .dark {
+    color-scheme: dark;
+  }
+
+  /* Base text contrast in dark mode */
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6,
+  .dark strong,
+  .dark b {
+    color: hsl(var(--foreground));
+  }
+
+  /* Re-map hardcoded light-theme text colors to luminous dark-theme tokens */
+  .dark .text-gray-900,
+  .dark .text-stone-900,
+  .dark .text-slate-900,
+  .dark .text-neutral-900,
+  .dark .text-zinc-900,
+  .dark .text-black,
+  .dark .text-\[\#2F3430\],
+  .dark .text-\[\#1E2920\],
+  .dark .text-\[\#2E3D30\] {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .dark .text-gray-800,
+  .dark .text-stone-800,
+  .dark .text-slate-800,
+  .dark .text-neutral-800,
+  .dark .text-zinc-800,
+  .dark .text-\[\#8A5A38\] {
+    color: hsl(var(--foreground) / 0.95) !important;
+  }
+
+  .dark .text-gray-700,
+  .dark .text-stone-700,
+  .dark .text-slate-700,
+  .dark .text-neutral-700,
+  .dark .text-zinc-700 {
+    color: hsl(var(--foreground) / 0.88) !important;
+  }
+
+  .dark .text-gray-600,
+  .dark .text-stone-600,
+  .dark .text-slate-600,
+  .dark .text-neutral-600,
+  .dark .text-zinc-600 {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  .dark .text-gray-500,
+  .dark .text-stone-500,
+  .dark .text-slate-500,
+  .dark .text-neutral-500,
+  .dark .text-zinc-500 {
+    color: hsl(var(--muted-foreground) / 0.9) !important;
+  }
+
+  /* Luminous text for tinted status badges */
+  .dark .text-rose-950,
+  .dark .text-rose-900,
+  .dark .text-rose-800,
+  .dark .text-rose-700 {
+    color: #fda4af !important; /* Rose-300 */
+  }
+
+  .dark .text-emerald-950,
+  .dark .text-emerald-900,
+  .dark .text-emerald-800,
+  .dark .text-emerald-700 {
+    color: #86efac !important; /* Emerald-300 */
+  }
+
+  .dark .text-amber-950,
+  .dark .text-amber-900,
+  .dark .text-amber-800,
+  .dark .text-amber-700 {
+    color: #fde047 !important; /* Amber-300 */
+  }
+
+  .dark .text-purple-950,
+  .dark .text-purple-900,
+  .dark .text-purple-800,
+  .dark .text-purple-700 {
+    color: #d8b4fe !important; /* Purple-300 */
+  }
+
+  .dark .text-blue-950,
+  .dark .text-blue-900,
+  .dark .text-blue-800,
+  .dark .text-blue-700,
+  .dark .text-sky-950,
+  .dark .text-sky-900,
+  .dark .text-sky-800,
+  .dark .text-sky-700 {
+    color: #93c5fd !important; /* Sky/Blue-300 */
+  }
+
+  .dark .text-teal-950,
+  .dark .text-teal-900,
+  .dark .text-teal-800,
+  .dark .text-teal-700 {
+    color: #5eead4 !important; /* Teal-300 */
+  }
+
+  /* Auto-adapt white & light surface containers in dark mode */
+  .dark .bg-white:not([data-keep-light]):not(img):not(svg) {
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--foreground));
+  }
+
+  .dark .bg-gray-50:not([data-keep-light]),
+  .dark .bg-stone-50:not([data-keep-light]),
+  .dark .bg-slate-50:not([data-keep-light]),
+  .dark .bg-neutral-50:not([data-keep-light]),
+  .dark .bg-\[\#FAF6EE\]:not([data-keep-light]),
+  .dark .bg-\[\#FFFDF8\]:not([data-keep-light]),
+  .dark .bg-\[\#FFF9F3\]:not([data-keep-light]),
+  .dark .bg-\[\#FDF3E7\]:not([data-keep-light]) {
+    background-color: hsl(var(--muted)) !important;
+    color: hsl(var(--foreground));
+  }
+
+  .dark .bg-white\/70,
+  .dark .bg-white\/80,
+  .dark .bg-white\/85,
+  .dark .bg-white\/90 {
+    background-color: rgba(28, 33, 30, 0.85) !important;
+    border-color: hsl(var(--border)) !important;
+    color: hsl(var(--foreground));
+  }
+
+  /* Semi-transparent soft tinted backgrounds */
+  .dark .bg-rose-50,
+  .dark .bg-rose-50\/60,
+  .dark .bg-rose-100 {
+    background-color: rgba(225, 29, 72, 0.15) !important;
+    border-color: rgba(225, 29, 72, 0.3) !important;
+  }
+
+  .dark .bg-emerald-50,
+  .dark .bg-emerald-50\/60,
+  .dark .bg-emerald-100 {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+  }
+
+  .dark .bg-amber-50,
+  .dark .bg-amber-50\/60,
+  .dark .bg-amber-100 {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+  }
+
+  .dark .bg-purple-50,
+  .dark .bg-purple-50\/60,
+  .dark .bg-purple-100 {
+    background-color: rgba(168, 85, 247, 0.15) !important;
+    border-color: rgba(168, 85, 247, 0.3) !important;
+  }
+
+  .dark .bg-blue-50,
+  .dark .bg-blue-50\/60,
+  .dark .bg-blue-100,
+  .dark .bg-sky-50,
+  .dark .bg-sky-50\/60,
+  .dark .bg-sky-100 {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+  }
+
+  .dark .bg-teal-50,
+  .dark .bg-teal-50\/60,
+  .dark .bg-teal-100 {
+    background-color: rgba(20, 184, 166, 0.15) !important;
+    border-color: rgba(20, 184, 166, 0.3) !important;
+  }
+
+  /* Borders in dark mode */
+  .dark .border-gray-100,
+  .dark .border-gray-200,
+  .dark .border-gray-300,
+  .dark .border-stone-100,
+  .dark .border-stone-200,
+  .dark .border-stone-300,
+  .dark .border-blush-100,
+  .dark .border-blush-200,
+  .dark .border-blush-300,
+  .dark .border-\[\#E4DDCE\],
+  .dark .border-\[\#F5DECC\],
+  .dark .border-white\/60 {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  /* Form inputs & textareas in dark mode */
+  .dark input:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea,
+  .dark select {
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
   * {
     border-color: hsl(var(--border));
   }
@@ -48,6 +295,7 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    overflow-x: hidden;
   }
 
   h1, h2, h3, .font-serif {
@@ -63,12 +311,27 @@
   border: 1px solid rgba(228, 221, 206, 0.7);
 }
 
+.dark .glass-panel {
+  background: rgba(26, 32, 28, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(55, 68, 59, 0.6);
+}
+
 .glass-pill {
   background: rgba(255, 253, 248, 0.90);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow: 0 10px 30px -5px rgba(47, 52, 48, 0.12);
+}
+
+.dark .glass-pill {
+  background: rgba(28, 34, 30, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(65, 78, 69, 0.6);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
 }
 
 /* Fetal Floating, Womb Pulsing, and Heartbeat Keyframes */

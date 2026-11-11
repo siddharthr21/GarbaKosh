@@ -26,7 +26,9 @@ import {
   Unlink,
   CheckCircle2,
   Circle,
-  AlertTriangle
+  AlertTriangle,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export const SettingsModule: React.FC = () => {
@@ -44,6 +46,8 @@ export const SettingsModule: React.FC = () => {
     unlinkPartner,
     updateSharingPermissions,
     activeRelationship,
+    theme,
+    setTheme,
     t
   } = useApp();
 
@@ -435,7 +439,7 @@ export const SettingsModule: React.FC = () => {
                 <div className="space-y-0.5">
                   <span className="font-bold block">Strict Maternal Privacy Guarantee</span>
                   <p className="text-[11px] leading-relaxed opacity-90">
-                    Private journal entries, personal GarbhSarthi AI chat consultations, and unshared clinical records are <strong>never accessible</strong> to your partner or any third party.
+                    Private journal entries, personal Gnani AI chat consultations, and unshared clinical records are <strong>never accessible</strong> to your partner or any third party.
                   </p>
                 </div>
               </div>
@@ -534,6 +538,48 @@ export const SettingsModule: React.FC = () => {
                 <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
                 <option value="hi-IN">हिन्दी (Hindi)</option>
               </select>
+            </div>
+
+            {/* Sanctuary Theme & Appearance */}
+            <div className="sm:col-span-2 pt-3 border-t border-border">
+              <label className="block text-foreground font-bold mb-2">Sanctuary Theme & Appearance</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={`p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
+                    theme === 'light'
+                      ? 'bg-primary-soft/60 border-primary text-primary font-bold shadow-xs'
+                      : 'bg-card border-border text-foreground hover:bg-muted/40'
+                  }`}
+                >
+                  <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <Sun className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="block text-xs font-bold text-foreground">Gentle Day Palette</span>
+                    <span className="block text-[10px] text-muted-foreground font-normal">Warm Ivory & Soft Sage</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={`p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
+                    theme === 'dark'
+                      ? 'bg-primary-soft/60 border-primary text-primary font-bold shadow-xs'
+                      : 'bg-card border-border text-foreground hover:bg-muted/40'
+                  }`}
+                >
+                  <div className="w-9 h-9 rounded-xl bg-indigo-950/80 text-indigo-400 border border-indigo-800/40 flex items-center justify-center shrink-0">
+                    <Moon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="block text-xs font-bold text-foreground">Night Sanctuary</span>
+                    <span className="block text-[10px] text-muted-foreground font-normal">Warm Obsidian & Luminous Glow</span>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
 

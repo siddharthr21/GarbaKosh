@@ -608,13 +608,13 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
       {/* 2. CALM MATERNAL PEACH HERO SECTION                       */}
       {/* Featuring Anatomical Illustration without heartbeat/anim  */}
       {/* ========================================================= */}
-      <div className="relative bg-gradient-to-b from-[#FDF3E7] via-[#F9EAD9] to-[#FFF9F3] pt-5 pb-3 px-4 sm:px-8 text-stone-900 overflow-hidden">
+      <div className="relative bg-gradient-to-b from-[#FDF3E7] via-[#F9EAD9] to-[#FFF9F3] dark:from-[#1E2320] dark:via-[#181D1A] dark:to-[#141715] pt-5 pb-3 px-4 sm:px-8 text-stone-900 dark:text-stone-100 overflow-hidden">
         {/* Top Header Bar: Date pill & Navigation arrows */}
         <div className="relative z-10 flex items-center justify-between gap-3 mb-3">
           {/* Date pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 backdrop-blur-md border border-white/60 shadow-xs text-xs font-semibold text-stone-800">
-            <span className="text-amber-800 text-sm">📅</span>
-            <span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 dark:bg-card/85 backdrop-blur-md border border-white/60 dark:border-border shadow-xs text-xs font-semibold text-stone-800 dark:text-stone-200">
+            <span className="text-amber-800 dark:text-amber-400 text-sm">📅</span>
+            <span suppressHydrationWarning>
               {activeDay.dateNumber} {activeDay.monthName}
             </span>
             <span className="text-stone-400">·</span>
@@ -626,7 +626,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
 
           {/* Quick Week Selectors */}
           <div className="flex items-center gap-1.5">
-            <div className="hidden sm:flex items-center gap-1 bg-white/60 p-1 rounded-full border border-white/60 backdrop-blur-sm mr-1">
+            <div className="hidden sm:flex items-center gap-1 bg-white/60 dark:bg-card/60 p-1 rounded-full border border-white/60 dark:border-border backdrop-blur-sm mr-1">
               {[4, 8, 12, 16, 20, 24, 28, 32, 36, 40].map((wk) => (
                 <button
                   key={wk}
@@ -634,8 +634,8 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                   onClick={() => handleWeekChange(wk)}
                   className={`px-2 py-0.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                     selectedWeek === wk
-                      ? 'bg-stone-900 text-white shadow-xs'
-                      : 'text-stone-600 hover:text-stone-900'
+                      ? 'bg-stone-900 dark:bg-primary text-white shadow-xs'
+                      : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
                   }`}
                 >
                   {wk}w
@@ -694,14 +694,14 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                   <div
                     className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       isSelected
-                        ? 'bg-stone-900 text-white shadow-xs'
-                        : 'text-stone-700'
+                        ? 'bg-stone-900 dark:bg-primary text-white shadow-xs'
+                        : 'text-stone-700 dark:text-stone-300'
                     }`}
                   >
                     {item.dateNumber}
                   </div>
                   {isSelected && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-800 mt-0.5" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-800 dark:bg-primary mt-0.5" />
                   )}
                 </div>
               </button>
@@ -715,11 +715,11 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
         {/* ========================================================= */}
         <div className="relative z-10 flex flex-col items-center justify-center py-3">
           {/* Developmental Landmark Pill */}
-          <div className="mb-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-amber-200 text-amber-900 text-xs font-bold shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+          <div className="mb-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 dark:bg-card/90 backdrop-blur-md border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-bold shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>{evolutionRef.epochName}</span>
-            <span className="text-stone-300">·</span>
-            <span className="text-stone-600 font-normal">{evolutionRef.growthFactor}</span>
+            <span className="text-stone-300 dark:text-stone-600">·</span>
+            <span className="text-stone-600 dark:text-stone-400 font-normal">{evolutionRef.growthFactor}</span>
           </div>
 
           {/* Calm Anatomical In Utero Container */}

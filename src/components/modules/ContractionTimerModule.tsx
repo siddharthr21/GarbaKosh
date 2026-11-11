@@ -140,7 +140,7 @@ export const ContractionTimerModule: React.FC = () => {
               className="px-4 py-2 bg-card border border-border text-foreground rounded-xl text-xs font-bold flex items-center gap-2"
             >
               <Phone className="w-4 h-4" />
-              <span>{t('Call Doctor', 'Call Dr.')} {profile.doctorInfo.name.split(',')[0]}</span>
+              <span>{t('Call Doctor', 'Call Dr.')} {profile.doctorInfo.name.split(',')[0].replace(/^Dr\.?\s*/i, '')}</span>
             </a>
           </div>
         </div>

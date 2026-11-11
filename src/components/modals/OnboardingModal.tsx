@@ -126,7 +126,7 @@ export const OnboardingModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="bg-card rounded-4xl max-w-xl w-full p-6 md:p-8 shadow-card border border-border relative overflow-hidden flex flex-col max-h-[90vh]">
         {/* Top Header */}
         <div className="flex items-center justify-between pb-4 border-b border-border">

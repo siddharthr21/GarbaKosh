@@ -27,7 +27,9 @@ import {
   LogOut,
   X,
   ShieldAlert,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -53,6 +55,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setSelectedLanguage,
     is511RuleAlertActive,
     setIsMotherSharedDashboardOpen,
+    theme,
+    toggleTheme,
     t
   } = useApp();
 
@@ -157,12 +161,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Globe className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-[10px] text-muted-foreground/80">{t('lang')}</span>
           </div>
-          <div className="flex items-center gap-1 pr-1">
+          <div className="flex flex-wrap items-center gap-1 pr-1">
             {[
               { code: 'en-US', label: 'EN' },
               { code: 'kn-IN', label: 'ಕನ್ನಡ' },
               { code: 'hi-IN', label: 'हिंदी' },
-              { code: 'ta-IN', label: 'தமிழ்' }
+              { code: 'ta-IN', label: 'தமிழ்' },
+              { code: 'te-IN', label: 'తెలుగు' },
+              { code: 'ml-IN', label: 'മലയാളം' }
             ].map(lang => (
               <button
                 key={lang.code}
@@ -298,6 +304,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span className="hidden sm:inline">Shared</span>
                 </button>
               )}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors cursor-pointer"
+                title={theme === 'dark' ? 'Switch to Gentle Day Palette' : 'Switch to Night Maternal Sanctuary'}
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-indigo-400" />
+                )}
+              </button>
               <button
                 onClick={() => { setActiveTab('settings'); onCloseMobile(); }}
                 className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors cursor-pointer"

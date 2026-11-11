@@ -209,7 +209,7 @@ export const HospitalChecklistModule: React.FC = () => {
           Birth Preferences & Labor Wishes Notes
         </h3>
         <p className="text-xs text-gray-500">
-          Document your preferences for labor comfort, companion involvement, pain management, and newborn immediate care. Share these with Dr. {profile.doctorInfo.name}.
+          Document your preferences for labor comfort, companion involvement, pain management, and newborn immediate care. Share these with {profile.doctorInfo.name.startsWith('Dr.') ? profile.doctorInfo.name : `Dr. ${profile.doctorInfo.name}`}.
         </p>
 
         <textarea

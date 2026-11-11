@@ -53,6 +53,7 @@ export interface ChatMessage {
 
 interface AppContextType {
   // Authentication & Multi-Account Isolation
+  isHydrated: boolean;
   isAuthenticated: boolean;
   currentUser: UserAccount | null;
   allAccounts: UserAccount[];
@@ -162,12 +163,14 @@ interface AppContextType {
   addBabyActivity: (activity: Omit<BabyActivityLog, 'id' | 'date'>) => void;
   deleteBabyActivity: (id: string) => void;
   
-  // Bloom AI
+  // Gnani AI
   chatMessages: ChatMessage[];
-  sendUserMessage: (text: string, language?: string) => Promise<void>;
+  sendUserMessage: (text: string, language?: string) => Promise<ChatMessage | null>;
   clearChat: () => void;
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
+  gnaniApiKey: string;
+  setGnaniApiKey: (key: string) => void;
   geminiApiKey: string;
   setGeminiApiKey: (key: string) => void;
   openaiApiKey: string;
@@ -185,6 +188,11 @@ interface AppContextType {
   refreshAiServerStatus: () => Promise<void>;
   t: (key: string, fallback?: string) => string;
   
+  // Theme & Appearance
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
+  toggleTheme: () => void;
+
   // Utility
   resetToDemoData: () => void;
   exportAllDataJson: () => void;
@@ -423,7 +431,7 @@ const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
   {
     id: 'msg-1',
     sender: 'assistant',
-    text: "Hello Anita! 🌸 I am Bloom AI, your personal pregnancy and parenthood companion. I'm tailored to your 24th week of pregnancy (Month 6). How are you and baby feeling today? Feel free to ask about your symptoms, safe movements, nutrition, hospital bags, or talk to me in English, Hindi, Kannada, Tamil, Telugu, or Malayalam!",
+    text: "Hello Anita! 🌸 I am Gnani AI (ಜ್ಞಾನಿ AI), your personal Indic pregnancy and parenthood companion powered by Gnani.ai. I'm tailored to your 24th week of pregnancy (Month 6). How are you and baby feeling today? Feel free to ask about your symptoms, safe movements, nutrition, hospital bags, or speak to me in English, Hindi, Kannada, Tamil, Telugu, or Malayalam!",
     timestamp: '10:00 AM',
     suggestedFollowUps: [
       'What are common symptoms during Week 24?',
@@ -452,67 +460,13 @@ const removeStorage = (key: string): void => {
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Accounts Registry & Security State
-  const [allAccounts, setAllAccounts] = useState<UserAccount[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('accounts');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            const mergedMap = new Map<string, UserAccount>();
-            for (const acc of parsed) {
-              if (acc && acc.id) mergedMap.set(acc.id, acc);
-            }
-            // Guarantee all canonical initial accounts exist with valid uniqueCodes
-            for (const defAcc of INITIAL_ACCOUNTS) {
-              const existing = mergedMap.get(defAcc.id);
-              if (!existing || !existing.uniqueCode) {
-                mergedMap.set(defAcc.id, defAcc);
-              }
-            }
-            return Array.from(mergedMap.values());
-          }
-        } catch (e) {}
-      }
-    }
-    return INITIAL_ACCOUNTS;
-  });
-
-  const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
-    if (typeof window !== 'undefined') {
-      const session = getStorage('auth_session');
-      if (session) {
-        try { return JSON.parse(session); } catch (e) {}
-      }
-    }
-    return null;
-  });
-
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const session = getStorage('auth_session');
-      return !!session;
-    }
-    return false;
-  });
-
-  const [profile, setProfile] = useState<UserProfile>(() => {
-    if (typeof window !== 'undefined') {
-      const session = getStorage('auth_session');
-      if (session) {
-        try {
-          const parsed = JSON.parse(session);
-          if (parsed && parsed.profile) return parsed.profile;
-        } catch (e) {}
-      }
-      const saved = getStorage('profile');
-      if (saved) {
-        try { return JSON.parse(saved); } catch (e) { console.error(e); }
-      }
-    }
-    return INITIAL_PROFILE;
-  });
+  // Accounts Registry & Security State - deterministic SSR defaults to prevent hydration errors
+  const [allAccounts, setAllAccounts] = useState<UserAccount[]>(INITIAL_ACCOUNTS);
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [profile, setProfile] = useState<UserProfile>(INITIAL_PROFILE);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+  const isHydratedRef = React.useRef(false);
 
   // Permanent Account Role: assigned during registration, strictly immutable
   const activeRole: 'mother' | 'partner' = currentUser ? currentUser.role : 'mother';
@@ -521,6 +475,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const [isMotherSharedDashboardOpen, setIsMotherSharedDashboardOpen] = useState(false);
+
+  // Dark Mode Theme State & Persistence
+  const [theme, setThemeState] = useState<'light' | 'dark'>('light');
+
+  const setTheme = (newTheme: 'light' | 'dark') => {
+    setThemeState(newTheme);
+    try {
+      localStorage.setItem('garbhsarthi_theme', newTheme);
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
   const availableMothers: AvailableMotherSummary[] = pairingService.getAvailableMothers(
     allAccounts,
@@ -534,61 +507,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isDesignSystemOpen, setIsDesignSystemOpen] = useState(false);
 
-  const [contractions, setContractions] = useState<ContractionRecord[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('contractions');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_CONTRACTIONS;
-  });
-
-  const [birthPlan, setBirthPlan] = useState<BirthPlanState>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('birthplan');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_BIRTH_PLAN;
-  });
-
-  const [dailyChecklist, setDailyChecklist] = useState<DailyChecklistTask[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('checklist');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_CHECKLIST;
-  });
-
-  const [vitals, setVitals] = useState<VitalRecord[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('vitals');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_VITALS;
-  });
-
-  const [meals, setMeals] = useState<MealItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('meals');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_MEALS;
-  });
-
-  const [waterGlasses, setWaterGlasses] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('water');
-      if (saved) return Number(saved) || 7;
-    }
-    return 7;
-  });
-
-  const [cravings, setCravings] = useState<CravingLog[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('cravings');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_CRAVINGS;
-  });
+  const [contractions, setContractions] = useState<ContractionRecord[]>(INITIAL_CONTRACTIONS);
+  const [birthPlan, setBirthPlan] = useState<BirthPlanState>(INITIAL_BIRTH_PLAN);
+  const [dailyChecklist, setDailyChecklist] = useState<DailyChecklistTask[]>(INITIAL_CHECKLIST);
+  const [vitals, setVitals] = useState<VitalRecord[]>(INITIAL_VITALS);
+  const [meals, setMeals] = useState<MealItem[]>(INITIAL_MEALS);
+  const [waterGlasses, setWaterGlasses] = useState<number>(7);
+  const [cravings, setCravings] = useState<CravingLog[]>(INITIAL_CRAVINGS);
 
   const [exercises, setExercises] = useState<ExerciseItem[]>(() => {
     return EXERCISE_ROUTINES.map(e => ({
@@ -604,56 +529,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   });
 
-  const [moodLogs, setMoodLogs] = useState<MoodLog[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('moods');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return [
-      { id: 'm-1', date: '2026-11-01', mood: 'calm', stressLevel: 3, anxietyLevel: 2, journalNotes: 'Slept well with the pregnancy pillow. Baby was gently fluttering this morning.', symptoms: ['Mild lower back tightness'] },
-      { id: 'm-2', date: '2026-11-02', mood: 'joyful', stressLevel: 2, anxietyLevel: 2, journalNotes: 'Rohan helped make dinner. We picked out baby nursery colors!', symptoms: ['Glowing skin', 'Appetite boost'] },
-      { id: 'm-3', date: '2026-11-03', mood: 'anxious', stressLevel: 5, anxietyLevel: 6, journalNotes: 'A bit anxious thinking about labor stages, but listening to the ocean soundscape helped calm my mind.', symptoms: ['Heartburn', 'Braxton Hicks'] }
-    ];
-  });
+  const [moodLogs, setMoodLogs] = useState<MoodLog[]>([
+    { id: 'm-1', date: '2026-11-01', mood: 'calm', stressLevel: 3, anxietyLevel: 2, journalNotes: 'Slept well with the pregnancy pillow. Baby was gently fluttering this morning.', symptoms: ['Mild lower back tightness'] },
+    { id: 'm-2', date: '2026-11-02', mood: 'joyful', stressLevel: 2, anxietyLevel: 2, journalNotes: 'Rohan helped make dinner. We picked out baby nursery colors!', symptoms: ['Glowing skin', 'Appetite boost'] },
+    { id: 'm-3', date: '2026-11-03', mood: 'anxious', stressLevel: 5, anxietyLevel: 6, journalNotes: 'A bit anxious thinking about labor stages, but listening to the ocean soundscape helped calm my mind.', symptoms: ['Heartburn', 'Braxton Hicks'] }
+  ]);
 
-  const [memories, setMemories] = useState<MemoryVaultItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('memories');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_MEMORIES;
-  });
-
-  const [reminders, setReminders] = useState<ReminderItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('reminders');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_REMINDERS;
-  });
-
-  const [babyNames, setBabyNames] = useState<BabyNameItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('babynames');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_BABY_NAMES;
-  });
-
-  const [babyShower, setBabyShower] = useState<BabyShowerPlan>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('babyshower');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_SHOWER_PLAN;
-  });
-  const [hospitalChecklist, setHospitalChecklist] = useState<HospitalChecklistItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('hospital');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_HOSPITAL_ITEMS;
-  });
+  const [memories, setMemories] = useState<MemoryVaultItem[]>(INITIAL_MEMORIES);
+  const [reminders, setReminders] = useState<ReminderItem[]>(INITIAL_REMINDERS);
+  const [babyNames, setBabyNames] = useState<BabyNameItem[]>(INITIAL_BABY_NAMES);
+  const [babyShower, setBabyShower] = useState<BabyShowerPlan>(INITIAL_SHOWER_PLAN);
+  const [hospitalChecklist, setHospitalChecklist] = useState<HospitalChecklistItem[]>(INITIAL_HOSPITAL_ITEMS);
 
   const [postpartumLogs, setPostpartumLogs] = useState<PostpartumLog[]>([
     {
@@ -677,29 +563,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     { id: 'ba-3', date: '2026-11-03', time: '11:15 AM', type: 'diaper-wet', notes: 'Clear pale urine, good hydration' }
   ]);
 
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('chat');
-      if (saved) try { return JSON.parse(saved); } catch (e) {}
-    }
-    return INITIAL_CHAT_MESSAGES;
-  });
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(INITIAL_CHAT_MESSAGES);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('language');
-      if (saved) return saved;
-    }
-    return 'en-US';
-  });
-
-  const [geminiApiKey, setGeminiApiKeyState] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return getStorage('gemini_api_key') || '';
-    }
-    return '';
-  });
-
+  const [geminiApiKey, setGeminiApiKeyState] = useState<string>('');
   const setGeminiApiKey = (key: string) => {
     setGeminiApiKeyState(key);
     if (typeof window !== 'undefined') {
@@ -707,13 +574,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const [openaiApiKey, setOpenaiApiKeyState] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return getStorage('openai_api_key') || '';
-    }
-    return '';
-  });
-
+  const [openaiApiKey, setOpenaiApiKeyState] = useState<string>('');
   const setOpenaiApiKey = (key: string) => {
     setOpenaiApiKeyState(key);
     if (typeof window !== 'undefined') {
@@ -721,14 +582,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const [groqApiKey, setGroqApiKeyState] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = getStorage('groq_api_key');
-      if (saved) return saved;
-    }
-    return process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
-  });
+  const DEFAULT_GNANI_API_KEY =
+    process.env.NEXT_PUBLIC_GNANI_API_KEY ||
+    'vach_1ytE2CY5X2P8OG75LB2LoKExoXdn3zYsCnjFDaGsK4f83KNfy9P46d54x65TsbmRKLIIkxknsvFJVj8W1VWZfQcKRJnvjGi8_de3ef9b7ebb582a7792bb89f2e87dce2';
 
+  const [gnaniApiKey, setGnaniApiKeyState] = useState<string>(DEFAULT_GNANI_API_KEY);
+  const setGnaniApiKey = (key: string) => {
+    setGnaniApiKeyState(key);
+    if (typeof window !== 'undefined') {
+      setStorage('gnani_api_key', key);
+    }
+  };
+
+  const [groqApiKey, setGroqApiKeyState] = useState<string>(process.env.NEXT_PUBLIC_GROQ_API_KEY || '');
   const setGroqApiKey = (key: string) => {
     setGroqApiKeyState(key);
     if (typeof window !== 'undefined') {
@@ -736,13 +602,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const [grokApiKey, setGrokApiKeyState] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return getStorage('grok_api_key') || '';
-    }
-    return '';
-  });
-
+  const [grokApiKey, setGrokApiKeyState] = useState<string>('');
   const setGrokApiKey = (key: string) => {
     setGrokApiKeyState(key);
     if (typeof window !== 'undefined') {
@@ -778,15 +638,151 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     refreshAiServerStatus();
   }, []);
 
+  // Client-Side Safe Hydration Effect: Runs once after DOM hydration to restore user session without SSR mismatch
+  useEffect(() => {
+    try {
+      // 1. Theme
+      const savedTheme = localStorage.getItem('garbhsarthi_theme') as 'light' | 'dark' | null;
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        setThemeState(savedTheme);
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } else if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setThemeState('dark');
+        document.documentElement.classList.add('dark');
+      }
+
+      // 2. Accounts Registry
+      const savedAccounts = getStorage('accounts');
+      if (savedAccounts) {
+        try {
+          const parsed = JSON.parse(savedAccounts);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const mergedMap = new Map<string, UserAccount>();
+            for (const acc of parsed) {
+              if (acc && acc.id) mergedMap.set(acc.id, acc);
+            }
+            for (const defAcc of INITIAL_ACCOUNTS) {
+              const existing = mergedMap.get(defAcc.id);
+              if (!existing || !existing.uniqueCode) {
+                mergedMap.set(defAcc.id, defAcc);
+              }
+            }
+            setAllAccounts(Array.from(mergedMap.values()));
+          }
+        } catch (e) {}
+      }
+
+      // 3. User Authentication Session & Profile
+      const session = getStorage('auth_session');
+      if (session) {
+        try {
+          const parsed = JSON.parse(session);
+          if (parsed && parsed.id) {
+            setCurrentUser(parsed);
+            setIsAuthenticated(true);
+            if (parsed.profile) {
+              setProfile(parsed.profile);
+            }
+          }
+        } catch (e) {}
+      } else {
+        const savedProfile = getStorage('profile');
+        if (savedProfile) {
+          try {
+            setProfile(JSON.parse(savedProfile));
+          } catch (e) {}
+        }
+      }
+
+      // 4. Language
+      const savedLang = getStorage('language');
+      if (savedLang) {
+        setSelectedLanguage(savedLang);
+      }
+
+      // 5. Pregnancy & Clinical Health Modules
+      const savedContractions = getStorage('contractions');
+      if (savedContractions) try { setContractions(JSON.parse(savedContractions)); } catch (e) {}
+
+      const savedBirthPlan = getStorage('birthplan');
+      if (savedBirthPlan) try { setBirthPlan(JSON.parse(savedBirthPlan)); } catch (e) {}
+
+      const savedChecklist = getStorage('checklist');
+      if (savedChecklist) try { setDailyChecklist(JSON.parse(savedChecklist)); } catch (e) {}
+
+      const savedVitals = getStorage('vitals');
+      if (savedVitals) try { setVitals(JSON.parse(savedVitals)); } catch (e) {}
+
+      const savedMeals = getStorage('meals');
+      if (savedMeals) try { setMeals(JSON.parse(savedMeals)); } catch (e) {}
+
+      const savedWater = getStorage('water');
+      if (savedWater) {
+        const parsedW = Number(savedWater);
+        if (!isNaN(parsedW)) setWaterGlasses(parsedW);
+      }
+
+      const savedCravings = getStorage('cravings');
+      if (savedCravings) try { setCravings(JSON.parse(savedCravings)); } catch (e) {}
+
+      const savedMoods = getStorage('moods');
+      if (savedMoods) try { setMoodLogs(JSON.parse(savedMoods)); } catch (e) {}
+
+      const savedMemories = getStorage('memories');
+      if (savedMemories) try { setMemories(JSON.parse(savedMemories)); } catch (e) {}
+
+      const savedReminders = getStorage('reminders');
+      if (savedReminders) try { setReminders(JSON.parse(savedReminders)); } catch (e) {}
+
+      const savedBabyNames = getStorage('babynames');
+      if (savedBabyNames) try { setBabyNames(JSON.parse(savedBabyNames)); } catch (e) {}
+
+      const savedBabyShower = getStorage('babyshower');
+      if (savedBabyShower) try { setBabyShower(JSON.parse(savedBabyShower)); } catch (e) {}
+
+      const savedHospital = getStorage('hospital');
+      if (savedHospital) try { setHospitalChecklist(JSON.parse(savedHospital)); } catch (e) {}
+
+      const savedChat = getStorage('chat');
+      if (savedChat) try { setChatMessages(JSON.parse(savedChat)); } catch (e) {}
+
+      // 6. API Keys
+      const savedGemini = getStorage('gemini_api_key');
+      if (savedGemini) setGeminiApiKeyState(savedGemini);
+
+      const savedOpenai = getStorage('openai_api_key');
+      if (savedOpenai) setOpenaiApiKeyState(savedOpenai);
+
+      const savedGnani = getStorage('gnani_api_key');
+      if (savedGnani) setGnaniApiKeyState(savedGnani);
+
+      const savedGroq = getStorage('groq_api_key');
+      if (savedGroq) setGroqApiKeyState(savedGroq);
+
+      const savedGrok = getStorage('grok_api_key');
+      if (savedGrok) setGrokApiKeyState(savedGrok);
+
+    } catch (err) {
+      console.error('Error hydrating saved state from localStorage:', err);
+    } finally {
+      isHydratedRef.current = true;
+      setIsHydrated(true);
+    }
+  }, []);
+
   const [activeEmergencyModal, setActiveEmergencyModal] = useState<string | null>(null);
 
   const t = (key: string, fallback?: string): string => {
     return getTranslation(selectedLanguage, key, fallback);
   };
 
-  // Sync to localStorage
+  // Sync to localStorage only AFTER initial hydration has safely completed
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!isHydratedRef.current || typeof window === 'undefined') return;
     setStorage('language', selectedLanguage);
     setStorage('profile', JSON.stringify(profile));
     setStorage('contractions', JSON.stringify(contractions));
@@ -1465,8 +1461,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     // Clinical Safety Check: Gestational Hypertension / Preeclampsia threshold (140/90 mmHg)
     if (record.bloodPressureSys >= 140 || record.bloodPressureDia >= 90) {
+      const doctorFormattedName = profile.doctorInfo.name.startsWith('Dr.') ? profile.doctorInfo.name : `Dr. ${profile.doctorInfo.name}`;
       triggerEmergencyModal(
-        `ELEVATED BLOOD PRESSURE DETECTED (${record.bloodPressureSys}/${record.bloodPressureDia} mmHg). A reading of 140/90 mmHg or higher during pregnancy requires urgent clinical evaluation for gestational hypertension or preeclampsia. Please rest on your left side and contact Dr. ${profile.doctorInfo.name} or your maternity emergency triage (${profile.doctorInfo.emergencyContact}) immediately.`
+        `ELEVATED BLOOD PRESSURE DETECTED (${record.bloodPressureSys}/${record.bloodPressureDia} mmHg). A reading of 140/90 mmHg or higher during pregnancy requires urgent clinical evaluation for gestational hypertension or preeclampsia. Please rest on your left side and contact ${doctorFormattedName} or your maternity emergency triage (${profile.doctorInfo.emergencyContact}) immediately.`
       );
     }
   };
@@ -1523,8 +1520,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCravings(prev => [newCraving, ...prev]);
 
     if (isPicaFlagged) {
+      const doctorFormattedName = profile.doctorInfo.name.startsWith('Dr.') ? profile.doctorInfo.name : `Dr. ${profile.doctorInfo.name}`;
       triggerEmergencyModal(
-        `Non-food craving detected ("${description}"). Craving substances such as soil, chalk, clay, ice, or detergent (Pica) is frequently linked with severe iron deficiency anemia or mineral imbalances. Please contact Dr. ${profile.doctorInfo.name} for an immediate blood panel.`
+        `Non-food craving detected ("${description}"). Craving substances such as soil, chalk, clay, ice, or detergent (Pica) is frequently linked with severe iron deficiency anemia or mineral imbalances. Please contact ${doctorFormattedName} for an immediate blood panel.`
       );
     }
 
@@ -1823,6 +1821,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(gnaniApiKey ? { 'x-gnani-key': gnaniApiKey } : {}),
           ...(groqApiKey ? { 'x-groq-key': groqApiKey } : {}),
           ...(geminiApiKey ? { 'x-gemini-key': geminiApiKey } : {}),
           ...(openaiApiKey ? { 'x-openai-key': openaiApiKey } : {}),
@@ -1830,11 +1829,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         },
         body: JSON.stringify({
           message: userText,
+          gnaniApiKey,
           groqApiKey,
           geminiApiKey,
           openaiApiKey,
           grokApiKey,
-          apiKey: groqApiKey || geminiApiKey || openaiApiKey || grokApiKey,
+          apiKey: gnaniApiKey || groqApiKey || geminiApiKey || openaiApiKey || grokApiKey,
           history: chatMessages.slice(-6).map(m => ({ sender: m.sender, text: m.text })),
           gestationalWeek: profile.currentGestationalWeek || 24,
           userRole: currentUser?.role || profile.role || 'mother',
@@ -1858,7 +1858,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           language: lang
         };
         setChatMessages(prev => [...prev, assistantMsg]);
-        return;
+        return assistantMsg;
       }
     } catch (apiErr) {
       console.warn('API chat fetch failed, using internal offline responder:', apiErr);
@@ -1881,10 +1881,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       let warning = 'The symptoms described require prompt emergency evaluation by a healthcare professional.';
       let action = 'Please call your doctor, maternity triage, or local emergency services (112 / 911 / 108) immediately.';
 
+      const doctorFormattedName = profile.doctorInfo.name.startsWith('Dr.') ? profile.doctorInfo.name : `Dr. ${profile.doctorInfo.name}`;
+
       if (isHeavyBleeding) {
         title = '🚨 CRITICAL: IMMEDIATE ATTENTION FOR BLEEDING';
         warning = 'Heavy vaginal bleeding, especially with clots or dizziness, is an obstetric emergency. It can signify placental complications.';
-        action = `Call Dr. ${profile.doctorInfo.name} or maternity emergency triage (${profile.doctorInfo.emergencyContact}) right away. Do not insert anything vaginally.`;
+        action = `Call ${doctorFormattedName} or maternity emergency triage (${profile.doctorInfo.emergencyContact}) right away. Do not insert anything vaginally.`;
       } else if (isPreeclampsia) {
         title = '⚠️ CRITICAL: POSSIBLE PREECLAMPSIA SIGNS';
         warning = 'Persistent severe headache accompanied by vision changes or sudden facial swelling can indicate dangerous blood pressure elevation.';
@@ -1906,14 +1908,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       assistantMsg = {
         id: `ast-${Date.now()}`,
         sender: 'assistant',
-        text: `⚠️ MEDICAL WARNING: ${warning}\n\nACTION: ${action}\n\n*DISCLAIMER: GarbhSarthi cannot replace direct physical clinical evaluation by Dr. ${profile.doctorInfo.name} or hospital emergency doctors.*`,
+        text: `⚠️ MEDICAL WARNING: ${warning}\n\nACTION: ${action}\n\n*DISCLAIMER: GarbhSarthi cannot replace direct physical clinical evaluation by ${doctorFormattedName} or hospital emergency doctors.*`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isEmergencyAlert: true,
         emergencyTitle: title,
         emergencyWarning: warning,
         emergencyAction: action,
         suggestedFollowUps: [
-          `Call Dr. ${profile.doctorInfo.name} (${profile.doctorInfo.phone})`,
+          `Call ${doctorFormattedName} (${profile.doctorInfo.phone})`,
           `Call Hospital Emergency Triage (${profile.doctorInfo.emergencyContact})`,
           'Find nearest emergency room'
         ]
@@ -1962,6 +1964,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     setChatMessages(prev => [...prev, assistantMsg]);
+    return assistantMsg;
   };
 
   const clearChat = () => {
@@ -2121,6 +2124,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         clearChat,
         selectedLanguage,
         setSelectedLanguage,
+        gnaniApiKey,
+        setGnaniApiKey,
         geminiApiKey,
         setGeminiApiKey,
         openaiApiKey,
@@ -2132,11 +2137,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         aiServerStatus,
         refreshAiServerStatus,
         t,
+        theme,
+        setTheme,
+        toggleTheme,
         resetToDemoData,
         exportAllDataJson,
         triggerEmergencyModal,
         activeEmergencyModal,
-        dismissEmergencyModal
+        dismissEmergencyModal,
+        isHydrated
       }}
     >
       {children}

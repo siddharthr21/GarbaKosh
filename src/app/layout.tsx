@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-cream-50/50 text-gray-900 selection:bg-blush-200">
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground selection:bg-blush-200 antialiased" suppressHydrationWarning>
         <AppProvider>
           {children}
           <EmergencyModal />

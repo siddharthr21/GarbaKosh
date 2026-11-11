@@ -7,9 +7,9 @@
 
 ## 🌟 Key Features
 
-### 1. 🤖 Bloom AI Clinical & Emotional Assistant
-- **Live Groq Cloud LPU Inference**: High-speed, context-aware obstetric intelligence powered by top-tier models (`openai/gpt-oss-120b`, `qwen/qwen3.8-27b`) with automated fallback to Google Gemini and offline clinical synthesis.
-- **Multilingual Support**: Real-time understanding in English, Kannada (ಕನ್ನಡ), Hindi (हिंदी), Tamil (தமிழ்), Telugu (తెలుగు), and Malayalam (മലയാളം).
+### 1. 🤖 Gnani AI Clinical & Voice Assistant
+- **Gnani.ai Indic Voice & Speech AI**: Integrated with Gnani Vachana platform featuring **Gnani Timbre (v2.5/v3.0)** neural speech synthesis for authentic regional Indian voices and **Gnani Prisma** speech-to-text recognition.
+- **Multilingual Support**: Real-time voice and text understanding in English, Kannada (ಕನ್ನಡ), Hindi (हिंदी), Tamil (தமிழ்), Telugu (తెలుగు), and Malayalam (മലയാളം).
 - **Culturally Attuned Guidance**: Incorporates Garbh Sanskar traditions, Ayurvedic rasayanas, classical ragas, and traditional home comforts alongside evidence-based obstetric protocols.
 - **Clinical Emergency Triage**: Detects obstetric red flags (heavy bleeding, preeclampsia signs, reduced fetal movements, rupture of membranes, and perinatal crisis) and pops immediate emergency triage guidance.
 

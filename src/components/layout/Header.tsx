@@ -19,7 +19,10 @@ import {
   Compass,
   LogOut,
   ArrowLeft,
-  Globe
+  Globe,
+  Sun,
+  Moon,
+  Edit3
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -43,6 +46,8 @@ export const Header: React.FC<HeaderProps> = ({
     triggerEmergencyModal,
     setIsOnboardingOpen,
     setIsMotherSharedDashboardOpen,
+    theme,
+    toggleTheme,
     t
   } = useApp();
 
@@ -86,14 +91,14 @@ export const Header: React.FC<HeaderProps> = ({
               title="Return to Home Dashboard"
             >
               <ArrowLeft className="w-3.5 h-3.5 text-primary" />
-              <span className="hidden sm:inline text-xs">Dashboard</span>
+              <span className="hidden sm:inline text-xs">{t('homeDashboard', 'Dashboard')}</span>
             </button>
           )}
 
           <div className="hidden sm:flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-primary" />
             <h2 className="text-xs sm:text-sm font-serif font-bold text-foreground capitalize truncate max-w-[120px] md:max-w-none">
-              {activeTab.replace('-', ' ')}
+              {t(activeTab.replace('-', ' '), activeTab.replace('-', ' '))}
             </h2>
           </div>
         </div>
@@ -102,8 +107,8 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="hidden lg:flex items-center gap-2 bg-muted/40 px-3.5 py-1 rounded-full border border-border shadow-xs text-xs shrink-0">
           <div className="flex items-center gap-1.5 text-primary font-bold">
             <Heart className="w-3.5 h-3.5 fill-primary shrink-0" />
-            <span>Week {currentWeek}</span>
-            <span className="font-normal text-muted-foreground">· Month {currentMonth}</span>
+            <span>{t('week', 'Week')} {currentWeek}</span>
+            <span className="font-normal text-muted-foreground">· {t('month', 'Month')} {currentMonth}</span>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-primary-soft text-primary font-semibold">
               T{currentTrimester}
             </span>
@@ -111,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="text-border">|</span>
           <div className="flex items-center gap-1.5 text-accent font-medium">
             <Calendar className="w-3.5 h-3.5 shrink-0" />
-            <span>{daysLeft} days to EDD</span>
+            <span suppressHydrationWarning>{daysLeft} {t('daysToEdd', 'days to EDD')}</span>
           </div>
         </div>
 
@@ -155,14 +160,14 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {isMother ? <UserCheck className="w-3.5 h-3.5 shrink-0" /> : <Users className="w-3.5 h-3.5 shrink-0" />}
               <span className="hidden xl:inline">
-                {isMother ? 'Mother' : 'Partner'}
+                {isMother ? t('mother', 'Mother') : t('partner', 'Partner')}
               </span>
               <span
                 className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold uppercase ${
                   isPaired ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-700'
                 }`}
               >
-                {isPaired ? 'Paired' : 'Unpaired'}
+                {isPaired ? t('active', 'Paired') : t('unpaired', 'Unpaired')}
               </span>
             </div>
 
@@ -179,20 +184,46 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* Emergency SOS Button */}
+          {/* Theme Toggle Button (Light / Dark Mode) */}
           <button
             type="button"
-            onClick={() =>
-              triggerEmergencyModal(
-                'Maternal or newborn red flag symptoms reported by user. Direct emergency hospital dispatch protocol.'
-              )
-            }
-            className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs px-2.5 sm:px-3 py-1.5 rounded-xl shadow-xs hover:shadow-md transition-all shrink-0 cursor-pointer"
-            title="Emergency Medical Triage Protocol"
+            onClick={toggleTheme}
+            className="flex items-center justify-center p-2 rounded-xl bg-card hover:bg-muted border border-border text-foreground transition-all cursor-pointer shadow-2xs shrink-0"
+            title={theme === 'dark' ? 'Switch to Gentle Day Palette' : 'Switch to Night Maternal Sanctuary'}
+            aria-label="Toggle theme"
           >
-            <AlertTriangle className="w-3.5 h-3.5 shrink-0 animate-pulse" />
-            <span className="tracking-tight font-bold">SOS Emergency</span>
+            {theme === 'dark' ? (
+              <Sun className="w-3.5 h-3.5 text-amber-400 animate-in spin-in-180 duration-300" />
+            ) : (
+              <Moon className="w-3.5 h-3.5 text-indigo-500 animate-in spin-in-180 duration-300" />
+            )}
           </button>
+
+          {/* Emergency SOS Button with Doctor Edit Option */}
+          <div className="inline-flex items-center rounded-xl shadow-xs shrink-0">
+            <button
+              type="button"
+              onClick={() =>
+                triggerEmergencyModal(
+                  'Maternal or newborn red flag symptoms reported by user. Direct emergency hospital dispatch protocol.'
+                )
+              }
+              className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs px-2.5 sm:px-3 py-1.5 rounded-l-xl transition-all cursor-pointer"
+              title="Emergency Medical Triage Protocol"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0 animate-pulse" />
+              <span className="tracking-tight font-bold">SOS Emergency</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => triggerEmergencyModal('EDIT_DOCTOR')}
+              className="flex items-center justify-center bg-rose-700 hover:bg-rose-800 active:bg-rose-900 text-rose-100 hover:text-white px-2 py-1.5 rounded-r-xl border-l border-rose-500/50 transition-all cursor-pointer"
+              title="Edit Doctor Name & Phone Number for SOS Emergency"
+              aria-label="Edit Doctor Name & Phone Number"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           {/* Exit / Sign Out Button */}
           <button
@@ -203,7 +234,7 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label="Exit and Sign Out"
           >
             <LogOut className="w-3.5 h-3.5 shrink-0" />
-            <span>Exit</span>
+            <span>{t('signOut', 'Exit')}</span>
           </button>
         </div>
       </div>

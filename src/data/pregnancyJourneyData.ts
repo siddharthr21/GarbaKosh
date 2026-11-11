@@ -936,7 +936,7 @@ export const MONTHS_DATA: MonthData[] = [
     ],
     weeklyTips: [
       "Invest in a supportive pregnancy pillow to position between your knees and behind your back.",
-      "Start shortlisting baby names in the GarbhSarthi AI Baby Name Generator with your partner."
+      "Start shortlisting baby names in the Gnani AI Baby Name Generator with your partner."
     ]
   },
   {

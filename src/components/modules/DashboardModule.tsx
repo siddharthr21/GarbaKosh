@@ -754,7 +754,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               className="w-full py-2.5 bg-primary-soft hover:bg-primary-soft/80 text-primary rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Ask GarbhSarthi AI questions for next doctor visit</span>
+              <span>Ask Gnani AI questions for next doctor visit</span>
             </button>
           </div>
 

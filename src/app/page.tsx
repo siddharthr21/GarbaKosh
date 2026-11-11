@@ -31,7 +31,7 @@ import { BabyShoppingModule } from '@/components/modules/BabyShoppingModule';
 import { SettingsModule } from '@/components/modules/SettingsModule';
 
 export default function Home() {
-  const { isAuthenticated } = useApp();
+  const { isAuthenticated, isHydrated } = useApp();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
   const [mounted, setMounted] = useState<boolean>(false);
@@ -40,8 +40,8 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  // Authentication Gate: Require login before accessing the maternal sanctuary dashboard
-  if (!mounted || !isAuthenticated) {
+  // Authentication Gate: Require login and client hydration before accessing the maternal sanctuary dashboard
+  if (!mounted || !isHydrated || !isAuthenticated) {
     return <AuthScreen />;
   }
 
@@ -101,7 +101,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-16 lg:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 pb-24 lg:pb-6">
         <Header
           onToggleMobileSidebar={() => setIsOpenMobile(true)}
           activeTab={activeTab}

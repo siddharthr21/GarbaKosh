@@ -14,7 +14,7 @@ export const MULTILINGUAL_AI_RESPONSES: Record<SupportedLanguageCode, Multilingu
       followUps: ['Can vitamin B6 help with nausea?', 'When does morning sickness typically subside?', 'Safe foods for an upset stomach']
     },
     {
-      keywords: ['sleep', 'position', 'side sleep', 'back sleep'],
+      keywords: ['sleep', 'sleeping', 'position', 'positions', 'side sleep', 'back sleep', 'posture', 'sleep on side'],
       response: `Sleeping on your **Left Side (SOS - Sleep On Side)** is the clinical gold standard in second and third trimesters.\n\nWhy it matters:\n• Prevents your uterus from compressing the **inferior vena cava (IVC)**, preserving optimal cardiac return.\n• Maximizes blood and nutrient perfusion to the placenta and baby.\n• **Comfort tip:** Place a supportive contoured pillow between your knees and tuck a small cushion behind your lower back.`,
       followUps: ['Can I sleep on my right side safely?', 'What if I wake up on my back?', 'Best pillows for pregnancy']
     },
@@ -29,12 +29,12 @@ export const MULTILINGUAL_AI_RESPONSES: Record<SupportedLanguageCode, Multilingu
       followUps: ['How to distinguish round ligament pain from labor?', 'Can I use a warm bath safely?', 'Safe stretches for pelvic relief']
     },
     {
-      keywords: ['hospital bag', 'packing', 'labor bag'],
+      keywords: ['hospital bag', 'packing', 'pack bag', 'pack hospital', 'delivery bag'],
       response: `Packing your hospital bag by Week 35 ensures you are calm when labor surges begin.\n\n**Essentials:**\n• **For Mother:** ID, insurance card, maternity hospital folder, birth plan, loose nursing nightgowns, warm non-skid socks, high-waisted cotton underwear, maternity pads, lip balm, and 10ft phone charger.\n• **For Baby:** 2–3 newborn onesies, swaddles, scratch mittens, pediatric car seat (pre-installed), diapers, and baby wipes.\n• **For Partner:** Snacks, hydration bottle, camera, change of clothes, and caregiver contacts list.`,
       followUps: ['What paperwork do I need for hospital admission?', 'When should the car seat be installed?', 'What snacks are best for labor?']
     },
     {
-      keywords: ['labor', 'contraction', 'surge', '511', 'hospital'],
+      keywords: ['labor', 'contraction', 'contractions', 'surge', '511', '5-1-1', 'labor pain', 'true labor'],
       response: `Recognizing genuine labor vs. Braxton Hicks contractions:\n\n• **True Labor:** Surges grow progressively longer, stronger, and closer together regardless of movement or rest.\n• **5-1-1 Rule for Hospital Departure:** When contractions occur every **5 minutes** apart, lasting at least **1 minute** each, consistently for **1 hour**, it is time to head to the maternity hospital or call your triage.`,
       followUps: ['How do I know my water broke?', 'What is back labor?', 'When to head to the hospital for second pregnancies?']
     },
@@ -52,12 +52,12 @@ export const MULTILINGUAL_AI_RESPONSES: Record<SupportedLanguageCode, Multilingu
       followUps: ['ವಾಕರಿಕೆಗೆ ವಿಟಮಿನ್ B6 ಹೇಗೆ ಸಹಕಾರಿ?', 'ಸಾಮಾನ್ಯವಾಗಿ ಬೆಳಗಿನ ವಾಂತಿ ಯಾವಾಗ ನಿಲ್ಲುತ್ತದೆ?', 'ಹೊಟ್ಟೆ ಕೆಟ್ಟಾಗ ಸೇವಿಸಬಹುದಾದ ಸುರಕ್ಷಿತ ಆಹಾರಗಳು']
     },
     {
-      keywords: ['ನಿದ್ರೆ', 'ಮಲಗುವ ಸ್ಥಾನ', 'sleep', 'position'],
+      keywords: ['ನಿದ್ರೆ', 'ಮಲಗ', 'ಮಲಗು', 'ಮಲಗುವ', 'ಭಂಗಿ', 'sleep', 'position', 'side sleep'],
       response: `ಗರ್ಭಾವಸ್ಥೆಯ ೨ನೇ ಮತ್ತು ೩ನೇ ತ್ರೈಮಾಸಿಕದಲ್ಲಿ **ಎಡ ಮಗ್ಗುಲಿನಲ್ಲಿ ಮಲಗುವುದು (Left Side Sleeping)** ಅತ್ಯಂತ ಸುರಕ್ಷಿತ ಮತ್ತು ವೈದ್ಯಕೀಯವಾಗಿ ಶಿಫಾರಸು ಮಾಡಲಾದ ವಿಧಾನವಾಗಿದೆ.\n\n**ಏಕೆಂದರೆ:**\n• ಇದು ದೇಹದ ಮುಖ್ಯ ರಕ್ತನಾಳದ (IVC) ಮೇಲೆ ಗರ್ಭಾಶಯದ ಒತ್ತಡವನ್ನು ತಪ್ಪಿಸಿ ರಕ್ತಪರಿಚಲನೆ ಸುಗಮವಾಗಿರಲು ನೆರವಾಗುತ್ತದೆ.\n• ಮಗುವಿಗೆ ಮತ್ತು ಮಾవిಗೆ (Placenta) ಗರಿಷ್ಠ ರಕ್ತ ಮತ್ತು ಆಮ್ಲಜನಕ ಪೂರೈಕೆಯಾಗುತ್ತದೆ.\n• **ಸಲಹೆ:** ಎರಡೂ ಮೊಣಕಾಲುಗಳ ನಡುವೆ ಗರ್ಭಧಾರಣಾ ದಿಂಬನ್ನು (Pregnancy Pillow) ಇಟ್ಟುಕೊಳ್ಳಿ.`,
       followUps: ['ಬಲ ಮಗ್ಗುಲಿನಲ್ಲಿ ಮಲಗಬಹುದೇ?', 'ಬೆನ್ನ ಮೇಲೆ ಮಲಗಿದರೆ ಏನಾಗುತ್ತದೆ?', 'ಗರ್ಭಾವಸ್ಥೆಯ ಉತ್ತಮ ದಿಂಬುಗಳು']
     },
     {
-      keywords: ['ಮಗುವಿನ ಚಲನೆ', 'ಕಿಕ್', 'kick', 'movement'],
+      keywords: ['ಮಗುವಿನ ಚಲನೆ', 'ಚಲನೆ', 'ಕಿಕ್', 'ಒದೆ', 'kick', 'movement'],
       response: `ಮಗುವಿನ ಚಲನೆಯು ಮಗುವಿನ ಉತ್ತಮ ಬೆಳವಣಿಗೆ ಮತ್ತು ಆರೋಗ್ಯದ ಸಂಕೇತವಾಗಿದೆ.\n\n**ಮಗುವಿನ ಕಿಕ್ ಎಣಿಕೆ ನಿಯಮ (೨೮ನೇ ವಾರದಿಂದ):**\n• ಊಟವಾದ ನಂತರ ಶಾಂತವಾದ ಕೋಣೆಯಲ್ಲಿ ಎಡ ಮಗ್ಗುಲಿಗೆ ಮಲಗಿ.\n• ಹೊಟ್ಟೆಯ ಮೇಲೆ ಕೈಯಿಟ್ಟು ಮಗುವಿನ ಚಲನೆಯನ್ನು ಗಮನಿಸಿ.\n• ಗುರಿ: **೨ ಗಂಟೆಗಳಲ್ಲಿ ಕನಿಷ್ಠ ೧೦ ಬಾರಿ ಮಗುವಿನ ಚಲನೆ** (ತಿರುಗುವುದು, ಒದೆಯುವುದು) ಇರಬೇಕು.\n• ಚಲನೆ ತುಂಬಾ ಕಡಿಮೆಯಾದರೆ ತಕ್ಷಣ ನಿಮ್ಮ ಸ್ತ್ರೀರೋಗ ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ.`,
       followUps: ['ಮಗು ರಾತ್ರಿ ವೇಳೆ ಹೆಚ್ಚು ಚಲಿಸುವುದು ಏಕೆ?', 'ಚಲನೆ ಕಡಿಮೆಯಾದರೆ ತಕ್ಷಣ ಏನು ಮಾಡಬೇಕು?', 'ಯಾವ ಚಲನೆಯನ್ನು ಕಿಕ್ ಎಂದು ಪರಿಗಣಿಸಬೇಕು?']
     },
@@ -67,12 +67,12 @@ export const MULTILINGUAL_AI_RESPONSES: Record<SupportedLanguageCode, Multilingu
       followUps: ['ಸಾಮಾನ್ಯ ನೋವು ಮತ್ತು ಹೆರಿಗೆ ನೋವಿನ ವ್ಯತ್ಯಾಸವೇನು?', 'ಶಾಖದ ಬ್ಯಾಗ್ ಬಳಸುವುದು ಸುರಕ್ಷಿತವೇ?', 'ಪೆಲ್ವಿಕ್ ಸ್ನಾಯುಗಳ ವ್ಯಾಯಾಮ']
     },
     {
-      keywords: ['ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್', 'ತಯಾರಿ', 'hospital bag'],
+      keywords: ['ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್', 'ಬ್ಯಾಗ್', 'ತಯಾರಿ', 'hospital bag', 'packing'],
       response: `೩೫ನೇ ವಾರಕ್ಕೆ ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್ ಸಿದ್ಧಪಡಿಸಿಟ್ಟುಕೊಳ್ಳುವುದು ಅತ್ಯಗತ್ಯ.\n\n**ಮುಖ್ಯ ಸಾಮಗ್ರಿಗಳು:**\n• **ತಾಯಿಗಾಗಿ:** ವೈದ್ಯಕೀಯ ದಾಖಲೆಗಳು, ಆಸ್ಪತ್ರೆ ಫೈಲ್, ಸಡಿಲವಾದ ಕಾಟನ್ ನೈಟಿಗಳು, ಹೆರಿಗೆ ಪ್ಯಾಡ್‌ಗಳು, ಬೆಚ್ಚಗಿನ ಕಾಲುಚೀಲಗಳು, ಮುಖದ ಕ್ರೀಮ್, ಫೋನ್ ಚಾರ್ಜರ್.\n• **ಮಗುವಿಗಾಗಿ:** ನವಜಾತ ಶಿಶುವಿನ ಕಾಟನ್ ಬಟ್ಟೆಗಳು (೩-೪ ಜೋಡಿ), ಸ್ವೆಟರ್, ಮೃದುವಾದ ಹೊದಿಕೆಗಳು, ಡೈಪರ್‌ಗಳು, ಬೇಬಿ ವೈಪ್ಸ್.\n• **ಸಂಗಾತಿಗಾಗಿ:** ಸ್ನ್ಯಾಕ್ಸ್, ನೀರಿನ ಬಾಟಲ್, ತುರ್ತು ಸಂಪರ್ಕ ಸಂಖ್ಯೆಗಳು.`,
       followUps: ['ಆಸ್ಪತ್ರೆ ದಾಖಲಾತಿಗೆ ಬೇಕಾಗುವ ದಾಖಲೆಗಳು ಯಾವುವು?', 'ಕಾರಿನಲ್ಲಿ ಬೇಬಿ ಸೀಟ್ ಯಾವಾಗ ಅಳವಡಿಸಬೇಕು?', 'ಹೆರಿಗೆ ಸಮಯದ ಪ್ರಮುಖ ಫೋನ್ ನಂಬರ್‌ಗಳು']
     },
     {
-      keywords: ['ಹೆರಿಗೆ ನೋವು', 'ನೋವು', 'labor', 'contraction', '511'],
+      keywords: ['ಹೆರಿಗೆ ನೋವು', 'ಹೆರಿಗೆ', 'ಪ್ರಸವ', 'labor', 'contraction', '511'],
       response: `ಹೆರಿಗೆ ನೋವು ಆರಂಭವಾಗುವುದನ್ನು ಗುರುತಿಸುವುದು ಹೇಗೆ:\n\n• **ನೈಜ ಹೆರಿಗೆ ನೋವು:** ನೋವು ನಿಯಮಿತವಾಗಿ ಬರುತ್ತದೆ ಮತ್ತು ವಿಶ್ರಾಂತಿ ಪಡೆದರೂ ನಿಲ್ಲುವುದಿಲ್ಲ, ಬದಲಿಗೆ ಹೆಚ್ಚಾಗುತ್ತದೆ.\n• **೫-೧-೧ ಗೋಲ್ಡನ್ ನಿಯಮ:** ಪ್ರತಿ **೫ ನಿಮಿಷಕ್ಕೊಮ್ಮೆ** ಬರುವ ನೋವು, ಕನಿಷ್ಠ **೧ ನಿಮಿಷ ಕಾಲ** ಇರುತ್ತಿದ್ದು, ಸತತವಾಗಿ **೧ ಗಂಟೆಯವರೆಗೆ** ಮುಂದುವರಿದರೆ ತಕ್ಷಣ ಆಸ್ಪತ್ರೆಗೆ ತೆರಳಿ!`,
       followUps: ['ಉದೆ ನೀರು ಒಡೆದರೆ ಏನು ಮಾಡಬೇಕು?', 'ಬ್ಯಾಕ್ ಲೇಬರ್ ಎಂದರೇನು?', 'ಆಸ್ಪತ್ರೆಗೆ ತೆರಳುವ ಸರಿಯಾದ ಸಮಯ ಯಾವುದು?']
     },
@@ -90,12 +90,12 @@ export const MULTILINGUAL_AI_RESPONSES: Record<SupportedLanguageCode, Multilingu
       followUps: ['क्या विटामिन B6 मतली में मददगार है?', 'मॉर्निंग सिकनेस कब समाप्त होती है?', 'पेट खराब होने पर क्या खाएं?']
     },
     {
-      keywords: ['नींद', 'सोने की स्थिति', 'sleep', 'position'],
+      keywords: ['नींद', 'सोना', 'सोने', 'करवट', 'लेटना', 'sleep', 'position'],
       response: `गर्भावस्था की दूसरी और तीसरी तिमाही में **बाईं करवट सोना (Left Side Sleeping)** सबसे सुरक्षित और सर्वोत्तम माना जाता है।\n\n**इसका महत्व:**\n• यह गर्भाशय द्वारा मुख्य नस (IVC) पर दबाव पड़ने से रोकता है, जिससे हृदय और प्लेसेंटा तक रक्त का प्रवाह बेहतरीन रहता है।\n• शिशु को भरपूर ऑक्सीजन और पोषण मिलता है।\n• **सुझाव:** दोनों घुटनों के बीच गर्भावस्था तकिया (Pregnancy Pillow) रखें।`,
       followUps: ['क्या दाईं करवट सो सकते हैं?', 'अगर पीठ के बल जागें तो क्या करें?', 'गर्भावस्था के लिए सबसे अच्छा तकिया']
     },
     {
-      keywords: ['किक', 'शिशु की हलचल', 'kick', 'movement'],
+      keywords: ['किक', 'हलचल', 'लात', 'शिशु की हलचल', 'kick', 'movement'],
       response: `शिशु की हलचल उसके स्वस्थ विकास और सक्रियता का सबसे बड़ा प्रमाण है।\n\n**किक काउंटिंग नियम (२८वें सप्ताह से):**\n• भोजन के बाद शांत कमरे में बाईं करवट लेट जाएं।\n• पेट पर हाथ रखकर शिशु की हलचल गिनें।\n• लक्ष्य: **२ घंटे के भीतर कम से कम १० हलचलें** (किक, करवट, खिंचाव)।\n• यदि हलचल अचानक कम लगे, तो तुरंत अपनी डॉक्टर से संपर्क करें।`,
       followUps: ['रात में शिशु अधिक सक्रिय क्यों होता है?', 'हलचल कम होने पर तुरंत क्या करें?', 'किस हलचल को किक माना जाए?']
     },
@@ -105,12 +105,12 @@ export const MULTILINGUAL_AI_RESPONSES: Record<SupportedLanguageCode, Multilingu
       followUps: ['सामान्य दर्द और प्रसव पीड़ा में अंतर कैसे करें?', 'क्या हीटिंग पैड सुरक्षित है?', 'पेल्विक फ्लोर व्यायाम']
     },
     {
-      keywords: ['अस्पताल बैग', 'हॉस्पिटल बैग', 'hospital bag'],
+      keywords: ['अस्पताल बैग', 'हॉस्पिटल बैग', 'बैग', 'hospital bag', 'packing'],
       response: `३५वें सप्ताह तक अस्पताल का बैग तैयार कर लेना सबसे समझदारी भरा कदम है।\n\n**ज़रूरी चीजें:**\n• **माँ के लिए:** मेडिकल रिपोर्ट्स, आईडी, ढीले सूती गाउन, मैटरनिटी पैड्स, गर्म मोजे, लिप बाम, लंबा फोन चार्जर।\n• **शिशु के लिए:** सूती कपड़े (३-४ सेट), टोपी, दस्ताने, मुलायम कंबल, नवजात डायपर, वाइप्स।\n• **साथी के लिए:** स्नैक्स, पानी की बोतल, आवश्यक फोन नंबर।`,
       followUps: ['अस्पताल में भर्ती के लिए कौन से दस्तावेज चाहिए?', 'कार में बेबी सीट कब लगाएं?', 'प्रसव के लिए महत्वपूर्ण फोन नंबर']
     },
     {
-      keywords: ['प्रसव पीड़ा', 'लेबर पेन', 'दर्द', 'labor', 'contraction', '511'],
+      keywords: ['प्रसव पीड़ा', 'लेबर पेन', 'प्रसव', 'labor', 'contraction', '511'],
       response: `सच्ची प्रसव पीड़ा (Labor Pain) को कैसे पहचानें:\n\n• **सच्चा दर्द:** समय के साथ दर्द तेज़, लंबा और बार-बार होता है और आराम करने से भी बंद नहीं होता।\n• **५-१-१ का नियम:** जब संकुचन हर **५ मिनट** में आए, कम से कम **१ मिनट** तक रहे और लगातार **१ घंटे** तक जारी रहे, तो तुरंत अस्पताल पहुंचें!`,
       followUps: ['पानी की थैली फटने पर क्या करें?', 'बैक लेबर क्या है?', 'अस्पताल जाने का सही समय']
     },
@@ -239,16 +239,16 @@ export const MULTILINGUAL_AI_RESPONSES: Record<SupportedLanguageCode, Multilingu
 export const getLocalizedAiGreeting = (lang: string, name = 'Anita'): string => {
   switch (lang) {
     case 'kn-IN':
-      return `ನಮಸ್ಕಾರ ${name}! 🌸 ನಾನು ಬ್ಲೂಮ್ ಎಐ, ನಿಮ್ಮ ಪ್ರೀತಿಯ ಗರ್ಭಧಾರಣೆ ಮತ್ತು ಶಿಶು ಆರೈಕೆಯ ವೈಯಕ್ತಿಕ ಸಹಾಯಕ. ನಿಮ್ಮ ಆರೋಗ್ಯ, ಮಗುವಿನ ಬೆಳವಣಿಗೆ, ಪೌಷ್ಟಿಕ ಆಹಾರ ಅಥವಾ ಗರ್ಭಧಾರಣೆಯ ಯಾವುದೇ ಲಕ್ಷಣಗಳ ಬಗ್ಗೆ ನನ್ನೊಂದಿಗೆ ಕನ್ನಡದಲ್ಲಿ ಮುಕ್ತವಾಗಿ ಮಾತನಾಡಿ!`;
+      return `ನಮಸ್ಕಾರ ${name}! 🌸 ನಾನು ಜ್ಞಾನಿ ಎಐ (Gnani AI), ನಿಮ್ಮ ಪ್ರೀತಿಯ ಗರ್ಭಧಾರಣೆ ಮತ್ತು ಶಿಶು ಆರೈಕೆಯ ವೈಯಕ್ತಿಕ ಸಹಾಯಕ. ನಿಮ್ಮ ಆರೋಗ್ಯ, ಮಗುವಿನ ಬೆಳವಣಿಗೆ, ಪೌಷ್ಟಿಕ ಆಹಾರ ಅಥವಾ ಗರ್ಭಧಾರಣೆಯ ಯಾವುದೇ ಲಕ್ಷಣಗಳ ಬಗ್ಗೆ ನನ್ನೊಂದಿಗೆ ಕನ್ನಡದಲ್ಲಿ ಮುಕ್ತವಾಗಿ ಮಾತನಾಡಿ!`;
     case 'hi-IN':
-      return `नमस्ते ${name}! 🌸 मैं ब्लूम एआई हूँ, आपकी व्यक्तिगत गर्भावस्था और मातृत्व साथी। आपकी सेहत, शिशु के विकास, खान-पान या किसी भी लक्षण के बारे में मुझसे हिंदी में खुलकर बात करें!`;
+      return `नमस्ते ${name}! 🌸 मैं ज्ञानी एआई (Gnani AI) हूँ, आपकी व्यक्तिगत गर्भावस्था और मातृत्व साथी। आपकी सेहत, शिशु के विकास, खान-पान या किसी भी लक्षण के बारे में मुझसे हिंदी में खुलकर बात करें!`;
     case 'ta-IN':
-      return `வணக்கம் ${name}! 🌸 நான் ப்ளூம் AI, உங்கள் கர்ப்பகால மற்றும் குழந்தை பராமரிப்பு தோழி. உங்கள் உடல்நலம், குழந்தையின் வளர்ச்சி, உணவு முறை அல்லது ஏதேனும் அறிகுறிகள் பற்றி என்னிடம் தமிழில் தாராளமாகக் கேளுங்கள்!`;
+      return `வணக்கம் ${name}! 🌸 நான் ஞானி AI (Gnani AI), உங்கள் கர்ப்பகால மற்றும் குழந்தை பராமரிப்பு தோழி. உங்கள் உடல்நலம், குழந்தையின் வளர்ச்சி, உணவு முறை அல்லது ஏதேனும் அறிகுறிகள் பற்றி என்னிடம் தமிழில் தாராளமாகக் கேளுங்கள்!`;
     case 'te-IN':
-      return `నమస్కారం ${name}! 🌸 నేను బ్లూమ్ AI, మీ వ్యక్తిగత గర్భధారణ మరియు శిశు సంరక్షణ సహాయకురాలిని. మీ ఆరోగ్యం, శిశువు ఎదుగుదల, ఆహారం లేదా ఏవైనా లక్షణాల గురించి నాతో తెలుగులో మాట్లాడండి!`;
+      return `నమస్కారం ${name}! 🌸 నేను జ్ఞాని AI (Gnani AI), మీ వ్యక్తిగత గర్భధారణ మరియు శిశు సంరక్షణ సహాయకురాలిని. మీ ఆరోగ్యం, శిశువు ఎదుగుదల, ఆహారం లేదా ఏవైనా లక్షణాల గురించి నాతో తెలుగులో మాట్లాడండి!`;
     case 'ml-IN':
-      return `നമസ്കാരം ${name}! 🌸 ഞാൻ ബ്ലൂം AI, നിങ്ങളുടെ ഗർഭകാല സുഹൃത്ത്. നിങ്ങളുടെ ആരോഗ്യം, കുഞ്ഞിന്റെ വളർച്ച, പോഷകാഹാരം എന്നിവയെക്കുറിച്ച് മലയാളത്തിൽ എന്നോട് ചോദിക്കൂ!`;
+      return `നമസ്കാരം ${name}! 🌸 ഞാൻ ജ്ഞാനി AI (Gnani AI), നിങ്ങളുടെ ഗർഭകാല സുഹൃത്ത്. നിങ്ങളുടെ ആരോഗ്യം, കുഞ്ഞിന്റെ വളർച്ച, പോഷകാഹാരം എന്നിവയെക്കുറിച്ച് മലയാളത്തിൽ എന്നോട് ചോദിക്കൂ!`;
     default:
-      return `Hello ${name}! 🌸 I am Bloom AI, your personal pregnancy and parenthood companion. How are you and baby feeling today? Feel free to ask about symptoms, safe movements, nutrition, hospital bags, or talk to me in English, Kannada, Hindi, Tamil, Telugu, or Malayalam!`;
+      return `Hello ${name}! 🌸 I am Gnani AI, your personal Indic pregnancy and parenthood companion powered by Gnani.ai. How are you and baby feeling today? Feel free to ask about symptoms, safe movements, nutrition, hospital bags, or speak to me in English, Kannada, Hindi, Tamil, Telugu, or Malayalam!`;
   }
 };

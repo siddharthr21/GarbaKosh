@@ -66,15 +66,15 @@ export const EMERGENCY_RED_FLAGS: EmergencyRedFlag[] = [
   }
 ];
 
-export const MEDICAL_DISCLAIMER = `DISCLAIMER: Bloom AI is an educational and supportive pregnancy and parenthood companion. It is NOT a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your gynecologist, obstetrician, pediatrician, or qualified healthcare provider with any questions regarding medical conditions or symptoms. Never disregard or delay seeking medical advice because of information provided here. In an emergency, contact your local emergency services (911 / 112 / 108) or go to the nearest emergency facility.`;
+export const MEDICAL_DISCLAIMER = `DISCLAIMER: Gnani AI is an educational and supportive Indic pregnancy and parenthood companion powered by Gnani.ai. It is NOT a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your gynecologist, obstetrician, pediatrician, or qualified healthcare provider with any questions regarding medical conditions or symptoms. Never disregard or delay seeking medical advice because of information provided here. In an emergency, contact your local emergency services (911 / 112 / 108) or go to the nearest emergency facility.`;
 
 export const SUPPORTED_LANGUAGES = [
-  { code: 'en-US', name: 'English', native: 'English', greeting: 'Hello! I am Bloom AI, your warm pregnancy companion.' },
-  { code: 'kn-IN', name: 'Kannada', native: 'ಕನ್ನಡ', greeting: 'ನಮಸ್ಕಾರ! ನಾನು ಬ್ಲೂಮ್ ಎಐ, ನಿಮ್ಮ ಗರ್ಭಧಾರಣೆಯ ವೈಯಕ್ತಿಕ ಸಹಾಯಕ.' },
-  { code: 'hi-IN', name: 'Hindi', native: 'हिन्दी', greeting: 'नमस्ते! मैं ब्लूम एआई हूँ, आपकी गर्भावस्था और शिशु देखभाल साथी।' },
-  { code: 'ta-IN', name: 'Tamil', native: 'தமிழ்', greeting: 'வணக்கம்! நான் ப்ளூம் AI, உங்கள் கர்ப்பகால மற்றும் குழந்தை பராமரிப்பு தோழி.' },
-  { code: 'te-IN', name: 'Telugu', native: 'తెలుగు', greeting: 'నమస్కారం! నేను బ్లూమ్ AI, మీ గర్భధారణ సహాయకురాలిని.' },
-  { code: 'ml-IN', name: 'Malayalam', native: 'മലയാളം', greeting: 'നമസ്കാരം! ഞാൻ ബ്ലൂം AI, നിങ്ങളുടെ ഗർഭകാല സുഹൃത്ത്.' }
+  { code: 'en-US', name: 'English', native: 'English', greeting: 'Hello! I am Gnani AI, your Indic maternal companion powered by Gnani.ai.' },
+  { code: 'kn-IN', name: 'Kannada', native: 'ಕನ್ನಡ', greeting: 'ನಮಸ್ಕಾರ! ನಾನು ಜ್ಞಾನಿ ಎಐ, ನಿಮ್ಮ ಗರ್ಭಧಾರಣೆಯ ವೈಯಕ್ತಿಕ ಸಹಾಯಕ (Gnani.ai).' },
+  { code: 'hi-IN', name: 'Hindi', native: 'हिन्दी', greeting: 'नमस्ते! मैं ज्ञानी एआई हूँ, आपकी गर्भावस्था और शिशु देखभाल साथी (Gnani.ai)।' },
+  { code: 'ta-IN', name: 'Tamil', native: 'தமிழ்', greeting: 'வணக்கம்! நான் ஞானி AI, உங்கள் கர்ப்பகால மற்றும் குழந்தை பராமரிப்பு தோழி (Gnani.ai).' },
+  { code: 'te-IN', name: 'Telugu', native: 'తెలుగు', greeting: 'నమస్కారం! నేను జ్ఞాని AI, మీ గర్భధారణ సహాయకురాలిని (Gnani.ai).' },
+  { code: 'ml-IN', name: 'Malayalam', native: 'മലയാളം', greeting: 'നമസ്കാരം! ഞാൻ ജ്ഞാനി AI, നിങ്ങളുടെ ഗർഭകാല സുഹൃത്ത് (Gnani.ai).' }
 ];
 
 export interface SuggestedPrompt {

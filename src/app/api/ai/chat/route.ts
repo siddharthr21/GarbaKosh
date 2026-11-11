@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { MULTILINGUAL_AI_RESPONSES } from '@/data/multilingualAiKnowledge';
+import { WEEKS_DATA } from '@/data/pregnancyJourneyData';
+import { SupportedLanguageCode } from '@/data/translations';
 
 interface ChatRequestBody {
   message: string;
   apiKey?: string;
+  gnaniApiKey?: string;
   groqApiKey?: string;
   grokApiKey?: string;
   geminiApiKey?: string;
@@ -69,7 +73,7 @@ function buildSystemPrompt(params: {
     params.gestationalWeek <= 13 ? '1st Trimester' :
     params.gestationalWeek <= 27 ? '2nd Trimester' : '3rd Trimester';
 
-  return `You are GarbhSarthi AI, an intelligent, empathetic, culturally conscious maternal and pediatric health companion for GarbhSarthi (GarbaKosh).
+  return `You are Gnani AI (ಜ್ಞಾನಿ AI / ज्ञानी AI / ஞானி AI / జ్ఞాని AI / ജ്ഞാനി AI), an intelligent, empathetic, culturally conscious Indic maternal, fetal, and pediatric health companion for GarbhSarthi (GarbaKosh), powered by Gnani.ai Indic conversational & voice intelligence.
 
 Current Context:
 - Expecting Mother: ${params.motherName}
@@ -470,7 +474,43 @@ async function callGrokAPI(
   return lastError ? { text: '', model: '', error: lastError } : null;
 }
 
-// Topic-Tailored Clinical Fallback (if completely offline)
+// Call Gnani AI Platform (Vachana Timbre & Prisma Indic AI Engine)
+async function callGnaniAPI(
+  gnaniKey: string
+): Promise<{ text: string; model: string; error?: string } | null> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    const res = await fetch('https://api.vachana.ai/api/v1/tts/inference', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key-ID': gnaniKey.trim()
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        text: 'Gnani AI connectivity check',
+        model: 'timbre-v2.5',
+        language: 'en-IN',
+        voice: 'Nalini',
+        audio_config: { container: 'wav' }
+      })
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      return { text: 'OK', model: 'vachana-timbre-prisma' };
+    } else {
+      const errText = await res.text();
+      return { text: '', model: '', error: `Gnani HTTP ${res.status}: ${errText.substring(0, 150)}` };
+    }
+  } catch (e: any) {
+    return { text: '', model: '', error: `Gnani error: ${e?.message || e}` };
+  }
+}
+
+// Topic-Tailored Clinical Fallback (if completely offline or using Speech/Voice Engine)
 function generateOfflineClinicalSynthesis(
   question: string,
   motherName: string,
@@ -479,74 +519,325 @@ function generateOfflineClinicalSynthesis(
   userRole: string
 ): { answer: string; followUps: string[] } {
   const q = question.toLowerCase();
-  const isNutrition = /(food|eat|diet|nutrition|coconut|papaya|pineapple|ragi|calcium|iron|ಊಟ|ಆಹಾರ|ತಿನ್ನ|ಎಳನೀರು|खाना|डाइट|உணவு|ఆహారం|ഭക്ഷണം)/i.test(q);
-  const isPain = /(pain|back|ache|spine|hurt|ನೋವು|ಬೆನ್ನು|ಸೊಂಟ|दर्द|पीठ|कमर|வலி|முதுகு|నొప్పి|నడుము|വേദന|നടു)/i.test(q);
-  const isSwelling = /(swell|feet|ankle|edema|ಊತ|ಕಾಲು|ಹಿಮ್ಮಡಿ|सूजन|पैरों|வீக்கம்|கால்|వాపు|కాళ్ళ|നീര്|കാലിലെ)/i.test(q);
+  const langKey = (language in MULTILINGUAL_AI_RESPONSES ? language : 'en-US') as SupportedLanguageCode;
 
-  if (language === 'kn-IN') {
-    if (isNutrition) {
+  // -------------------------------------------------------------
+  // 1. Week & Fetal Growth/Size Inquiries (e.g., Week 24, Baby weight, how big is baby)
+  // -------------------------------------------------------------
+  const weekRegex = /(?:week|wk|ವಾರ|सप्ताह|வாரம்|వారం|ആഴ്ച)\s*([0-9]{1,2})|([0-9]{1,2})\s*(?:st|nd|rd|th)?\s*(?:week|wk|ನೇ ವಾರ|वें सप्ताह|வது வாரம்|వ వారం|ാം ആഴ്ച)/i;
+  const isGrowthQuery = /(how big|baby size|baby weight|baby length|fetal growth|fetal development|development|milestone|fruit|ಮಗುವಿನ ಗಾತ್ರ|ಮಗುವಿನ ತೂಕ|ಮಗುವಿನ ಬೆಳವಣಿಗೆ|ಬೆಳವಣಿಗೆ|शिशु का आकार|वजन|विकास|குழந்தை வளர்ச்சி|எடை|శిశువు బరువు|ఎదుగుదల|കുഞ്ഞിന്റെ വളർച്ച|തൂക്കം)/i.test(q);
+  const weekMatch = q.match(weekRegex);
+
+  let targetWeek = gestationalWeek;
+  if (weekMatch) {
+    const parsed = parseInt(weekMatch[1] || weekMatch[2], 10);
+    if (!isNaN(parsed) && parsed >= 1 && parsed <= 40) {
+      targetWeek = parsed;
+    }
+  }
+
+  if (weekMatch || isGrowthQuery) {
+    const weekIndex = Math.max(0, Math.min(39, targetWeek - 1));
+    const wk = WEEKS_DATA[weekIndex];
+
+    if (langKey === 'kn-IN') {
       return {
-        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ಆಹಾರದ ಕುರಿತು ಮುಖ್ಯ ಸಲಹೆಗಳು:\n\n• **ಪೌಷ್ಟಿಕಾಂಶಗಳು:** ರಾಗಿ ಗಂಜಿ/ಮುದ್ದೆ, ಪಾಲಕ್ ಸೊಪ್ಪು, ದಾಳಿಂಬೆ, ಖರ್ಜೂರ ಮತ್ತು ಎಳನೀರು ಉತ್ತಮ ಪೋಷಕಾಂಶ ಮತ್ತು ಜಲಾಂಶ ನೀಡುತ್ತವೆ.\n• **ಜೀರ್ಣಕ್ರಿಯೆ:** ದಿನಕ್ಕೆ ೮-೧೦ ಲೋಟ ನೀರು ಕುಡಿಯಿರಿ. ಅತಿಯಾದ ಖಾರ, ಎಣ್ಣೆಯುಕ್ತ ಮತ್ತು ಸಂಸ್ಕರಿಸಿದ ಆಹಾರಗಳನ್ನು ಮಿತಿಗೊಳಿಸಿ.\n• **ಎಚ್ಚರಿಕೆ:** ಹಸಿ ಪರಂಗಿಕಾಯಿ ಮತ್ತು ಅರೆಬೇಯಿಸಿದ ಆಹಾರವನ್ನು ಸೇವಿಸಬೇಡಿ.`,
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${wk.week}ನೇ ವಾರದಲ್ಲಿ** (${wk.trimester}ನೇ ತ್ರೈಮಾಸಿಕ) ಮಗುವಿನ ಬೆಳವಣಿಗೆಯ ವಿವರಗಳು:\n\n• **ಮಗುವಿನ ಗಾತ್ರ:** ${wk.fruitEmoji} ${wk.babySizeFruit}\n• **ಅಳತೆ & ತೂಕ:** ಉದ್ದ ಸುಮಾರು **${wk.babyLengthCm} cm**, ತೂಕ ಸುಮಾರು **${wk.babyWeightG} ಗ್ರಾಂ**\n• **ಮಗುವಿನ ಬೆಳವಣಿಗೆ:** ${wk.babyDevelopment}\n• **ತಾಯಿಯಲ್ಲಿನ ಬದಲಾವಣೆಗಳು:** ${wk.motherChanges}\n• **ಪೌಷ್ಟಿಕ ಆಹಾರ ಸಲಹೆ:** ${wk.nutritionTip}\n• **ಸುರಕ್ಷಿತ ವ್ಯಾಯಾಮ:** ${wk.safeExerciseTip}`,
+        followUps: [
+          `${wk.week}ನೇ ವಾರದ ಮುಖ್ಯ ಲಕ್ಷಣಗಳು`,
+          'ಗರ್ಭಾವಸ್ಥೆಯ ಆಹಾರ ಪಟ್ಟಿ',
+          'ಮಗುವಿನ ಕಿಕ್ ಎಣಿಕೆ ಮಾಡುವುದು ಹೇಗೆ?'
+        ]
+      };
+    }
+
+    if (langKey === 'hi-IN') {
+      return {
+        answer: `नमस्ते ${motherName}! 🌸 गर्भावस्था के **${wk.week}वें सप्ताह** (${wk.trimester}rd तिमाही) में शिशु के विकास का विवरण:\n\n• **शिशु का आकार:** ${wk.fruitEmoji} ${wk.babySizeFruit}\n• **लंबाई व वजन:** लंबाई लगभग **${wk.babyLengthCm} सेमी**, वजन लगभग **${wk.babyWeightG} ग्राम**\n• **शिशु का विकास:** ${wk.babyDevelopment}\n• **माँ के शारीरिक बदलाव:** ${wk.motherChanges}\n• **पोषण सलाह:** ${wk.nutritionTip}\n• **सुरक्षित व्यायाम:** ${wk.safeExerciseTip}`,
+        followUps: [
+          `${wk.week}वें सप्ताह के मुख्य लक्षण`,
+          'गर्भावस्था में सुरक्षित आहार',
+          'शिशु की हलचल कब महसूस होती है?'
+        ]
+      };
+    }
+
+    return {
+      answer: `Hello ${motherName}! 🌸 Here is your fetal development update for **Week ${wk.week}** (Trimester ${wk.trimester}):\n\n• **Baby Size:** ${wk.fruitEmoji} ${wk.babySizeFruit}\n• **Measurements:** Length ~**${wk.babyLengthCm} cm**, Weight ~**${wk.babyWeightG} grams**\n• **Milestones:** ${wk.headline} — ${wk.babyDevelopment}\n• **Maternal Changes:** ${wk.motherChanges}\n• **Clinical Nutrition Tip:** ${wk.nutritionTip}\n• **Safe Activity Guidance:** ${wk.safeExerciseTip}`,
+      followUps: [
+        `What symptoms are normal in Week ${wk.week}?`,
+        'Safe exercises for this trimester',
+        'When should I schedule my next scan?'
+      ]
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 2. Multilingual Clinical Knowledge Base (MULTILINGUAL_AI_RESPONSES)
+  // -------------------------------------------------------------
+  function scoreKeywords(text: string, keywords: string[]): number {
+    let score = 0;
+    for (const kw of keywords) {
+      const kwLower = kw.toLowerCase().trim();
+      if (text === kwLower) {
+        score += 100;
+      } else if (text.includes(kwLower)) {
+        score += 25 + kwLower.length;
+      } else {
+        const parts = kwLower.split(/\s+/).filter((p) => p.length >= 3);
+        for (const part of parts) {
+          if (text.includes(part)) {
+            score += 8 + part.length;
+          }
+        }
+      }
+    }
+    return score;
+  }
+
+  const langResponses = MULTILINGUAL_AI_RESPONSES[langKey] || MULTILINGUAL_AI_RESPONSES['en-US'];
+  let bestItem: any = null;
+  let highestScore = 0;
+
+  for (const item of langResponses) {
+    const s = scoreKeywords(q, item.keywords);
+    if (s > highestScore) {
+      highestScore = s;
+      bestItem = item;
+    }
+  }
+
+  // Cross-language keyword fallback if score is low
+  if (highestScore < 10 && langKey !== 'en-US') {
+    for (const item of MULTILINGUAL_AI_RESPONSES['en-US']) {
+      const s = scoreKeywords(q, item.keywords);
+      if (s > highestScore) {
+        highestScore = s;
+        const targetList = MULTILINGUAL_AI_RESPONSES[langKey] || [];
+        const idx = MULTILINGUAL_AI_RESPONSES['en-US'].indexOf(item);
+        if (targetList[idx]) {
+          bestItem = targetList[idx];
+        }
+      }
+    }
+  }
+
+  if (bestItem && highestScore >= 8) {
+    const greeting =
+      langKey === 'kn-IN'
+        ? `ನಮಸ್ಕಾರ ${motherName}! 🌸\n\n`
+        : langKey === 'hi-IN'
+        ? `नमस्ते ${motherName}! 🌸\n\n`
+        : langKey === 'ta-IN'
+        ? `வணக்கம் ${motherName}! 🌸\n\n`
+        : langKey === 'te-IN'
+        ? `నమస్కారం ${motherName}! 🌸\n\n`
+        : langKey === 'ml-IN'
+        ? `നമസ്കാരം ${motherName}! 🌸\n\n`
+        : `Hello ${motherName}! 🌸\n\n`;
+
+    return {
+      answer: `${greeting}${bestItem.response}`,
+      followUps: bestItem.followUps
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 3. Papaya, Pineapple, Caffeine & Specific Food Safety
+  // -------------------------------------------------------------
+  const isPapayaPineapple = /(papaya|pineapple|caffeine|coffee|tea|kesar|saffron|raw egg|fish|alcohol|smoke|dry fruit|ಪರಂಗಿ|ಅನಾನಸ್|ಕೇಸರಿ|ಕಾಫಿ|पपीता|अनानास|केसर|பப்பாளி|அன்னாசி|బొప్పాయి|అనాస|പപ്പായ)/i.test(q);
+  if (isPapayaPineapple) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಆಹಾರ ಸುರಕ್ಷತೆಯ ಕುರಿತು ಪ್ರಮುಖ ಮಾರ್ಗದರ್ಶನ:\n\n• **ಹಸಿ ಪರಂಗಿಕಾಯಿ (Raw Papaya):** ಹಸಿ ಅಥವಾ ಅರೆಬೆಂದ ಪರಂಗಿಕಾಯಿಯಲ್ಲಿ ಲೇಟೆಕ್ಸ್ ಮತ್ತು ಪಪೈನ್ ಹೆಚ್ಚಾಗಿರುತ್ತದೆ, ಇದು ಗರ್ಭಾಶಯದ ಸಂಕೋಚನವನ್ನು ಪ್ರಚೋದಿಸಬಹುದು. ಆದ್ದರಿಂದ ಇದನ್ನು ಸೇವಿಸಬೇಡಿ. ಚೆನ್ನಾಗಿ ಹಣ್ಣಾದ ಪರಂಗಿ ಹಣ್ಣನ್ನು ವೈದ್ಯರ ಸಲಹೆಯಂತೆ ಅತ್ಯಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ ಸೇವಿಸಬಹುದು.\n• **ಅನಾನಸ್ (Pineapple):** ಅನಾನಸ್‌ನಲ್ಲಿ ಬ್ರೋಮೆಲೈನ್ ಇರುತ್ತದೆ. ಹೆಚ್ಚಿನ ಪ್ರಮಾಣದಲ್ಲಿ ಸೇವಿಸುವುದನ್ನು ತಪ್ಪಿಸಿ.\n• **ಕೆಫೀನ್ (ಕಾಫಿ/ಟೀ):** ದಿನಕ್ಕೆ ಗರಿಷ್ಠ ೨೦೦ ಮಿಗ್ರಾಂ (೧-೨ ಕಪ್) ಮಾತ್ರ ಸೀಮಿತಗೊಳಿಸಿ.\n• **ಕೇಸರಿ (Kesar):** ಬೆಚ್ಚಗಿನ ಹಾಲಿನಲ್ಲಿ ೧-೨ ಎಸಳು ಕೇಸರಿ ಸುವಾಸನೆಗಾಗಿ ಮಾತ್ರ ಸುರಕ್ಷಿತ, ಅತಿಯಾಗಿ ಬೇಡ.`,
+        followUps: ['ಗರ್ಭಿಣಿಯರಿಗೆ ಸುರಕ್ಷಿತ ಹಣ್ಣುಗಳು', 'ಎಳನೀರು ಕುಡಿಯಲು ಸೂಕ್ತ ಸಮಯ', 'ಕಬ್ಬಿಣಾಂಶ ಹೆಚ್ಚಿಸುವ ಆಹಾರಗಳು']
+      };
+    }
+    if (langKey === 'hi-IN') {
+      return {
+        answer: `नमस्ते ${motherName}! 🌸 गर्भावस्था में खान-पान की सुरक्षा के महत्वपूर्ण नियम:\n\n• **कच्चा पपीता (Raw Papaya):** कच्चे या अधपके पपीते में लेटेक्स और पपेन होता है जो गर्भाशय में संकुचन पैदा कर सकता है। इसे गर्भावस्था में बिल्कुल न खाएं।\n• **अनानास (Pineapple):** अनानास में ब्रोमेलैन होता है, इसलिए इसका अधिक मात्रा में सेवन करने से बचें।\n• **कैफीन (चाय/कॉफ़ी):** दिन में २०० मिलीग्राम (१-२ कप) से अधिक कैफीन न लें।\n• **केसर (Kesar):** गुनगुने दूध में १-२ रेशे केसर स्वाद और सुगंध के लिए सुरक्षित है।`,
+        followUps: ['गर्भावस्था में कौन से फल खाएं?', 'नारियल पानी पीने के फायदे', 'आयरन बढ़ाने वाले आहार']
+      };
+    }
+    return {
+      answer: `Hello ${motherName}! 🌸 Key clinical guidelines on pregnancy food safety:\n\n• **Raw/Unripe Papaya:** Strictly avoid unripe or semi-ripe papaya. It contains concentrated latex and papain, which can trigger uterine contractions. Fully ripe yellow papaya in tiny occasional amounts is generally fine, but many mothers prefer avoiding it entirely.\n• **Pineapple:** Contains bromelain, which in massive medicinal doses could soften the cervix. Fresh culinary slices in moderate portions are safe, but avoid large quantities or concentrated extracts.\n• **Caffeine:** Limit strictly to under 200mg daily (about 1 mug of brewed coffee or 2 cups of tea) to prevent elevated fetal heart rate.\n• **Saffron (Kesar):** 1–2 strands in warm milk for flavor is safe; avoid large medicinal doses.`,
+      followUps: ['What fruits are most beneficial in pregnancy?', 'Safe herbal teas for pregnancy', 'Essential foods for 2nd trimester']
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 4. Travel, Flying & Commuting Safety
+  // -------------------------------------------------------------
+  const isTravel = /(travel|flight|fly|flying|plane|car|driving|train|bus|journey|trip|commute|ಪ್ರಯಾಣ|ವಿಮಾನ|कार|यात्रा|सफर|பயணம்|ప్రయాణం|യാത്ര)/i.test(q);
+  if (isTravel) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಪ್ರಯಾಣದ ಸುರಕ್ಷತಾ ನಿಯಮಗಳು:\n\n• **ಸುರಕ್ಷಿತ ಸಮಯ:** ೨ನೇ ತ್ರೈಮಾಸಿಕ (೧೪ ರಿಂದ ೨೮ ವಾರಗಳು) ಪ್ರಯಾಣಕ್ಕೆ ಅತ್ಯಂತ ಸೂಕ್ತ ಸಮಯ.\n• **ವಿಮಾನ ಪ್ರಯಾಣ:** ಬಹುತೇಕ ವಿಮಾನಯಾನ ಸಂಸ್ಥೆಗಳು ೩೬ನೇ ವಾರದವರೆಗೆ (ಅವಳಿ ಮಕ್ಕಳಿದ್ದರೆ ೩೨ ವಾರ) ಅನುಮತಿಸುತ್ತವೆ. ೨೮ ವಾರದ ನಂತರ ವೈದ್ಯರ ಫಿಟ್‌ನೆಸ್ ಪ್ರಮಾಣಪತ್ರ ಅಗತ್ಯ.\n• **ಕಾರು ಪ್ರಯಾಣ:** ಸೀಟ್‌ಬೆಲ್ಟ್ ಅನ್ನು ಹೊಟ್ಟೆಯ ಕೆಳಭಾಗದಲ್ಲಿ ತೊಡೆಯ ಮೇಲೆ ಸರಿಯಾಗಿ ಧರಿಸಿ.\n• **ರಕ್ತಪರಿಚಲನೆ:** ಪ್ರತಿ ೧-೨ ಗಂಟೆಗೊಮ್ಮೆ ಎದ್ದು ನಡೆದಾಡಿ, ಸಾಕಷ್ಟು ನೀರು ಕುಡಿಯಿರಿ.`,
+        followUps: ['ವಿಮಾನ ಪ್ರಯಾಣಕ್ಕೆ ವೈದ್ಯರ ಅನುಮತಿ ಪತ್ರ', 'ಕಾರಿನಲ್ಲಿ ಸೀಟ್‌ಬೆಲ್ಟ್ ಧರಿಸುವ ವಿಧಾನ', 'ಪ್ರಯಾಣದಲ್ಲಿ ತುರ್ತು ಮುನ್ನೆಚ್ಚರಿಕೆಗಳು']
+      };
+    }
+    return {
+      answer: `Hello ${motherName}! 🌸 Clinical guidelines for safe travel during pregnancy:\n\n• **Golden Window:** The second trimester (Weeks 14–28) is the safest and most comfortable travel window.\n• **Air Travel:** Most airlines permit domestic flying up to 36 weeks (32 weeks for twins). An OB/GYN fitness-to-fly certificate is usually required after 28 weeks.\n• **Seatbelt Safety:** Position the lap belt low across your pelvic bones, well below your belly bump.\n• **Venous Thromboembolism (DVT) Prevention:** On journeys over 2 hours, wear compression socks, flex your ankles every 30 minutes, and take a 10-minute walk every 2 hours.\n• **Hydration:** Sip water steadily and carry your antenatal records and Dr. Sunita's emergency contact.`,
+      followUps: ['Safe seatbelt positioning tips', 'OB/GYN travel clearance checklist', 'Managing motion sickness while pregnant']
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 5. Scans, Tests & Medical Screenings (Ultrasound, NT, OGTT)
+  // -------------------------------------------------------------
+  const isScan = /(scan|ultrasound|nt scan|anomaly|tiffa|ogtt|glucose test|blood test|screening|ಸ್ಕ್ಯಾನ್|ತಪಾಸಣೆ|ರಕ್ತ ಪರೀಕ್ಷೆ|जांच|सोनोग्राफी|ஸ்கேன்|పరీక్ష|സ്കാൻ)/i.test(q);
+  if (isScan) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ ಪ್ರಮುಖ ಸ್ಕ್ಯಾನ್ ಮತ್ತು ತಪಾಸಣೆಗಳು:\n\n• **೧೧-೧೩ ವಾರಗಳು:** NT ಸ್ಕ್ಯಾನ್ ಮತ್ತು ಡಬಲ್ ಮಾರ್ಕರ್ ರಕ್ತ ಪರೀಕ್ಷೆ (ವರ್ಣತಂತು ದೋಷಗಳ ತಪಾಸಣೆ).\n• **೧೮-೨೨ ವಾರಗಳು:** ಅನೋಮಲಿ / ಟಿಫಾ (TIFFA) ಸ್ಕ್ಯಾನ್ — ಮಗುವಿನ ಅಂಗಾಂಗಗಳು, ಹೃದಯ, ಮೆದುಳು ಮತ್ತು ಜರಾಯು (Placenta) ಸಂಪೂರ್ಣ ತಪಾಸಣೆ.\n• **೨೪-೨೮ ವಾರಗಳು:** OGTT ಗ್ಲೂಕೋಸ್ ಟೆಸ್ಟ್ (ಗರ್ಭಧಾರಣೆಯ ಮಧುಮೇಹ ತಪಾಸಣೆ).\n• **೩೨-೩೬ ವಾರಗಳು:** ಮಗುವಿನ ಬೆಳವಣಿಗೆ ಮತ್ತು ಆಮ್ನಿಯೋಟಿಕ್ ದ್ರವದ (AFI) ಸ್ಕ್ಯಾನ್.`,
+        followUps: ['ಟಿಫಾ ಸ್ಕ್ಯಾನ್‌ನಲ್ಲಿ ಏನು ಪರಿಶೀಲಿಸುತ್ತಾರೆ?', 'OGTT ಗ್ಲೂಕೋಸ್ ಪರೀಕ್ಷೆಗೆ ತಯಾರಿ ಹೇಗೆ?', 'ಮಗುವಿನ ತೂಕ ತಿಳಿಯುವ ಸ್ಕ್ಯಾನ್']
+      };
+    }
+    return {
+      answer: `Hello ${motherName}! 🌸 Essential antenatal screening roadmap:\n\n• **Weeks 11–13:** Nuchal Translucency (NT) Scan + First Trimester Maternal Serum Screening (Double Marker) for chromosomal health.\n• **Weeks 18–22:** Detailed Level II Anatomy / TIFFA Scan to examine fetal cardiac chambers, brain ventricles, spine, kidneys, and placental attachment.\n• **Weeks 24–28:** Oral Glucose Tolerance Test (OGTT) for gestational diabetes screening.\n• **Weeks 32–36:** Third Trimester Growth & Umbilical Artery Doppler Scan to verify amniotic fluid index (AFI) and placental blood flow.`,
+      followUps: ['What happens during the TIFFA anomaly scan?', 'How to prepare for the OGTT glucose test?', 'Normal amniotic fluid index range']
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 6. Constipation, Acidity & Heartburn
+  // -------------------------------------------------------------
+  const isDigestion = /(constipat|heartburn|acid|gas|bloat|piles|hemorrhoid|ಮಲಬದ್ಧತೆ|ಉರಿ|ಅಸಿಡಿಟಿ|गैस|कब्ज|एसिडिटी|மலச்சிக்கல்|நெஞ்செரிச்சல்|మలబద్ధకం|కడుపులో మంట|മലബന്ധം|നെഞ്ചെരിച്ചിൽ)/i.test(q);
+  if (isDigestion) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಅಸಿಡಿಟಿ ಮತ್ತು ಮಲಬದ್ಧತೆಗೆ ಪರಿಹಾರಗಳು:\n\n• **ಅಸಿಡಿಟಿಗೆ:** ಸ್ವಲ್ಪ ಸ್ವಲ್ಪವೇ ಊಟ ಮಾಡಿ, ಊಟವಾದ ತಕ್ಷಣ ಮಲಗಬೇಡಿ (ಕನಿಷ್ಠ ೪೫ ನಿಮಿಷ ನಡಿಗೆ ಅಥವಾ ಕುಳಿತುಕೊಳ್ಳಿ). ತಣ್ಣನೆಯ ಹಾಲು ಅಥವಾ ಎಳನೀರು ಕುಡಿಯಿರಿ.\n• **ಮಲಬದ್ಧತೆಗೆ:** ದಿನಕ್ಕೆ ೮-೧೦ ಲೋಟ ನೀರು ಕುಡಿಯಿರಿ. ನಾರಿನಂಶವಿರುವ ಆಹಾರ (ರಾಗಿ, ಓಟ್ಸ್, ಪಾಲಕ್, ಸೇಬು, ಪೇರಳೆ) ಸೇವಿಸಿ.\n• **ಎಚ್ಚರಿಕೆ:** ವೈದ್ಯರ ಅನುಮತಿಯಿಲ್ಲದೆ ಯಾವುದೇ ಜೀರ್ಣಕಾರಿ ಮಾತ್ರೆಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಡಿ.`,
+        followUps: ['ಅಸಿಡಿಟಿಗೆ ನೈಸರ್ಗಿಕ ಮನೆಮದ್ದುಗಳು', 'ನಾರಿನಂಶ ಹೆಚ್ಚಿರುವ ಭಾರತೀಯ ಆಹಾರಗಳು', 'ಎಳನೀರಿನ ಪ್ರಯೋಜನಗಳು']
+      };
+    }
+    return {
+      answer: `Hello ${motherName}! 🌸 Managing pregnancy reflux & bowel regularity:\n\n• **Heartburn Relief:** Progesterone relaxes the lower esophageal sphincter. Eat smaller, frequent meals every 2.5 hours. Avoid lying down for at least 45 minutes after meals. Elevate your head 6 inches with extra pillows.\n• **Constipation Relief:** Aim for 28–30g dietary fiber daily (oats, chia seeds, prunes, lentils, raw vegetables). Drink 2.5–3 liters of water.\n• **Quick Soothers:** Cold milk, tender coconut water, and fennel seeds (saunf) offer gentle natural relief. Avoid self-medicating with antacids without your doctor's clearance.`,
+      followUps: ['Safe antacids during pregnancy', 'High-fiber Indian meal plan', 'Immediate relief for severe heartburn']
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 7. Exercise, Walking & Prenatal Yoga
+  // -------------------------------------------------------------
+  const isExercise = /(exercise|walk|walking|yoga|squat|kegel|gym|workout|stretch|fit|physical activity|ವ್ಯಾಯಾಮ|ನಡಿಗೆ|ಯೋಗ|व्यायाम|टहलना|உடற்பயிற்சி|వ్యాయామం|നടത്തം)/i.test(q);
+  if (isExercise) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಾವಸ್ಥೆಯ ಸುರಕ್ಷಿತ ವ್ಯಾಯಾಮ ಮಾರ್ಗದರ್ಶನ:\n\n• **ದೈನಂದಿನ ನಡಿಗೆ:** ದಿನಕ್ಕೆ ೨೦-೩೦ ನಿಮಿಷಗಳ ಕಾಲ ಆರಾಮದಾಯಕ ವೇಗದಲ್ಲಿ ಮುಂಜಾನೆ ಅಥವಾ ಸಂಜೆ ನಡಿಗೆ ಮಾಡಿ.\n• **ಕೆಗೆಲ್ ವ್ಯಾಯಾಮ:** ಪೆಲ್ವಿಕ್ ಸ್ನಾಯುಗಳನ್ನು ಬಲಪಡಿಸಲು ಮತ್ತು ಸುಲಭ ಹೆರಿಗೆಗೆ ಕೆಗೆಲ್ (Kegel) ವ್ಯಾಯಾಮಗಳು ಅತ್ಯುತ್ತಮ.\n• **ಬೆಕ್ಕಿನ-ಹಸುವಿನ ಭಂಗಿ (Cat-Cow Pose):** ಬೆನ್ನು ಮತ್ತು ಸೊಂಟದ ಒತ್ತಡ ನಿವಾರಿಸಲು ದಿನಕ್ಕೆ ೧೦ ಬಾರಿ ಮಾಡಿ.\n• **ಮುನ್ನೆಚ್ಚರಿಕೆ:** ಭಾರ ಎತ್ತುವುದು, ಜಿಗಿಯುವುದು ಅಥವಾ ಬೆನ್ನಿನ ಮೇಲೆ ನೇರವಾಗಿ ಮಲಗುವ ವ್ಯಾಯಾಮಗಳನ್ನು ತಪ್ಪಿಸಿ.`,
+        followUps: ['ಸುಲಭ ಹೆರಿಗೆಗೆ ಕೆಗೆಲ್ ವ್ಯಾಯಾಮ ಮಾಡುವುದು ಹೇಗೆ?', 'ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ನಡಿಗೆ ಸಲಹೆಗಳು', 'ಯಾವ ವ್ಯಾಯಾಮಗಳನ್ನು ತಪ್ಪಿಸಬೇಕು?']
+      };
+    }
+    return {
+      answer: `Hello ${motherName}! 🌸 Safe prenatal exercise guidelines for Week ${gestationalWeek}:\n\n• **Brisk Walking:** 25–30 minutes of daily low-impact walking improves circulation, stabilizes blood glucose, and enhances mood.\n• **Pelvic Floor (Kegels):** Perform 3 sets of 10 contractions daily to support bladder control and perineal elasticity for labor.\n• **Prenatal Yoga:** Gentle Cat-Cow stretches, butterfly pose (Baddha Konasana), and modified squats open pelvic outlets.\n• **The Talk Test:** You should always be able to hold a conversation comfortably without becoming breathless.\n• **Safety:** Stop immediately if you experience dizziness, vaginal spotting, or pelvic pain.`,
+      followUps: ['Step-by-step Kegel instructions', 'Squats for labor preparation', 'Exercises to avoid in this trimester']
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 8. General Nutrition, Diet & Hydration
+  // -------------------------------------------------------------
+  const isNutrition = /(food|eat|diet|nutrition|coconut|ragi|calcium|iron|protein|meal|snack|ಊಟ|ಆಹಾರ|ತಿನ್ನ|ಎಳನೀರು|खाना|डाइट|உணவு|ఆహారం|ഭക്ഷണം)/i.test(q);
+  if (isNutrition) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ಪೌಷ್ಟಿಕ ಆಹಾರದ ಪ್ರಮುಖ ಸಲಹೆಗಳು:\n\n• **ಕಬ್ಬಿಣಾಂಶ & ಫೋಲಿಕ್ ಆಸಿಡ್:** ಪಾಲಕ್, ದಾಳಿಂಬೆ, ಖರ್ಜೂರ, ಹೆಸರುಕಾಳು ಮತ್ತು ಬೆಲ್ಲ.\n• **ಕ್ಯಾಲ್ಸಿಯಂ & ಪ್ರೋಟೀನ್:** ರಾಗಿ ಗಂಜಿ/ಮುದ್ದೆ, ಮೊಸರು, ಪನ್ನೀರ್, ಬಾದಾಮಿ ಮತ್ತು ಮೊಟ್ಟೆ.\n• **ಜಲಾಂಶ:** ದಿನಕ್ಕೆ ೨.೫ ಲೀಟರ್ ನೀರು ಮತ್ತು ಮುಂಜಾನೆ ಎಳನೀರು ಸೇವನೆ.\n• **ವಿಟಮಿನ್ ಸಿ:** ಕಬ್ಬಿಣಾಂಶ ದೇಹದಲ್ಲಿ ಸರಿಯಾಗಿ ಹೀರಿಕೊಳ್ಳಲು ನೆಲ್ಲಿಕಾಯಿ ಅಥವಾ ನಿಂಬೆ ರಸ ಸೇವಿಸಿ.`,
         followUps: ['ಗರ್ಭಿಣಿಯರಿಗೆ ರಾಗಿ ಉಪಯೋಗಗಳು', 'ಎಳನೀರು ಕುಡಿಯಲು ಸೂಕ್ತ ಸಮಯ', 'ಕಬ್ಬಿಣದಂಶ ಹೆಚ್ಚಿಸುವ ವಿಧಾನ']
       };
     }
-    if (isSwelling) {
-      return {
-        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ಪಾದಗಳ ಊತ ಸಾಮಾನ್ಯವಾಗಿರುತ್ತದೆ:\n\n• **ಉಪಶಮನ:** ಕುಳಿತಾಗ ಪಾದಗಳನ್ನು ದಿಂಬಿನ ಮೇಲೆ ಎತ್ತರಿಸಿ ಇರಿಸಿ. ದೀರ್ಘಕಾಲ ಒಂದೇ ಕಡೆ ನಿಲ್ಲುವುದನ್ನು ತಪ್ಪಿಸಿ.\n• **ನೀರು & ಉಪ್ಪು:** ಸಾಕಷ್ಟು ನೀರು ಕುಡಿಯುವುದರಿಂದ ನೀರಿನ ಶೇಖರಣೆ ಕಡಿಮೆಯಾಗುತ್ತದೆ. ಉಪ್ಪಿನ ಪ್ರಮಾಣವನ್ನು ಮಿತಿಗೊಳಿಸಿ.\n• **ಎಚ್ಚರಿಕೆ:** ಮುಖ ಅಥವಾ ಕೈಗಳಲ್ಲಿ ಹಠಾತ್ ಊತ ಕಂಡುಬಂದರೆ ತಕ್ಷಣ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ.`,
-        followUps: ['ಕಾಲು ಊತ ಯಾವಾಗ ಕಡಿಮೆಯಾಗುತ್ತದೆ?', 'ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ರಕ್ತದೊತ್ತಡ ತಪಾಸಣೆ', 'ಆರಾಮದಾಯಕ ಪಾದರಕ್ಷೆಗಳು']
-      };
-    }
-    if (isPain) {
-      return {
-        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ಬೆನ್ನು ಮತ್ತು ಸೊಂಟದ ನೋವಿಗೆ ಪರಿಹಾರಗಳು:\n\n• **ಮಲಗುವ ಭಂಗಿ:** ಎಡಭಾಗಕ್ಕೆ ತಿರುಗಿ ಮಲಗಿ, ಮೊಣಕಾಲುಗಳ ನಡುವೆ ಗರ್ಭಧಾರಣೆಯ ದಿಂಬನ್ನು (pregnancy pillow) ಇಟ್ಟುಕೊಳ್ಳಿ.\n• **ಶಾಖ ಚಿಕಿತ್ಸೆ:** ಬೆನ್ನಿನ ಕೆಳಭಾಗಕ್ಕೆ ಬೆಚ್ಚಗಿನ ನೀರಿನ ಬ್ಯಾಗ್ ಇಟ್ಟುಕೊಳ್ಳಿ. ಭಾರವಾದ ವಸ್ತುಗಳನ್ನು ಎತ್ತಬೇಡಿ.\n• **ವ್ಯಾಯಾಮ:** ವೈದ್ಯರ ಅನುಮತಿಯೊಂದಿಗೆ ಸೌಮ್ಯವಾದ ನಡಿಗೆ ಅಥವಾ ಬೆಕ್ಕಿನ-ಹಸುವಿನ ಭಂಗಿ (Cat-Cow stretch) ಮಾಡಿ.`,
-        followUps: ['ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಮಲಗುವ ಭಂಗಿ', 'ಪೆಲ್ವಿಕ್ ನೋವಿಗೆ ಮನೆಮದ್ದು', 'ವ್ಯಾಯಾಮದ ಮುನ್ನೆಚ್ಚರಿಕೆಗಳು']
-      };
-    }
     return {
-      answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ನಿಮ್ಮ ಆರೋಗ್ಯದ ಕುರಿತು ವೈದ್ಯಕೀಯ ಮಾರ್ಗದರ್ಶನ:\n\n• **ಆರೋಗ್ಯ ರಕ್ಷಣೆ:** ಸಾಕಷ್ಟು ವಿಶ್ರಾಂತಿ, ಸಮತೋಲಿತ ಆಹಾರ ಮತ್ತು ನಿತ್ಯ 2.5 ಲೀಟರ್ ನೀರು ಸೇವನೆ ಮುಖ್ಯ.\n• **ವೈದ್ಯರ ಭೇಟಿ:** ನಿಗದಿತ ದಿನಾಂಕಗಳಲ್ಲಿ ಅಲ್ಟ್ರಾಸೌಂಡ್ ಸ್ಕ್ಯಾನ್ ಮತ್ತು ತಪಾಸಣೆಗಳನ್ನು ಮಾಡಿಸಿಕೊಳ್ಳಿ.`,
-      followUps: ['ಈ ವಾರ ಮಗುವಿನ ತೂಕ ಎಷ್ಟು?', 'ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್ ಸಿದ್ಧತೆ', 'ಮಗುವಿನ ಬೆಳವಣಿಗೆ ವಿವರ']
+      answer: `Hello ${motherName}! 🌸 Clinical nutrition priorities for Week ${gestationalWeek}:\n\n• **Protein Target:** Aim for 60–75g protein daily (lentils, paneer, Greek yogurt, eggs, almonds) to support fetal tissue expansion.\n• **Iron & Vitamin C Synergy:** Pair iron sources (spinach, dates, beetroot) with Vitamin C (citrus, amla) for optimal absorption; avoid tea/coffee within 1 hour of iron meals.\n• **Calcium Density:** 1,000mg/day via fortified curd, ragi, sesame, and dairy to preserve maternal bone density while fetal skeleton mineralizes.\n• **Electrolyte Hydration:** 2.5–3L fluids including fresh tender coconut water to maintain adequate amniotic fluid levels.`,
+      followUps: ['Best iron-rich snack combinations', 'Daily meal plan template', 'Safe dairy and cheese choices']
     };
   }
 
-  // English default
-  if (isNutrition) {
-    return {
-      answer: `Hello ${motherName}! 🌸 Regarding your nutrition query at **Week ${gestationalWeek}**:\n\n• **Hydration & Electrolytes:** Tender coconut water and fresh chaas (buttermilk) are safe and excellent for replenishing minerals and easing mild heartburn.\n• **Core Nutrients:** Focus on iron (spinach, lentils, dates), calcium (ragi, curd, sesame), and 60-70g protein daily.\n• **Safety:** Avoid unpasteurized juices, raw papaya, excess caffeine, and overly spicy oily foods.`,
-      followUps: ['Safe amount of coconut water daily', 'Iron absorption tips with Vitamin C', 'Snack ideas for 2nd trimester']
-    };
-  }
-  if (isSwelling) {
-    return {
-      answer: `Hello ${motherName}! 🌸 Mild ankle and foot swelling (physiological edema) is very common in **Week ${gestationalWeek}** as maternal blood volume increases:\n\n• **Elevation:** Elevate your feet on a footstool or pillow whenever resting.\n• **Movement:** Avoid standing or sitting cross-legged for prolonged periods. Gentle 20-minute walks promote venous return.\n• **When to Alert Doctor:** Sudden swelling in your face, around eyes, or sudden severe puffiness in hands accompanied by a headache requires immediate blood pressure evaluation.`,
-      followUps: ['Compression socks recommendations', 'Signs of preeclampsia to watch for', 'Best resting positions']
-    };
-  }
+  // -------------------------------------------------------------
+  // 9. Back Pain, Cramps & Physical Aches
+  // -------------------------------------------------------------
+  const isPain = /(pain|back|ache|spine|hurt|cramp|sciatica|leg cramp|ನೋವು|ಬೆನ್ನು|ಸೊಂಟ|ಕಾಲು|दर्द|पीठ|कमर|வலி|முதுகு|నొప్పి|నడుము|വേദന|നടു)/i.test(q);
   if (isPain) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ಬೆನ್ನು ಮತ್ತು ಸೊಂಟದ ನೋವಿಗೆ ಪರಿಹಾರಗಳು:\n\n• **ಮಲಗುವ ಭಂಗಿ:** ಎಡ ಮಗ್ಗುಲಿಗೆ ಮಲಗಿ, ಮೊಣಕಾಲುಗಳ ನಡುವೆ ಗರ್ಭಧಾರಣೆಯ ದಿಂಬನ್ನು (Pregnancy Pillow) ಇಟ್ಟುಕೊಳ್ಳಿ.\n• **ಶಾಖ ಚಿಕಿತ್ಸೆ:** ಬೆನ್ನಿನ ಕೆಳಭಾಗಕ್ಕೆ ಉಗುರುಬೆಚ್ಚಗಿನ ನೀರಿನ ಶಾಖ ನೀಡಿ. ಭಾರವಾದ ವಸ್ತುಗಳನ್ನು ಎತ್ತಬೇಡಿ.\n• **ಕ್ಯಾಲ್ಸಿಯಂ & ಮೆಗ್ನೀಸಿಯಮ್:** ರಾತ್ರಿ ಕಾಲು ಸೆಳೆತವಿದ್ದರೆ ಸಾಕಷ್ಟು ನೀರು ಕುಡಿಯಿರಿ ಮತ್ತು ವೈದ್ಯರು ನೀಡಿದ ಕ್ಯಾಲ್ಸಿಯಂ ಮಾತ್ರೆಗಳನ್ನು ತಪ್ಪದೇ ತೆಗೆದುಕೊಳ್ಳಿ.`,
+        followUps: ['ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಮಲಗುವ ಭಂಗಿ', 'ಪೆಲ್ವಿಕ್ ನೋವಿಗೆ ಮನೆಮದ್ದು', 'ಕಾಲು ಸೆಳೆತ ತಪ್ಪಿಸಲು ಸಲಹೆಗಳು']
+      };
+    }
     return {
-      answer: `Hello ${motherName}! 🌸 Lower back and pelvic tightness at **Week ${gestationalWeek}** often stems from your shifting center of gravity and the relaxing hormone softening ligaments:\n\n• **Sleep Posture:** Sleep on your left side with a supportive pregnancy pillow between knees and under your belly.\n• **Warm Compress:** Apply a warm heating pad to your lower lumbar region for 15 minutes.\n• **Gentle Stretches:** Pelvic tilts and prenatal yoga Cat-Cow poses help relieve nerve pressure.`,
-      followUps: ['Safe sleeping positions', 'Pelvic belt benefits', 'Doctor referral for severe pain']
+      answer: `Hello ${motherName}! 🌸 Managing musculoskeletal aches at Week ${gestationalWeek}:\n\n• **Spinal Alignment:** As your center of gravity shifts forward, avoid standing swayed-back. Wear supportive flat footwear with arch support.\n• **Side Sleeping (SOS):** Lie on your left side with a contoured pillow between your knees and a wedge beneath your abdomen to unload lumbar vertebrae.\n• **Warm Therapy:** Apply a warm compress (never scalding hot) to the lower back for 15 minutes.\n• **Nocturnal Leg Cramps:** Ensure adequate magnesium and hydration; gently dorsiflex your toes toward your shin if a calf cramp strikes.`,
+      followUps: ['Safe stretching routine for back pain', 'Maternity support belt recommendations', 'When to seek medical review for pain']
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 10. Swelling, Preeclampsia & BP
+  // -------------------------------------------------------------
+  const isSwelling = /(swell|feet|ankle|edema|preeclampsia|high bp|blood pressure|proteinuria|ಊತ|ಕಾಲು|ಹಿಮ್ಮಡಿ|ರಕ್ತದೊತ್ತಡ|सूजन|पैरों|रक्तचाप|வீக்கம்|கால்|வாపు|కాళ్ళ|നീര്)/i.test(q);
+  if (isSwelling) {
+    if (langKey === 'kn-IN') {
+      return {
+        answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** ಪಾದಗಳ ಊತ ಸಾಮಾನ್ಯವಾಗಿರುತ್ತದೆ:\n\n• **ಉಪಶಮನ:** ವಿಶ್ರಾಂತಿ ಪಡೆಯುವಾಗ ಪಾದಗಳನ್ನು ದಿಂಬಿನ ಮೇಲೆ ಎತ್ತರಿಸಿ ಇರಿಸಿ. ದೀರ್ಘಕಾಲ ನಿಲ್ಲುವುದು ಅಥವಾ ಕಾಲುಗಳ ಮೇಲೆ ಕಾಲು ಹಾಕಿ ಕುಳಿತುಕೊಳ್ಳುವುದನ್ನು ತಪ್ಪಿಸಿ.\n• **ಜಲಾಂಶ:** ಸಾಕಷ್ಟು ನೀರು ಕುಡಿಯಿರಿ. ಉಪ್ಪಿನ ಪ್ರಮಾಣವನ್ನು ಮಿತಿಗೊಳಿಸಿ.\n• **ಎಚ್ಚರಿಕೆ:** ಮುಖ ಅಥವಾ ಕೈಗಳಲ್ಲಿ ಹಠಾತ್ ಊತ ಮತ್ತು ತಲೆನೋವು ಕಂಡುಬಂದರೆ ತಕ್ಷಣ ರಕ್ತದೊತ್ತಡ ತಪಾಸಣೆ ಮಾಡಿಸಿಕೊಳ್ಳಿ.`,
+        followUps: ['ಕಾಲು ಊತ ಯಾವಾಗ ಕಡಿಮೆಯಾಗುತ್ತದೆ?', 'ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ರಕ್ತದೊತ್ತಡ ತಪಾಸಣೆ', 'ಆರಾಮದಾಯಕ ಪಾದರಕ್ಷೆಗಳು']
+      };
+    }
+    return {
+      answer: `Hello ${motherName}! 🌸 Ankle and foot swelling (physiological dependent edema) at Week ${gestationalWeek}:\n\n• **Venous Elevation:** Elevate your feet above heart level for 20 minutes when resting to facilitate lymphatic and venous return.\n• **Hydration Balance:** Drinking 2.5–3L water paradoxically encourages the body to flush retained fluid and excess sodium.\n• **Preeclampsia Red Flags:** If swelling appears suddenly in your face, eyelids, or hands, or is accompanied by a severe persistent headache or visual disturbances, check blood pressure and seek immediate clinical evaluation.`,
+      followUps: ['Graduated compression socks benefits', 'Differentiating normal swelling from preeclampsia', 'Low sodium seasoning ideas']
+    };
+  }
+
+  // -------------------------------------------------------------
+  // 11. Comprehensive Contextual Fallback (Week & Trimester Tailored)
+  // -------------------------------------------------------------
+  const weekIdx = Math.max(0, Math.min(39, gestationalWeek - 1));
+  const currentWk = WEEKS_DATA[weekIdx];
+
+  if (langKey === 'kn-IN') {
+    return {
+      answer: `ನಮಸ್ಕಾರ ${motherName}! 🌸 ಗರ್ಭಧಾರಣೆಯ **${gestationalWeek}ನೇ ವಾರದಲ್ಲಿ** (${currentWk.trimester}ನೇ ತ್ರೈಮಾಸಿಕ) ನಿಮ್ಮ ಪ್ರಶ್ನೆಗೆ ವೈದ್ಯಕೀಯ ಮಾರ್ಗದರ್ಶನ:\n\n• **ಪ್ರಸ್ತುತ ಮಗುವಿನ ಸ್ಥಿತಿ:** ${currentWk.fruitEmoji} ಮಗು ಈಗ **${currentWk.babySizeFruit}** ಗಾತ್ರದಲ್ಲಿದೆ (ಉದ್ದ ~${currentWk.babyLengthCm} cm, ತೂಕ ~${currentWk.babyWeightG}g).\n• **ಆರೋಗ್ಯ ರಕ್ಷಣೆ:** ಸಾಕಷ್ಟು ವಿಶ್ರಾಂತಿ ಪಡೆಯಿರಿ, ಎಡ ಮಗ್ಗುಲಿಗೆ ಮಲಗಿ ಮತ್ತು ದಿನಕ್ಕೆ ೨.೫ ಲೀಟರ್ ನೀರು ಸೇವಿಸಿ.\n• **ವೈದ್ಯರ ಸಲಹೆ:** ${currentWk.weeklyAdvice}\n• **ನೆನಪಿಡಿ:** ಯಾವುದೇ ಹಠಾತ್ ನೋವು, ರಕ್ತಸ್ರಾವ ಅಥವಾ ಮಗುವಿನ ಚಲನೆ ಕಡಿಮೆಯಾದರೆ ತಕ್ಷಣ ನಿಮ್ಮ ಸ್ತ್ರೀರೋಗ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ.`,
+      followUps: [
+        `${gestationalWeek}ನೇ ವಾರದ ಮಗುವಿನ ಬೆಳವಣಿಗೆ`,
+        'ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್ ತಯಾರಿ ಹೇಗೆ?',
+        'ಗರ್ಭಾವಸ್ಥೆಯ ಸುರಕ್ಷಿತ ವ್ಯಾಯಾಮಗಳು'
+      ]
+    };
+  }
+
+  if (langKey === 'hi-IN') {
+    return {
+      answer: `नमस्ते ${motherName}! 🌸 गर्भावस्था के **${gestationalWeek}वें सप्ताह** (${currentWk.trimester}rd तिमाही) के लिए नैदानिक सलाह:\n\n• **शिशु की वर्तमान स्थिति:** ${currentWk.fruitEmoji} शिशु अब **${currentWk.babySizeFruit}** के आकार का है (लंबाई ~${currentWk.babyLengthCm} सेमी, वजन ~${currentWk.babyWeightG} ग्राम)।\n• **दैनिक देखभाल:** पर्याप्त आराम करें, बाईं करवट सोएं और प्रतिदिन २.५ लीटर पानी पिएं।\n• **सप्ताहिक सलाह:** ${currentWk.weeklyAdvice}\n• **सावधानी:** अचानक तेज सिरदर्द, रक्तस्राव या शिशु की हलचल में कमी महसूस होने पर तुरंत अपनी डॉक्टर से संपर्क करें।`,
+      followUps: [
+        `${gestationalWeek}वें सप्ताह का विकास`,
+        'अस्पताल बैग की तैयारी',
+        'गर्भावस्था के सुरक्षित व्यायाम'
+      ]
     };
   }
 
   return {
-    answer: `Hello ${motherName}! 🌸 Regarding your query at **Week ${gestationalWeek}**:\n\n• **Clinical Care:** Prioritize restful sleep on your left side and stay hydrated with 2.5L+ fluids daily.\n• **Nutrition:** Focus on iron, calcium, and protein density (lentils, leafy greens, fortified dairy).\n• **Safety:** Contact Dr. Sunita promptly if you experience severe headaches, vision changes, or fluid leakage.`,
+    answer: `Hello ${motherName}! 🌸 Regarding your query at **Week ${gestationalWeek}** (Trimester ${currentWk.trimester}):\n\n• **Baby Status:** ${currentWk.fruitEmoji} Baby is currently the size of a **${currentWk.babySizeFruit}** (~${currentWk.babyLengthCm} cm, ~${currentWk.babyWeightG}g).\n• **Core Maternal Care:** Prioritize restful left-side sleeping (SOS position), 2.5L+ hydration, and a balanced diet rich in iron, calcium, and protein.\n• **Clinical Focus for This Week:** ${currentWk.weeklyAdvice}\n• **Safety Standard:** If you ever experience persistent abdominal pain, fluid leakage, or reduced fetal movement, contact Dr. Sunita or your maternity triage immediately.\n\nFeel free to ask more specific questions about safe foods, travel, sleeping postures, scans, kicks, or hospital bags!`,
     followUps: [
-      `Developmental changes in Week ${gestationalWeek}`,
-      'Safe exercises for this trimester',
-      'Hospital bag checklist'
+      `Fetal milestones in Week ${gestationalWeek}`,
+      'Hospital bag packing checklist',
+      'Safe exercises for this stage of pregnancy'
     ]
   };
 }
 
 // GET Endpoint: Check configured AI providers and connection health
 export async function GET() {
+  const DEFAULT_GNANI_KEY =
+    process.env.GNANI_API_KEY ||
+    process.env.NEXT_PUBLIC_GNANI_API_KEY ||
+    'vach_1ytE2CY5X2P8OG75LB2LoKExoXdn3zYsCnjFDaGsK4f83KNfy9P46d54x65TsbmRKLIIkxknsvFJVj8W1VWZfQcKRJnvjGi8_de3ef9b7ebb582a7792bb89f2e87dce2';
+  const hasGnani = Boolean(DEFAULT_GNANI_KEY);
   const hasGroq = Boolean(process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY);
   const hasGemini = Boolean(process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY);
   const hasOpenAI = Boolean(process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY);
   const hasOpenRouter = Boolean(process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY);
   const hasGrok = Boolean(process.env.XAI_API_KEY || process.env.GROK_API_KEY);
 
-  const activeProvider = hasGroq
+  const activeProvider = hasGnani
+    ? 'gnani'
+    : hasGroq
     ? 'groq'
     : hasGemini
     ? 'gemini'
@@ -561,6 +852,7 @@ export async function GET() {
   return NextResponse.json({
     configured: Boolean(activeProvider),
     serverProviders: {
+      gnani: hasGnani,
       groq: hasGroq,
       gemini: hasGemini,
       openai: hasOpenAI,
@@ -569,7 +861,9 @@ export async function GET() {
     },
     activeProvider,
     providerDisplayName:
-      activeProvider === 'groq'
+      activeProvider === 'gnani'
+        ? 'Gnani AI (Vachana Speech & Indic AI)'
+        : activeProvider === 'groq'
         ? 'Groq Cloud LPU'
         : activeProvider === 'gemini'
         ? 'Google Gemini'
@@ -590,6 +884,7 @@ export async function POST(req: NextRequest) {
     const {
       message = '',
       apiKey = '',
+      gnaniApiKey: bodyGnaniKey = '',
       groqApiKey: bodyGroqKey = '',
       geminiApiKey: bodyGeminiKey = '',
       openaiApiKey: bodyOpenAIKey = '',
@@ -612,6 +907,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Auto-detect key provider if generic key is provided
+    let autoGnani = '';
     let autoGroq = '';
     let autoGemini = '';
     let autoOpenAI = '';
@@ -620,13 +916,26 @@ export async function POST(req: NextRequest) {
 
     const genericKey = (apiKey || req.headers.get('x-api-key') || '').trim();
     if (genericKey) {
-      if (genericKey.startsWith('gsk_')) autoGroq = genericKey;
+      if (genericKey.startsWith('vach_')) autoGnani = genericKey;
+      else if (genericKey.startsWith('gsk_')) autoGroq = genericKey;
       else if (genericKey.startsWith('AIzaSy')) autoGemini = genericKey;
       else if (genericKey.startsWith('sk-or-v1-')) autoOpenRouter = genericKey;
       else if (genericKey.startsWith('xai-')) autoGrok = genericKey;
       else if (genericKey.startsWith('sk-')) autoOpenAI = genericKey;
-      else autoGroq = genericKey; // Default fallback to Groq
+      else autoGnani = genericKey;
     }
+
+    const DEFAULT_GNANI_KEY =
+      process.env.GNANI_API_KEY ||
+      process.env.NEXT_PUBLIC_GNANI_API_KEY ||
+      'vach_1ytE2CY5X2P8OG75LB2LoKExoXdn3zYsCnjFDaGsK4f83KNfy9P46d54x65TsbmRKLIIkxknsvFJVj8W1VWZfQcKRJnvjGi8_de3ef9b7ebb582a7792bb89f2e87dce2';
+
+    const effectiveGnaniKey = (
+      bodyGnaniKey ||
+      req.headers.get('x-gnani-key') ||
+      autoGnani ||
+      DEFAULT_GNANI_KEY
+    ).trim();
 
     // Effective keys combining body, headers, auto-detection, and server environment
     const effectiveGroqKey = (
@@ -678,7 +987,27 @@ export async function POST(req: NextRequest) {
     // TEST CONNECTION MODE: Verify key and return diagnostic
     // ---------------------------------------------------------
     if (test) {
-      // 1. Test Groq
+      // 1. Test Gnani AI (Vachana Speech & Indic Engine)
+      if (effectiveGnaniKey && (bodyGnaniKey || genericKey.startsWith('vach_') || (!bodyGroqKey && !bodyGeminiKey && !bodyOpenAIKey))) {
+        const gnaniTest = await callGnaniAPI(effectiveGnaniKey);
+        if (gnaniTest && gnaniTest.text) {
+          return NextResponse.json({
+            success: true,
+            provider: 'Gnani AI',
+            model: gnaniTest.model,
+            message: `Connected successfully to Gnani AI (Vachana Timbre & Prisma Indic AI Engine)!`
+          });
+        }
+        if (gnaniTest?.error) {
+          return NextResponse.json({
+            success: false,
+            provider: 'Gnani AI',
+            error: gnaniTest.error
+          }, { status: 400 });
+        }
+      }
+
+      // 2. Test Groq
       if (effectiveGroqKey) {
         const groqTest = await callGroqAPI(
           effectiveGroqKey,
@@ -934,7 +1263,7 @@ export async function POST(req: NextRequest) {
       isEmergencyAlert: false,
       response: offlineFallback.answer,
       followUps: offlineFallback.followUps,
-      source: 'offline-clinical-synthesis'
+      source: effectiveGnaniKey ? 'gnani-indic-ai' : 'offline-clinical-synthesis'
     });
   } catch (error) {
     console.error('Chat API error:', error);

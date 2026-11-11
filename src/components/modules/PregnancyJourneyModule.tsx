@@ -52,22 +52,22 @@ export const PregnancyJourneyModule: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" />
             <span>WHO & Hadlock Fetal Biometric Progression</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-serif font-bold text-gray-900">
+          <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
             {t('journeyTitle')}
           </h1>
-          <p className="text-xs md:text-sm text-gray-600 max-w-2xl mt-0.5">
+          <p className="text-xs md:text-sm text-muted-foreground max-w-2xl mt-0.5">
             {t('journeySubtitle')}
           </p>
         </div>
 
         {/* View Mode Toggle Pill */}
-        <div className="flex items-center gap-1.5 p-1.5 bg-[#FAF6EE] rounded-2xl border border-stone-200 self-start md:self-auto shadow-xs">
+        <div className="flex items-center gap-1.5 p-1.5 bg-muted/60 dark:bg-muted/40 rounded-2xl border border-border self-start md:self-auto shadow-xs">
           <button
             onClick={() => setViewMode('weeks')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               viewMode === 'weeks'
                 ? 'bg-emerald-700 text-white shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
@@ -78,7 +78,7 @@ export const PregnancyJourneyModule: React.FC = () => {
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               viewMode === 'months'
                 ? 'bg-emerald-700 text-white shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />

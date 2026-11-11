@@ -51,7 +51,7 @@ export const SharedMotherDashboardModal: React.FC = () => {
   const latestVital = vitals[vitals.length - 1];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-card w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-4xl border-2 border-border shadow-2xl flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-border bg-gradient-to-r from-cream-100 via-primary-soft/30 to-accent-soft/30 flex items-center justify-between">
@@ -231,7 +231,7 @@ export const SharedMotherDashboardModal: React.FC = () => {
               </div>
               <div className="p-2.5 rounded-xl bg-card border border-border flex items-center gap-2">
                 <EyeOff className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                <span>Bloom AI Assistant Chats</span>
+                <span>Gnani AI Assistant Chats</span>
               </div>
               <div className="p-2.5 rounded-xl bg-card border border-border flex items-center gap-2">
                 <EyeOff className="w-3.5 h-3.5 text-rose-500 shrink-0" />
