@@ -133,14 +133,14 @@ export const BabyShowerModule: React.FC = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
               <Edit3 className="w-4 h-4 text-primary" />
-              <span>Edit Date, Celebration Venue & Budget</span>
+              <span>{t('Edit Date, Celebration Venue & Budget', 'Edit Date, Celebration Venue & Budget')}</span>
             </h3>
-            <span className="text-[11px] text-muted-foreground font-medium">Changes persist to your account</span>
+            <span className="text-[11px] text-muted-foreground font-medium">{t('Changes persist to your account', 'Changes persist to your account')}</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
             <div>
-              <label className="block text-gray-700 font-bold mb-1">Celebration Date</label>
+              <label className="block text-gray-700 font-bold mb-1">{t('Celebration Date', 'Celebration Date')}</label>
               <input
                 type="date"
                 value={editDate}
@@ -151,7 +151,7 @@ export const BabyShowerModule: React.FC = () => {
             </div>
 
             <div className="lg:col-span-2">
-              <label className="block text-gray-700 font-bold mb-1">Celebration Venue</label>
+              <label className="block text-gray-700 font-bold mb-1">{t('Celebration Venue', 'Celebration Venue')}</label>
               <input
                 type="text"
                 value={editVenue}
@@ -163,7 +163,7 @@ export const BabyShowerModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-bold mb-1">Total Budget (₹)</label>
+              <label className="block text-gray-700 font-bold mb-1">{t('Total Budget (₹)', 'Total Budget (₹)')}</label>
               <input
                 type="number"
                 min="0"
@@ -175,7 +175,7 @@ export const BabyShowerModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-bold mb-1">Budget Spent (₹)</label>
+              <label className="block text-gray-700 font-bold mb-1">{t('Budget Spent (₹)', 'Budget Spent (₹)')}</label>
               <input
                 type="number"
                 min="0"
@@ -193,14 +193,14 @@ export const BabyShowerModule: React.FC = () => {
               onClick={() => setIsEditingDetails(false)}
               className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer transition-all"
             >
-              Cancel
+              {t('Cancel', 'Cancel')}
             </button>
             <button
               type="submit"
               className="px-5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer transition-all"
             >
               <Save className="w-3.5 h-3.5" />
-              <span>Save Event Details</span>
+              <span>{t('Save Event Details', 'Save Event Details')}</span>
             </button>
           </div>
         </form>
@@ -218,7 +218,7 @@ export const BabyShowerModule: React.FC = () => {
               className="text-[10px] text-primary hover:underline font-bold"
               title="Edit Event Date"
             >
-              Edit
+              {t('edit', 'Edit')}
             </button>
           </div>
           <div className="text-lg font-black text-gray-900">{babyShower.eventDate}</div>
@@ -235,7 +235,7 @@ export const BabyShowerModule: React.FC = () => {
               className="text-[10px] text-emerald-700 hover:underline font-bold"
               title="Edit Budget"
             >
-              Edit
+              {t('edit', 'Edit')}
             </button>
           </div>
           <div className="text-lg font-black text-emerald-700">₹{babyShower.budgetSpent.toLocaleString('en-IN')} / ₹{babyShower.budgetTotal.toLocaleString('en-IN')}</div>
@@ -260,7 +260,7 @@ export const BabyShowerModule: React.FC = () => {
               className="text-[10px] text-primary hover:underline font-bold"
               title="Edit Venue"
             >
-              Edit
+              {t('edit', 'Edit')}
             </button>
           </div>
           <div className="text-xs font-bold text-gray-800 truncate mt-1">{babyShower.venue}</div>
@@ -290,11 +290,11 @@ export const BabyShowerModule: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-900 text-xs">{th.label}</span>
-                  {isSelected && <span className="text-xs text-blush-600 font-bold">✓ Selected</span>}
+                  <span className="font-bold text-gray-900 text-xs">{t(th.label, th.label)}</span>
+                  {isSelected && <span className="text-xs text-blush-600 font-bold">✓ {t('Selected', 'Selected')}</span>}
                 </div>
                 <div className={`h-2 rounded-full bg-gradient-to-r ${th.color}`} />
-                <p className="text-[11px] text-gray-600 leading-relaxed">{th.desc}</p>
+                <p className="text-[11px] text-gray-600 leading-relaxed">{t(th.desc, th.desc)}</p>
               </div>
             );
           })}
@@ -338,9 +338,9 @@ export const BabyShowerModule: React.FC = () => {
         {/* Task Management */}
         <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-gray-900">Event Tasks & Checklists</h3>
+            <h3 className="text-base font-bold text-gray-900">{t('eventTasksChecklist', 'Event Tasks & Checklists')}</h3>
             <span className="text-xs text-gray-500">
-              {babyShower.tasks.filter(t => t.completed).length} of {babyShower.tasks.length} done
+              {babyShower.tasks.filter(t => t.completed).length} of {babyShower.tasks.length} {t('completedTasks', 'done')}
             </span>
           </div>
 
@@ -361,7 +361,7 @@ export const BabyShowerModule: React.FC = () => {
                   onChange={() => {}}
                   className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-400"
                 />
-                <span className="font-semibold">{task.title}</span>
+                <span className="font-semibold">{t(task.title, task.title)}</span>
               </div>
             ))}
           </div>
@@ -371,7 +371,7 @@ export const BabyShowerModule: React.FC = () => {
               type="text"
               value={newTaskTitle}
               onChange={e => setNewTaskTitle(e.target.value)}
-              placeholder="Add event task (e.g. Order sweets, hire photographer)..."
+              placeholder={t('addEventTaskPlaceholder', 'Add event task (e.g. Order sweets, hire photographer)...')}
               className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
             />
             <button
@@ -389,8 +389,8 @@ export const BabyShowerModule: React.FC = () => {
         {/* Guest RSVP */}
         <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-gray-900">Guest List & RSVPs</h3>
-            <span className="text-xs text-gray-500">{babyShower.guests.length} Guests Listed</span>
+            <h3 className="text-base font-bold text-gray-900">{t('Guest List & RSVPs', 'Guest List & RSVPs')}</h3>
+            <span className="text-xs text-gray-500">{babyShower.guests.length} {t('Guests Listed', 'Guests Listed')}</span>
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -401,7 +401,7 @@ export const BabyShowerModule: React.FC = () => {
               >
                 <div>
                   <h4 className="font-bold text-gray-900">{guest.name}</h4>
-                  {guest.gift && <p className="text-[10px] text-gray-500">🎁 Gift: {guest.gift}</p>}
+                  {guest.gift && <p className="text-[10px] text-gray-500">🎁 {t('Gift', 'Gift')}: {t(guest.gift, guest.gift)}</p>}
                 </div>
 
                 <div className="flex items-center gap-1 text-[10px] font-bold">
@@ -409,7 +409,7 @@ export const BabyShowerModule: React.FC = () => {
                     <button
                       key={status}
                       onClick={() => updateGuestRsvp(guest.id, status)}
-                      className={`px-2 py-0.5 rounded-md capitalize transition-all ${
+                      className={`px-2 py-0.5 rounded-md capitalize transition-all cursor-pointer ${
                         guest.rsvp === status
                           ? status === 'attending'
                             ? 'bg-emerald-500 text-white'
@@ -419,7 +419,7 @@ export const BabyShowerModule: React.FC = () => {
                           : 'bg-white border border-gray-200 text-gray-500'
                       }`}
                     >
-                      {status}
+                      {t(status, status)}
                     </button>
                   ))}
                 </div>
@@ -432,14 +432,14 @@ export const BabyShowerModule: React.FC = () => {
               type="text"
               value={newGuestName}
               onChange={e => setNewGuestName(e.target.value)}
-              placeholder="Invite guest name..."
+              placeholder={t('Invite guest name...', 'Invite guest name...')}
               className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
             />
             <button
               type="submit"
-              className="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold"
+              className="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold cursor-pointer"
             >
-              Add Guest
+              {t('Add Guest', 'Add Guest')}
             </button>
           </form>
         </div>
@@ -449,10 +449,10 @@ export const BabyShowerModule: React.FC = () => {
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
               <Gift className="w-4 h-4 text-rose-500" />
-              Gift Registry & Wishlist
+              {t('Gift Registry & Wishlist', 'Gift Registry & Wishlist')}
             </h3>
             <span className="text-xs text-rose-600 font-bold">
-              {babyShower.registryItems.filter(i => i.claimedBy).length}/{babyShower.registryItems.length} Claimed
+              {babyShower.registryItems.filter(i => i.claimedBy).length}/{babyShower.registryItems.length} {t('Claimed', 'Claimed')}
             </span>
           </div>
 
@@ -463,10 +463,10 @@ export const BabyShowerModule: React.FC = () => {
                 className="p-3 bg-cream-50/60 rounded-xl border border-cream-200 flex items-center justify-between gap-3 text-xs"
               >
                 <div>
-                  <h4 className="font-bold text-gray-900">{item.name}</h4>
+                  <h4 className="font-bold text-gray-900">{t(item.name, item.name)}</h4>
                   <span className="text-[10px] text-gray-500">
                     {item.priceEst ? `₹${item.priceEst.toLocaleString('en-IN')} · ` : ''}
-                    {item.claimedBy ? `Claimed by ${item.claimedBy} 🎁` : 'Available to gift'}
+                    {item.claimedBy ? `${t('Claimed by', 'Claimed by')} ${item.claimedBy} 🎁` : t('Available to gift', 'Available to gift')}
                   </span>
                 </div>
 
@@ -478,9 +478,9 @@ export const BabyShowerModule: React.FC = () => {
                       ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'
                       : 'bg-primary-soft hover:bg-primary/20 text-primary border border-primary/30'
                   }`}
-                  title="Click to toggle gift claim status"
+                  title={t('Click to toggle gift claim status', 'Click to toggle gift claim status')}
                 >
-                  {item.claimedBy ? '✓ Claimed' : '+ Claim Gift'}
+                  {item.claimedBy ? `✓ ${t('Claimed', 'Claimed')}` : `+ ${t('Claim Gift', 'Claim Gift')}`}
                 </button>
               </div>
             ))}
@@ -500,7 +500,7 @@ export const BabyShowerModule: React.FC = () => {
               type="text"
               value={newRegistryName}
               onChange={e => setNewRegistryName(e.target.value)}
-              placeholder="Add wishlist item (e.g. Organic Cotton Swaddle)..."
+              placeholder={t('Add wishlist item (e.g. Organic Cotton Swaddle)...', 'Add wishlist item (e.g. Organic Cotton Swaddle)...')}
               className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
             />
             <input
@@ -514,7 +514,7 @@ export const BabyShowerModule: React.FC = () => {
               type="submit"
               className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shrink-0 cursor-pointer"
             >
-              Add Gift
+              {t('Add Gift', 'Add Gift')}
             </button>
           </form>
         </div>

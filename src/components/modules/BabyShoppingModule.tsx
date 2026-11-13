@@ -200,7 +200,7 @@ export const BabyShoppingModule: React.FC = () => {
           className="px-4 py-2.5 rounded-2xl bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center gap-2 shadow-xs transition-all self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Custom Baby Gear</span>
+          <span>{t('Add Custom Baby Gear', 'Add Custom Baby Gear')}</span>
         </button>
       </div>
 
@@ -209,7 +209,7 @@ export const BabyShoppingModule: React.FC = () => {
         <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
         <div className="space-y-0.5">
           <h4 className="font-bold text-emerald-900 uppercase text-[11px] flex items-center gap-1.5">
-            <span>Verified Pediatric Safety & Live Marketplace Connectivity</span>
+            <span>{t('Verified Pediatric Safety & Live Marketplace Connectivity', 'Verified Pediatric Safety & Live Marketplace Connectivity')}</span>
             <Award className="w-3.5 h-3.5 text-emerald-600" />
           </h4>
           <p className="text-emerald-900/90 leading-relaxed text-[11px]">
@@ -228,7 +228,7 @@ export const BabyShoppingModule: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search gear, brand, or item (e.g. Avent, stroller, crib, Sebamed)..."
+              placeholder={t('Search gear, brand, or item (e.g. Avent, stroller, crib, Sebamed)...', 'Search gear, brand, or item (e.g. Avent, stroller, crib, Sebamed)...')}
               className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition-all"
             />
           </div>
@@ -241,22 +241,22 @@ export const BabyShoppingModule: React.FC = () => {
               onChange={e => setOnlyOrganic(e.target.checked)}
               className="rounded text-amber-500 focus:ring-amber-400 cursor-pointer"
             />
-            <span className="text-amber-900">🍃 100% Organic / Non-Toxic Only</span>
+            <span className="text-amber-900">🍃 {t('100% Organic / Non-Toxic Only', '100% Organic / Non-Toxic Only')}</span>
           </label>
         </div>
 
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto text-xs pb-1">
           {[
-            { id: 'all', label: 'All Essentials' },
-            { id: 'clothing', label: 'Clothing' },
-            { id: 'diapering', label: 'Diapering' },
-            { id: 'skincare', label: 'Skincare' },
-            { id: 'feeding', label: 'Feeding' },
-            { id: 'bedding', label: 'Crib & Sleep' },
-            { id: 'gear', label: 'Strollers & Seats' },
-            { id: 'bathing', label: 'Bath' },
-            { id: 'safety', label: 'Safety & Monitors' }
+            { id: 'all', label: t('All Essentials', 'All Essentials') },
+            { id: 'clothing', label: t('Clothing', 'Clothing') },
+            { id: 'diapering', label: t('Diapering', 'Diapering') },
+            { id: 'skincare', label: t('Skincare', 'Skincare') },
+            { id: 'feeding', label: t('Feeding', 'Feeding') },
+            { id: 'bedding', label: t('Crib & Sleep', 'Crib & Sleep') },
+            { id: 'gear', label: t('Strollers & Seats', 'Strollers & Seats') },
+            { id: 'bathing', label: t('Bath', 'Bath') },
+            { id: 'safety', label: t('Safety & Monitors', 'Safety & Monitors') }
           ].map(cat => (
             <button
               key={cat.id}

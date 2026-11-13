@@ -266,10 +266,10 @@ export const SettingsModule: React.FC = () => {
           {/* Card Title & Subtitle */}
           <div className="space-y-1 pb-2">
             <h2 className="text-xl font-serif font-bold text-foreground">
-              Privacy & Data Sharing
+              {t('Privacy & Data Sharing', 'Privacy & Data Sharing')}
             </h2>
             <p className="text-xs text-muted-foreground">
-              Full transparency over who can access your maternal health records.
+              {t('Full transparency over who can access your maternal health records.', 'Full transparency over who can access your maternal health records.')}
             </p>
           </div>
 
@@ -277,10 +277,10 @@ export const SettingsModule: React.FC = () => {
           <div className="p-4 md:p-5 rounded-3xl bg-muted/20 border border-border space-y-1.5">
             <div className="flex items-center gap-2 text-foreground font-bold text-xs">
               <ShieldCheck className="w-4 h-4 text-primary" />
-              <span>Your Data is Private</span>
+              <span>{t('Your Data is Private', 'Your Data is Private')}</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed pl-6">
-              No one else currently has access to your data. All maternal timelines, medical notes, and health records are secured with Row Level Security.
+              {t('No one else currently has access to your data. All maternal timelines, medical notes, and health records are secured with Row Level Security.', 'No one else currently has access to your data. All maternal timelines, medical notes, and health records are secured with Row Level Security.')}
             </p>
           </div>
 
@@ -291,11 +291,11 @@ export const SettingsModule: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Heart className="w-4 h-4 text-accent fill-accent" />
                   <h3 className="text-sm font-serif font-bold text-foreground">
-                    Partner Companion Sharing
+                    {t('Partner Companion Sharing', 'Partner Companion Sharing')}
                   </h3>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Share real-time gestational milestones and labor tools with your supportive partner.
+                  {t('Share real-time gestational milestones and labor tools with your supportive partner.', 'Share real-time gestational milestones and labor tools with your supportive partner.')}
                 </p>
               </div>
 
@@ -304,7 +304,7 @@ export const SettingsModule: React.FC = () => {
                   ? 'bg-primary-soft text-primary'
                   : 'bg-muted text-muted-foreground'
               }`}>
-                {isPaired ? 'Active' : 'Unpaired'}
+                {isPaired ? t('Active', 'Active') : t('Unpaired', 'Unpaired')}
               </span>
             </div>
 
@@ -312,17 +312,17 @@ export const SettingsModule: React.FC = () => {
             <div className="p-4 rounded-2xl bg-muted/30 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
-                  {isMother ? 'YOUR UNIQUE MOTHER SECURITY CODE' : 'YOUR UNIQUE PARTNER CODE'}
+                  {isMother ? t('YOUR UNIQUE MOTHER SECURITY CODE', 'YOUR UNIQUE MOTHER SECURITY CODE') : t('YOUR UNIQUE PARTNER CODE', 'YOUR UNIQUE PARTNER CODE')}
                 </span>
                 <span className="text-xl md:text-2xl font-mono font-black text-foreground tracking-wider">
                   {mySecurityCode}
                 </span>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   {isMother
-                    ? 'Share this code with your partner so they can securely synchronize from their partner account.'
+                    ? t('Share this code with your partner so they can securely synchronize from their partner account.', 'Share this code with your partner so they can securely synchronize from their partner account.')
                     : currentUser?.isPaired
-                      ? `Linked to Mother Code: ${currentUser?.partnerLinkedCode || 'MAMA-2026'}`
-                      : 'Unpaired: Connect using the mother’s code in the Partner Space tab to view records.'
+                      ? `${t('Linked to Mother Code', 'Linked to Mother Code')}: ${currentUser?.partnerLinkedCode || 'MAMA-2026'}`
+                      : t('Unpaired: Connect using the mother’s code in the Partner Space tab to view records.', 'Unpaired: Connect using the mother’s code in the Partner Space tab to view records.')
                   }
                 </p>
               </div>
@@ -332,7 +332,7 @@ export const SettingsModule: React.FC = () => {
                 className="px-4 py-2 rounded-xl bg-card border border-border hover:bg-muted text-foreground text-xs font-bold transition-all shadow-xs flex items-center gap-2 self-start sm:self-auto shrink-0"
               >
                 {copiedCode ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedCode ? 'Copied Code' : 'Copy Code'}</span>
+                <span>{copiedCode ? t('Copied Code', 'Copied Code') : t('Copy Code', 'Copy Code')}</span>
               </button>
             </div>
 
@@ -340,11 +340,11 @@ export const SettingsModule: React.FC = () => {
             <div className="space-y-3 pt-1">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-foreground block">
-                  {isMother ? 'Granular Sharing Permissions Granted to Partner:' : 'Sharing Permissions Granted by Expecting Mother:'}
+                  {isMother ? t('Granular Sharing Permissions Granted to Partner:', 'Granular Sharing Permissions Granted to Partner:') : t('Sharing Permissions Granted by Expecting Mother:', 'Sharing Permissions Granted by Expecting Mother:')}
                 </span>
                 {isMother && (
                   <span className="text-[10px] text-primary font-bold uppercase tracking-wider">
-                    Controlled by You
+                    {t('Controlled by You', 'Controlled by You')}
                   </span>
                 )}
               </div>
@@ -419,13 +419,13 @@ export const SettingsModule: React.FC = () => {
                       </div>
                       <div className="space-y-0.5 flex-1 min-w-0">
                         <div className="font-semibold text-xs flex items-center justify-between">
-                          <span className="truncate">{item.title}</span>
+                          <span className="truncate">{t(item.title, item.title)}</span>
                           <span className={`text-[10px] font-bold ${isGranted ? 'text-primary' : 'text-muted-foreground'}`}>
-                            {isGranted ? 'Enabled' : 'Disabled'}
+                            {isGranted ? t('Enabled', 'Enabled') : t('Disabled', 'Disabled')}
                           </span>
                         </div>
                         <p className="text-[11px] text-muted-foreground leading-tight">
-                          {item.desc}
+                          {t(item.desc, item.desc)}
                         </p>
                       </div>
                     </div>
@@ -437,9 +437,9 @@ export const SettingsModule: React.FC = () => {
               <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2 mt-2">
                 <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div className="space-y-0.5">
-                  <span className="font-bold block">Strict Maternal Privacy Guarantee</span>
+                  <span className="font-bold block">{t('Strict Maternal Privacy Guarantee', 'Strict Maternal Privacy Guarantee')}</span>
                   <p className="text-[11px] leading-relaxed opacity-90">
-                    Private journal entries, personal Gnani AI chat consultations, and unshared clinical records are <strong>never accessible</strong> to your partner or any third party.
+                    {t('Private journal entries, personal Gnani AI chat consultations, and unshared clinical records are never accessible to your partner or any third party.', 'Private journal entries, personal Gnani AI chat consultations, and unshared clinical records are never accessible to your partner or any third party.')}
                   </p>
                 </div>
               </div>
@@ -451,9 +451,9 @@ export const SettingsModule: React.FC = () => {
                 <span className={`w-2.5 h-2.5 rounded-full ${isPaired ? 'bg-emerald-500 animate-pulse' : 'bg-stone-400'}`} />
                 <span>
                   {isPaired ? (
-                    <>Connected with {isMother ? 'partner' : 'mother'}: <strong className="text-foreground font-semibold">{connectedPartnerName}</strong></>
+                    <>{t('Connected with', 'Connected with')} {isMother ? t('partner', 'partner') : t('mother', 'mother')}: <strong className="text-foreground font-semibold">{connectedPartnerName}</strong></>
                   ) : (
-                    <>No active partner connected yet. Share your code <strong className="font-mono text-primary font-bold">{mySecurityCode}</strong> to link.</>
+                    <>{t('No active partner connected yet. Share your code', 'No active partner connected yet. Share your code')} <strong className="font-mono text-primary font-bold">{mySecurityCode}</strong> {t('to link.', 'to link.')}</>
                   )}
                 </span>
               </div>

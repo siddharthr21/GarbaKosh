@@ -481,7 +481,7 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-primary animate-ping" />
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-primary" />
           </div>
-          <span className="font-bold text-xs tracking-wide">Ask Gnani AI 🌸</span>
+          <span className="font-bold text-xs tracking-wide">{t('askGnaniAi', 'Ask Gnani AI')} 🌸</span>
         </button>
       )}
 

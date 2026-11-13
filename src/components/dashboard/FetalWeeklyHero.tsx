@@ -451,7 +451,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
   estimatedDueDate,
   onSelectWeek
 }) => {
-  const { updateProfile } = useApp();
+  const { updateProfile, t } = useApp();
   const [selectedWeek, setSelectedWeek] = useState<number>(currentGestationalWeek || 24);
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(3); // 0 = Mon, 3 = Thu
 
@@ -552,14 +552,14 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-serif font-bold text-stone-100 uppercase tracking-wider">
-                Fetal Evolution & Developmental Reference
+                {t('fetalEvolutionReference', 'Fetal Evolution & Developmental Reference')}
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary-soft font-mono font-bold">
-                Week {selectedWeek} of 40 ({progressPercent}%)
+                {t('week', 'Week')} {selectedWeek} / 40 ({progressPercent}%)
               </span>
             </div>
             <p className="text-[11px] text-stone-400">
-              {evolutionRef.carnegieStage} • Hadlock & WHO Clinical Standards
+              {evolutionRef.carnegieStage} • {t('hadlockStandard', 'Hadlock & WHO Clinical Standards')}
             </p>
           </div>
         </div>
@@ -575,7 +575,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            Trimester 1
+            {t('trimester1', 'Trimester 1')}
           </button>
 
           <button
@@ -587,7 +587,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            Trimester 2
+            {t('trimester2', 'Trimester 2')}
           </button>
 
           <button
@@ -599,7 +599,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            Trimester 3
+            {t('trimester3', 'Trimester 3')}
           </button>
         </div>
       </div>
@@ -618,9 +618,9 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
               {activeDay.dateNumber} {activeDay.monthName}
             </span>
             <span className="text-stone-400">·</span>
-            <span className="text-primary font-bold">Month {selectedMonth}</span>
+            <span className="text-primary font-bold">{t('month', 'Month')} {selectedMonth}</span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
-              Trimester {selectedTrimester}
+              {t('trimester', 'Trimester')} {selectedTrimester}
             </span>
           </div>
 
@@ -717,7 +717,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
           {/* Developmental Landmark Pill */}
           <div className="mb-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 dark:bg-card/90 backdrop-blur-md border border-amber-200 dark:border-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-bold shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span>{evolutionRef.epochName}</span>
+            <span>{t(evolutionRef.epochName)}</span>
             <span className="text-stone-300 dark:text-stone-600">·</span>
             <span className="text-stone-600 dark:text-stone-400 font-normal">{evolutionRef.growthFactor}</span>
           </div>
@@ -742,9 +742,9 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
           {/* Week Title & Clinical Biometrics */}
           <div className="mt-2 text-center space-y-1">
             <h2 className="text-xl sm:text-2xl font-serif font-black text-stone-800 tracking-tight flex items-center justify-center gap-2">
-              <span>Week {selectedWeek}</span>
+              <span>{t('week', 'Week')} {selectedWeek}</span>
               <span className="text-sm font-sans font-bold text-stone-600 bg-white/70 px-2.5 py-0.5 rounded-full border border-white/60">
-                {currentWeekData.fruitEmoji} {currentWeekData.babySizeFruit}
+                {currentWeekData.fruitEmoji} {t(currentWeekData.babySizeFruit)}
               </span>
             </h2>
 
@@ -754,8 +754,8 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                 <Ruler className="w-3.5 h-3.5 text-primary" />
                 <span>
                   {currentWeekData.babyLengthCm < 1
-                    ? `${(currentWeekData.babyLengthCm * 10).toFixed(1)} mm CRL`
-                    : `${currentWeekData.babyLengthCm} cm CHL`}
+                    ? `${(currentWeekData.babyLengthCm * 10).toFixed(1)} mm ${t('crl', 'CRL')}`
+                    : `${currentWeekData.babyLengthCm} cm ${t('chl', 'CHL')}`}
                 </span>
               </span>
 
@@ -763,8 +763,8 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                 <Scale className="w-3.5 h-3.5 text-accent" />
                 <span>
                   {currentWeekData.babyWeightG >= 1000
-                    ? `${(currentWeekData.babyWeightG / 1000).toFixed(2)} kg EFW`
-                    : `${currentWeekData.babyWeightG} g EFW`}
+                    ? `${(currentWeekData.babyWeightG / 1000).toFixed(2)} kg ${t('weightMetric', 'Weight')}`
+                    : `${currentWeekData.babyWeightG} g ${t('weightMetric', 'Weight')}`}
                 </span>
               </span>
             </div>
@@ -792,10 +792,10 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm sm:text-base font-serif font-bold text-foreground flex items-center gap-2">
               <Layers className="w-4 h-4 text-primary" />
-              <span>Anatomical Systems Evolved in Week {selectedWeek}</span>
+              <span>{t('weekMilestones', 'Anatomical Systems Evolved in Week')} {selectedWeek}</span>
             </h3>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted font-mono font-semibold text-muted-foreground">
-              Carnegie Reference
+              {t('carnegieStage', 'Carnegie Reference')}
             </span>
           </div>
 
@@ -804,10 +804,10 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
             <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/70 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-amber-900">
                 <Brain className="w-3.5 h-3.5 text-amber-700" />
-                <span>Brain & Nervous System</span>
+                <span>{t('brainNervous', 'Brain & Nervous System')}</span>
               </div>
               <p className="text-stone-700 leading-relaxed font-normal">
-                {evolutionRef.brainNervousSystem}
+                {t(evolutionRef.brainNervousSystem)}
               </p>
             </div>
 
@@ -815,10 +815,10 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
             <div className="p-3.5 rounded-2xl bg-rose-50/60 border border-rose-200/70 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-rose-900">
                 <Activity className="w-3.5 h-3.5 text-rose-700" />
-                <span>Cardiovascular & Visceral Organs</span>
+                <span>{t('cardiovascular', 'Cardiovascular & Visceral Organs')}</span>
               </div>
               <p className="text-stone-700 leading-relaxed font-normal">
-                {evolutionRef.cardiovascularVisceral}
+                {t(evolutionRef.cardiovascularVisceral)}
               </p>
             </div>
 
@@ -826,10 +826,10 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
             <div className="p-3.5 rounded-2xl bg-sky-50/60 border border-sky-200/70 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-sky-900">
                 <Eye className="w-3.5 h-3.5 text-sky-700" />
-                <span>Sensory & Craniofacial Development</span>
+                <span>{t('sensoryCranio', 'Sensory & Craniofacial Development')}</span>
               </div>
               <p className="text-stone-700 leading-relaxed font-normal">
-                {evolutionRef.sensoryCraniofacial}
+                {t(evolutionRef.sensoryCraniofacial)}
               </p>
             </div>
 
@@ -837,10 +837,10 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
             <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/70 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-emerald-900">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Pulmonary & Musculoskeletal</span>
+                <span>{t('pulmonaryMusculo', 'Pulmonary & Musculoskeletal')}</span>
               </div>
               <p className="text-stone-700 leading-relaxed font-normal">
-                {evolutionRef.pulmonaryMusculoskeletal}
+                {t(evolutionRef.pulmonaryMusculoskeletal)}
               </p>
             </div>
           </div>
@@ -851,14 +851,14 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
           <div className="flex items-center justify-between">
             <h4 className="text-xs sm:text-sm font-serif font-bold text-[#8A5A38] flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5 text-amber-700" />
-              <span>Clinical Advice for Mother • Trimester {selectedTrimester}</span>
+              <span>{t('safeMovement', 'Clinical Advice for Mother')} • {t('trimester', 'Trimester')} {selectedTrimester}</span>
             </h4>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold uppercase">
-              Month {selectedMonth}
+              {t('month', 'Month')} {selectedMonth}
             </span>
           </div>
           <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
-            {currentWeekData.weeklyAdvice || currentWeekData.nutritionTip || currentWeekData.safeExerciseTip}
+            {t(currentWeekData.weeklyAdvice || currentWeekData.nutritionTip || currentWeekData.safeExerciseTip)}
           </p>
         </div>
 
@@ -866,7 +866,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border/50 text-xs">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Select gestational week (1 to 40):</span>
+            <span>{t('selectWeek', 'Select gestational week (1 to 40):')}</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -879,7 +879,7 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
               className="w-full sm:w-44 accent-primary cursor-pointer"
             />
             <span className="font-mono font-bold text-foreground px-2 py-0.5 rounded-lg bg-muted/50 border border-border min-w-[54px] text-center">
-              Wk {selectedWeek}
+              {t('week', 'Wk')} {selectedWeek}
             </span>
 
             {/* If browsing a different week, show 1-click update button */}
@@ -891,11 +891,11 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
                 title={`Set your pregnancy current progress to Week ${selectedWeek}`}
               >
                 <CheckCircle2 className="w-3 h-3" />
-                <span>Set as My Current Week</span>
+                <span>{t('setAsCurrentWeek', 'Set as My Current Week')}</span>
               </button>
             ) : (
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
-                ● Your Current Week
+                ● {t('active', 'Your Current Week')}
               </span>
             )}
           </div>

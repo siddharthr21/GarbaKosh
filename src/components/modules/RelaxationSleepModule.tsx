@@ -197,10 +197,10 @@ export const RelaxationSleepModule: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
         <div className="flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-purple-600" />
-          <h3 className="text-base font-bold text-gray-900">Bedtime Visualizations & Sleep Stories</h3>
+          <h3 className="text-base font-bold text-gray-900">{t('Bedtime Visualizations & Sleep Stories', 'Bedtime Visualizations & Sleep Stories')}</h3>
         </div>
         <p className="text-xs text-gray-500">
-          Gently narrated visualizations to guide your mind into deep, dreamless restorative delta sleep.
+          {t('Gently narrated visualizations to guide your mind into deep, dreamless restorative delta sleep.', 'Gently narrated visualizations to guide your mind into deep, dreamless restorative delta sleep.')}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -215,14 +215,14 @@ export const RelaxationSleepModule: React.FC = () => {
               }`}
             >
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-gray-900 text-sm">{story.title}</span>
+                <span className="font-bold text-gray-900 text-sm">{t(story.title, story.title)}</span>
                 <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[10px] font-bold">
-                  {story.duration}
+                  {t(story.duration, story.duration)}
                 </span>
               </div>
-              <p className="text-xs text-gray-600 leading-relaxed">{story.summary}</p>
+              <p className="text-xs text-gray-600 leading-relaxed">{t(story.summary, story.summary)}</p>
               <div className="p-3 bg-white rounded-xl border border-gray-100 text-[11px] text-gray-600 italic leading-relaxed">
-                "{story.textSnippet}"
+                "{t(story.textSnippet, story.textSnippet)}"
               </div>
             </div>
           ))}

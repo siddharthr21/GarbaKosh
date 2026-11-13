@@ -248,10 +248,10 @@ export const LittleMomentsModule: React.FC = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-blush-700 uppercase tracking-wider border border-blush-200">
-                  Week {mem.gestationalWeek}
+                  {t('Week', 'Week')} {mem.gestationalWeek}
                 </div>
                 <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-md text-white px-2 py-0.5 rounded-md text-[10px] capitalize">
-                  {mem.type.replace('-', ' ')}
+                  {t(mem.type.replace('-', ' '), mem.type.replace('-', ' '))}
                 </div>
               </div>
 
@@ -260,19 +260,19 @@ export const LittleMomentsModule: React.FC = () => {
                   <Calendar className="w-3 h-3" />
                   <span>{mem.date}</span>
                 </div>
-                <h3 className="font-bold text-gray-900 text-base">{mem.title}</h3>
-                <p className="text-xs text-gray-600 leading-relaxed italic">"{mem.caption}"</p>
+                <h3 className="font-bold text-gray-900 text-base">{t(mem.title, mem.title)}</h3>
+                <p className="text-xs text-gray-600 leading-relaxed italic">"{t(mem.caption, mem.caption)}"</p>
 
                 {mem.notes && (
                   <p className="text-[11px] text-gray-500 pt-1 leading-relaxed border-t border-gray-100">
-                    {mem.notes}
+                    {t(mem.notes, mem.notes)}
                   </p>
                 )}
 
                 {mem.doctorComments && (
                   <div className="p-2.5 bg-blush-50/50 rounded-xl border border-blush-100 text-[11px] text-blush-900">
-                    <span className="font-bold block text-[10px] uppercase text-blush-700">Doctor's Observation:</span>
-                    {mem.doctorComments}
+                    <span className="font-bold block text-[10px] uppercase text-blush-700">{t("Doctor's Observation:", "Doctor's Observation:")}</span>
+                    {t(mem.doctorComments, mem.doctorComments)}
                   </div>
                 )}
               </div>

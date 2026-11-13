@@ -202,7 +202,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
               className="px-4 py-2 rounded-2xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
               <span>🌸</span>
-              <span>View Mother's Shared Dashboard</span>
+              <span>{t("View Mother's Shared Dashboard", "View Mother's Shared Dashboard")}</span>
             </button>
           )}
 
@@ -212,7 +212,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
             <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold uppercase ${
               isPaired ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-700'
             }`}>
-              {isPaired ? 'Connected' : 'Unpaired'}
+              {isPaired ? t('Connected', 'Connected') : t('Unpaired', 'Unpaired')}
             </span>
           </div>
         </div>
@@ -230,7 +230,7 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
             onClick={() => setPairingStatus(null)}
             className="text-xs font-bold hover:underline ml-3 cursor-pointer shrink-0"
           >
-            Dismiss
+            {t('Dismiss', 'Dismiss')}
           </button>
         </div>
       )}

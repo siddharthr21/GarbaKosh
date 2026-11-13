@@ -199,7 +199,7 @@ export const ContractionTimerModule: React.FC = () => {
                   : 'bg-muted/40 text-muted-foreground hover:bg-muted'
               }`}
             >
-              {lvl === 'Mild' ? t('mildIntensity', 'Mild') : lvl === 'Moderate' ? t('moderateIntensity', 'Moderate') : t('intenseIntensity', 'Intense')}
+              {lvl === 'Mild' ? t('intensityMild', 'Mild') : lvl === 'Moderate' ? t('intensityModerate', 'Moderate') : t('intensityStrong', 'Intense')}
             </button>
           ))}
         </div>
@@ -279,7 +279,7 @@ export const ContractionTimerModule: React.FC = () => {
                           ? 'bg-accent-soft text-accent'
                           : 'bg-primary-soft text-primary'
                       }`}>
-                        {c.intensity === 'Mild' ? t('mildIntensity', 'Mild') : c.intensity === 'Moderate' ? t('moderateIntensity', 'Moderate') : t('intenseIntensity', 'Intense')}
+                        {c.intensity === 'Mild' ? t('intensityMild', 'Mild') : c.intensity === 'Moderate' ? t('intensityModerate', 'Moderate') : t('intensityStrong', 'Intense')}
                       </span>
                     </td>
                     <td className="py-3 px-3 text-right">

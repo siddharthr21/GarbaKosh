@@ -218,7 +218,11 @@ export const BirthPlanModule: React.FC = () => {
         <h3 className="text-sm font-serif font-bold text-foreground">{t('specialInstructions', 'Special Instructions for Delivery Team')}</h3>
         <textarea
           rows={4}
-          value={birthPlan.specialNotes}
+          value={
+            birthPlan.specialNotes === 'Please explain every procedure before administering. We prefer a gentle, quiet birth atmosphere.'
+              ? t('Please explain every procedure before administering. We prefer a gentle, quiet birth atmosphere.')
+              : t(birthPlan.specialNotes, birthPlan.specialNotes)
+          }
           onChange={e => updateBirthPlanNotes(e.target.value)}
           placeholder={t("Any personal requests, cultural ceremonies, or medical allergies...", "Any personal requests, cultural ceremonies (e.g. whispering blessings in baby's ear), or medical allergies...")}
           className="w-full p-3 bg-muted/20 border border-input rounded-2xl text-xs text-foreground leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary"

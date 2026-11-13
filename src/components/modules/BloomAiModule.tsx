@@ -706,19 +706,25 @@ export const BloomAiModule: React.FC = () => {
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 overflow-x-auto text-xs pb-1">
           <span className="text-gray-500 font-bold text-[11px] shrink-0 uppercase tracking-wider mr-1">
-            Browse Topics:
+            {t('quickQuestions', 'Browse Topics')}:
           </span>
-          {(['All', 'Pregnancy', 'Labour', 'Newborn', 'Postpartum'] as const).map((cat) => (
+          {[
+            { id: 'All', key: 'filterAll' },
+            { id: 'Pregnancy', key: 'filterPregnancy' },
+            { id: 'Labour', key: 'filterLabour' },
+            { id: 'Newborn', key: 'filterNewborn' },
+            { id: 'Postpartum', key: 'filterPostpartum' }
+          ].map(({ id, key }) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={id}
+              onClick={() => setSelectedCategory(id as any)}
               className={`px-3 py-1 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
-                selectedCategory === cat
+                selectedCategory === id
                   ? 'bg-primary text-white shadow-2xs'
                   : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              {cat}
+              {t(key, id)}
             </button>
           ))}
         </div>

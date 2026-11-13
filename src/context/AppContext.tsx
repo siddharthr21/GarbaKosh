@@ -424,7 +424,9 @@ const INITIAL_BABY_NAMES: BabyNameItem[] = BABY_NAMES_DATABASE.map((item, idx) =
   isFavorite: idx < 4,
   isShortlisted: idx < 6,
   motherVote: idx === 0 || idx === 1 ? 1 : 0,
-  partnerVote: idx === 1 || idx === 2 ? 1 : 0
+  partnerVote: idx === 1 || idx === 2 ? 1 : 0,
+  localizedNames: item.localizedNames,
+  localizedMeanings: item.localizedMeanings
 }));
 
 const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
@@ -564,7 +566,45 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   ]);
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(INITIAL_CHAT_MESSAGES);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
+  const [selectedLanguage, setSelectedLanguageState] = useState<string>('en-US');
+
+  const setSelectedLanguage = (lang: string) => {
+    setSelectedLanguageState(lang);
+    if (typeof window !== 'undefined') {
+      setStorage('language', lang);
+    }
+    setProfile(prev => ({ ...prev, preferredLanguage: lang }));
+    setChatMessages(prev => {
+      if (prev.length <= 1 && (prev.length === 0 || prev[0].sender === 'assistant')) {
+        const greetingText = getLocalizedAiGreeting(lang, profile.name.split(' ')[0]);
+        const followUps =
+          lang === 'kn-IN'
+            ? ['ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಆಹಾರ ಕ್ರಮ', 'ಬೆಳಗಿನ ವಾಕರಿಕೆಗೆ ಪರಿಹಾರ', 'ಹೆರಿಗೆ ಸಿದ್ಧತೆ 5-1-1 ನಿಯಮ']
+            : lang === 'hi-IN'
+            ? ['गर्भावस्था में क्या खाना चाहिए?', 'मॉर्निंग सिकनेस से कैसे बचें?', 'प्रसव के लक्षण और तैयारी']
+            : lang === 'ta-IN'
+            ? ['கர்ப்பகால சத்தான உணவுகள்', 'காலை சோர்வுக்கான தீர்வுகள்', 'பிரசவத்திற்கான 5-1-1 விதி']
+            : lang === 'te-IN'
+            ? ['గర్భిణీలకు మంచి ఆహారం', 'మార్నింగ్ సిక్‌నెస్ నివారణ', 'ప్రసవ సన్నాహాలు 5-1-1 నియమం']
+            : lang === 'ml-IN'
+            ? ['ഗർഭകാല പോഷകാഹാരങ്ങൾ', 'രാവിലെയുള്ള ക്ഷീണം ഒഴിവാക്കാൻ', 'പ്രസവ തയ്യാറെടുപ്പുകൾ 5-1-1']
+            : [
+                'What are common symptoms during Week 24?',
+                'How to safely relieve round ligament pain?',
+                'What should I prepare for the glucose screening test?'
+              ];
+        return [{
+          id: `msg-${Date.now()}`,
+          sender: 'assistant',
+          text: greetingText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          suggestedFollowUps: followUps,
+          language: lang
+        }];
+      }
+      return prev;
+    });
+  };
 
   const [geminiApiKey, setGeminiApiKeyState] = useState<string>('');
   const setGeminiApiKey = (key: string) => {
@@ -1969,22 +2009,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const clearChat = () => {
     const greetingText = getLocalizedAiGreeting(selectedLanguage, profile.name.split(' ')[0]);
+    const followUps =
+      selectedLanguage === 'kn-IN'
+        ? ['ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಆಹಾರ ಕ್ರಮ', 'ಬೆಳಗಿನ ವಾಕರಿಕೆಗೆ ಪರಿಹಾರ', 'ಹೆರಿಗೆ ಸಿದ್ಧತೆ 5-1-1 ನಿಯಮ']
+        : selectedLanguage === 'hi-IN'
+        ? ['गर्भावस्था में क्या खाना चाहिए?', 'मॉर्निंग सिकनेस से कैसे बचें?', 'प्रसव के लक्षण और तैयारी']
+        : selectedLanguage === 'ta-IN'
+        ? ['கர்ப்பகால சத்தான உணவுகள்', 'காலை சோர்வுக்கான தீர்வுகள்', 'பிரசவத்திற்கான 5-1-1 விதி']
+        : selectedLanguage === 'te-IN'
+        ? ['గర్భిణీలకు మంచి ఆహారం', 'మార్నింగ్ సిక్‌నెస్ నివారణ', 'ప్రసవ సన్నాహాలు 5-1-1 నియమం']
+        : selectedLanguage === 'ml-IN'
+        ? ['ഗർഭകാല പോഷകാഹാരങ്ങൾ', 'രാവിലെയുള്ള ക്ഷീണം ഒഴിവാക്കാൻ', 'പ്രസവ തയ്യാറെടുപ്പുകൾ 5-1-1']
+        : [
+            'What are common symptoms during Week 24?',
+            'How to safely relieve round ligament pain?',
+            'What should I prepare for the glucose screening test?'
+          ];
     setChatMessages([
       {
         id: `msg-${Date.now()}`,
         sender: 'assistant',
         text: greetingText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        suggestedFollowUps:
-          selectedLanguage === 'kn-IN'
-            ? ['ಗರ್ಭಿಣಿಯರಿಗೆ ಉತ್ತಮ ಆಹಾರ ಕ್ರಮ', 'ಬೆಳಗಿನ ವಾಕರಿಕೆಗೆ ಪರಿಹಾರ', 'ಹೆರಿಗೆ ಸಿದ್ಧತೆ 5-1-1 ನಿಯಮ']
-            : selectedLanguage === 'hi-IN'
-            ? ['गर्भावस्था में क्या खाना चाहिए?', 'मॉर्निंग सिकनेस से कैसे बचें?', 'प्रसव के लक्षण और तैयारी']
-            : [
-                'What are common symptoms during Week 24?',
-                'How to safely relieve round ligament pain?',
-                'What should I prepare for the glucose screening test?'
-              ]
+        suggestedFollowUps: followUps,
+        language: selectedLanguage
       }
     ]);
   };

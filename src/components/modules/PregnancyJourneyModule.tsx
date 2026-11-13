@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { MONTHS_DATA, WEEKS_DATA } from '@/data/pregnancyJourneyData';
+import { getLocalizedWeekData } from '@/data/multilingualContent';
 import { getPregnancyMonth } from '@/utils/pregnancyCalculations';
 import {
   Sparkles,
@@ -26,7 +27,7 @@ import {
 } from 'lucide-react';
 
 export const PregnancyJourneyModule: React.FC = () => {
-  const { profile, t } = useApp();
+  const { profile, t, selectedLanguage } = useApp();
   const currentMotherMonth = getPregnancyMonth(profile.currentGestationalWeek || 24);
   
   // View mode switcher: 40-week biometric timeline vs 9-month in-depth guide
@@ -40,7 +41,8 @@ export const PregnancyJourneyModule: React.FC = () => {
     setSelectedMonthIndex(getPregnancyMonth(wk) - 1);
   }, [profile.currentGestationalWeek]);
 
-  const activeWeek = WEEKS_DATA.find(w => w.week === selectedWeekNum) || WEEKS_DATA[selectedWeekNum - 1] || WEEKS_DATA[0];
+  const rawActiveWeek = WEEKS_DATA.find(w => w.week === selectedWeekNum) || WEEKS_DATA[selectedWeekNum - 1] || WEEKS_DATA[0];
+  const activeWeek = getLocalizedWeekData(rawActiveWeek, selectedLanguage);
   const activeMonth = MONTHS_DATA[selectedMonthIndex] || MONTHS_DATA[0];
 
   return (
@@ -177,7 +179,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                 <p className="text-sm text-stone-700 max-w-xl">
                   {t('babySizeOf')}{' '}
                   <span className="font-bold text-emerald-900">
-                    {activeWeek.babySizeFruit} {activeWeek.fruitEmoji}
+                    {t(activeWeek.babySizeFruit, activeWeek.babySizeFruit)} {activeWeek.fruitEmoji}
                   </span>
                   .
                 </p>
@@ -192,7 +194,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                     {activeWeek.babyLengthCm} cm
                   </div>
                   <span className="text-[10px] text-stone-500">
-                    {activeWeek.week <= 13 ? 'Crown-Rump (CRL)' : 'Crown-Heel (CHL)'}
+                    {activeWeek.week <= 13 ? t('crlCmp', 'Crown-Rump (CRL)') : t('chlCmp', 'Crown-Heel (CHL)')}
                   </span>
                 </div>
 
@@ -204,7 +206,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                       ? `${(activeWeek.babyWeightG / 1000).toFixed(2)} kg`
                       : `${activeWeek.babyWeightG} g`}
                   </div>
-                  <span className="text-[10px] text-stone-500">Hadlock 50th %ile</span>
+                  <span className="text-[10px] text-stone-500">{t('hadlock50th', 'Hadlock 50th %ile')}</span>
                 </div>
               </div>
             </div>
@@ -224,7 +226,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                 </div>
               </div>
               <p className="text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
-                {activeWeek.babyDevelopment}
+                {t(activeWeek.babyDevelopment, activeWeek.babyDevelopment)}
               </p>
             </div>
 
@@ -240,7 +242,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                 </div>
               </div>
               <p className="text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
-                {activeWeek.motherChanges}
+                {t(activeWeek.motherChanges, activeWeek.motherChanges)}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-2">
                 {activeWeek.symptoms.map((s, i) => (
@@ -248,7 +250,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                     key={i}
                     className="px-2.5 py-1 rounded-lg bg-[#FAF6EE] text-stone-800 text-xs font-semibold border border-stone-200"
                   >
-                    {s}
+                    {t(s, s)}
                   </span>
                 ))}
               </div>
@@ -266,7 +268,7 @@ export const PregnancyJourneyModule: React.FC = () => {
                 </div>
               </div>
               <p className="text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
-                {activeWeek.safeExerciseTip}
+                {t(activeWeek.safeExerciseTip, activeWeek.safeExerciseTip)}
               </p>
             </div>
 
@@ -283,10 +285,10 @@ export const PregnancyJourneyModule: React.FC = () => {
               </div>
               <div className="space-y-2 text-xs md:text-sm text-stone-700 leading-relaxed pt-1">
                 <p>
-                  <strong className="text-emerald-900">Nutrition Focus:</strong> {activeWeek.nutritionTip}
+                  <strong className="text-emerald-900">{t('nutritionFocus', 'Nutrition Focus')}:</strong> {t(activeWeek.nutritionTip, activeWeek.nutritionTip)}
                 </p>
                 <div className="p-3 bg-amber-50/70 rounded-2xl border border-amber-200 text-xs text-amber-950 font-medium">
-                  💡 <strong className="font-bold">Clinical Advice:</strong> {activeWeek.weeklyAdvice}
+                  💡 <strong className="font-bold">{t('clinicalAdvice', 'Clinical Advice')}:</strong> {t(activeWeek.weeklyAdvice, activeWeek.weeklyAdvice)}
                 </div>
               </div>
             </div>
@@ -303,7 +305,7 @@ export const PregnancyJourneyModule: React.FC = () => {
           <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-card space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase tracking-wider font-bold text-stone-500">
-                Select Pregnancy Stage:
+                {t('selectPregnancyStage', 'Select Pregnancy Stage:')}
               </span>
               <div className="flex gap-1.5">
                 <button

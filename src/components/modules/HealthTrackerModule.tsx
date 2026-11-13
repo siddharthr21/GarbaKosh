@@ -470,17 +470,17 @@ export const HealthTrackerModule: React.FC = () => {
 
               <div className="flex-1 text-xs">
                 <span className="text-[10px] uppercase font-bold text-lavender-700 bg-lavender-50 px-2 py-0.5 rounded-md inline-block mb-1">
-                  {rem.category}
+                  {t(rem.category, rem.category)}
                 </span>
                 <p className={`font-bold text-gray-900 ${rem.completed ? 'line-through text-gray-400' : ''}`}>
-                  {rem.title}
+                  {t(rem.title, rem.title)}
                 </p>
                 <div className="flex items-center gap-2 text-gray-500 text-[11px] mt-1">
                   <span>📅 {rem.date}</span>
-                  <span>⏰ {rem.time}</span>
+                  <span>⏰ {t(rem.time, rem.time)}</span>
                 </div>
                 {rem.doctorOrLocation && (
-                  <p className="text-gray-500 text-[11px] mt-0.5">📍 {rem.doctorOrLocation}</p>
+                  <p className="text-gray-500 text-[11px] mt-0.5">📍 {t(rem.doctorOrLocation, rem.doctorOrLocation)}</p>
                 )}
               </div>
 

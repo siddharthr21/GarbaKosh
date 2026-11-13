@@ -276,6 +276,8 @@ export interface BabyNameItem {
   isShortlisted: boolean;
   motherVote: number;
   partnerVote: number;
+  localizedNames?: Record<string, string>;
+  localizedMeanings?: Record<string, string>;
 }
 
 export interface BabyActivityLog {

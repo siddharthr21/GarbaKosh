@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="hidden sm:flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-primary" />
             <h2 className="text-xs sm:text-sm font-serif font-bold text-foreground capitalize truncate max-w-[120px] md:max-w-none">
-              {t(activeTab.replace('-', ' '), activeTab.replace('-', ' '))}
+              {t(activeTab, activeTab)}
             </h2>
           </div>
         </div>

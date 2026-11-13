@@ -1,12 +1,13 @@
-export type SupportedLanguageCode = 'en-US' | 'kn-IN' | 'hi-IN' | 'ta-IN' | 'te-IN' | 'ml-IN';
+import { EXTENDED_PHRASES } from './extendedTranslations';
+import { COMMON_PHRASES, getLocalizedWeekData } from './multilingualContent';
 
+export type SupportedLanguageCode = 'en-US' | 'kn-IN' | 'hi-IN' | 'ta-IN' | 'te-IN' | 'ml-IN';
 export interface TranslationDictionary {
   [key: string]: string;
 }
 
 export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> = {
   'en-US': {
-    // Brand & App
     appName: 'GarbhSarthi',
     maternalSanctuary: 'MATERNAL SANCTUARY',
     tagline: 'Every heartbeat, every milestone, every moment — together.',
@@ -33,8 +34,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     today: 'Today',
     viewAll: 'View All',
     completed: 'Completed',
-
-    // Sidebar & Navigation
     clinicalTracking: 'Clinical & Daily Tracking',
     homeDashboard: 'Home Dashboard',
     journey: '40-Week Journey',
@@ -42,33 +41,28 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     vitalsKicks: 'Vitals & Kick Counter',
     contractions: 'Labor Surge Timer',
     birthPlan: 'Birth Plan Builder',
-
     maternalHealth: 'Maternal Health & Wellness',
     nutrition: 'Clinical Nutrition & Diet',
     exercise: 'Prenatal Fitness & Kegels',
     emotionalWellness: 'Emotional Wellness',
     soundscapes: 'Sleep & Soundscapes',
     memoryVault: 'Ultrasound & Moments Vault',
-
     partnerFamily: 'Partner & Family Prep',
     partnerCompanion: 'Partner Companion',
     hospitalBag: 'Hospital Bag Checklist',
     babyNames: 'Multilingual Baby Names',
     babyShower: 'Baby Shower & Ceremony',
     nurseryRegistry: 'Nursery Registry',
-
     postpartumSettings: 'Postpartum & Settings',
     fourthTrimester: 'Fourth Trimester Recovery',
     newbornCare: 'Newborn Care Companion',
     settings: 'Settings & Privacy Sharing',
     emergencyProtocol: 'Emergency Protocol (112)',
-
-    // Dashboard
     welcomeBack: 'Welcome back',
     babySizeOf: 'Baby is approximately the size of a',
     dueCountdown: 'Due Date Countdown',
     daysUntil: 'days until',
-    todaysHealthChecklist: "Today's Clinical Health Checklist",
+    todaysHealthChecklist: 'Today\'s Clinical Health Checklist',
     completedTasks: 'completed',
     waterIntake: 'Daily Hydration Tracker',
     glasses: 'glasses',
@@ -87,17 +81,15 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     kicksToday: 'Kicks Today',
     logVitals: 'Log Vitals',
     foodDiary: 'Food Diary',
-
-    // 40-Week Journey
     journeyTitle: 'My Pregnancy Journey',
     journeySubtitle: 'Follow your baby’s anatomical and physiological development alongside maternal adaptations across all 40 weeks and 9 monthly stages.',
     timeline40Weeks: '40-Week Timeline',
     chapters9Months: '9 Monthly Chapters',
     selectWeek: 'Select Gestational Week (1 - 40):',
     weekOf40: 'Week {week} of 40',
-    babyDevelopment: "Baby's Development",
+    babyDevelopment: 'Baby\'s Development',
     babyDevelopmentSub: 'Anatomical & neurological milestones',
-    motherBodySymptoms: "Mother's Body & Symptoms",
+    motherBodySymptoms: 'Mother\'s Body & Symptoms',
     motherBodySymptomsSub: 'Physiological adaptations & hormonal changes',
     nutritionGuidance: 'Clinical Nutrition Guidance',
     nutritionGuidanceSub: 'Targeted nutrients for this week',
@@ -107,8 +99,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     weightMetric: 'Weight',
     crlCmp: 'Crown-Rump (CRL)',
     chlCmp: 'Crown-Heel (CHL)',
-
-    // Monthly View
     monthOverview: 'Monthly Overview',
     majorMilestones: 'Major Developmental Milestones',
     maternalChanges: 'Maternal Physical & Emotional Changes',
@@ -118,8 +108,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     precautionsHeading: 'Crucial Precautions & Warning Signs',
     faqHeading: 'Frequently Asked Questions',
     weeklyTips: 'Weekly Clinical Tips',
-
-    // Gnani AI
     aiAssistantTitle: 'Gnani AI Assistant',
     aiAssistantSubtitle: 'Clinical & empathetic Indic maternal and pediatric companion powered by Gnani.ai',
     aiInputPlaceholder: 'Ask Gnani AI anything in your preferred language...',
@@ -134,8 +122,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     filterLabour: 'Labour',
     filterNewborn: 'Newborn',
     filterPostpartum: 'Postpartum',
-
-    // Vitals & Kicks
     vitalsTitle: 'Clinical Vitals & Evening Kick Counter',
     vitalsSubtitle: 'Track maternal blood pressure, weight trajectory, pulse, and daily fetal movement counts.',
     kickCounterTitle: 'Kick Counter Session',
@@ -150,8 +136,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     pulseBpmLabel: 'Pulse (bpm)',
     saveVitalRecord: 'Save Record',
     vitalHistory: 'Vitals & Movement History',
-
-    // Labor Contraction Timer
     surgeTimerTitle: 'Labor Surge & Contraction Timer',
     surgeTimerSubtitle: 'Accurate clinical timing for contraction intervals, duration, and 5-1-1 hospital departure guidance.',
     startTimer: 'START CONTRACTION',
@@ -166,8 +150,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     intensityLabel: 'Intensity',
     rule511AlertTitle: '5-1-1 RULE ACTIVE: HOSPITAL DEPARTURE RECOMMENDED',
     rule511AlertBody: 'Your contractions have occurred every 5 minutes or less, lasting at least 1 minute, consistently for 1 hour. Contact your maternity hospital and prepare to depart.',
-
-    // Birth Plan
     birthPlanTitle: 'Clinical Birth Plan Builder',
     birthPlanSubtitle: 'Clarify your delivery preferences for labor companions, pain management, delivery positions, and newborn care.',
     printExportPlan: 'Print / Clinical PDF',
@@ -177,8 +159,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     deliverySection: 'Delivery & Cord Clamping',
     newbornCareSection: 'Immediate Newborn Care',
     specialNotesLabel: 'Special Clinician Instructions',
-
-    // Nutrition & Cravings
     nutritionTitle: 'Maternal Clinical Nutrition & Food Diary',
     nutritionSubtitle: 'Precision macronutrient targets and craving tracking based on gestational week and pre-pregnancy BMI.',
     breakfast: 'Breakfast',
@@ -195,8 +175,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     sourCraving: 'Sour',
     picaWarningTitle: '🚨 PICA ALERT: CLINICIAN CONTACT REQUIRED',
     picaWarningBody: 'Cravings for non-food items (soil, chalk, clay, ice chips) can indicate severe iron or zinc deficiency anemia. Please notify your doctor.',
-
-    // Fitness & Exercise
     fitnessTitle: 'Prenatal Fitness & Pelvic Floor Center',
     fitnessSubtitle: 'Safe trimester-tailored yoga, gentle cardio, and guided Kegel pelvic floor exercises.',
     kegelTitle: 'Guided Pelvic Floor Kegels',
@@ -206,8 +184,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     difficultyLevel: 'Difficulty',
     markCompleted: 'Mark as Completed',
     completedBadge: 'Done Today',
-
-    // Emotional Wellness
     wellnessTitle: 'Emotional Wellness & Journaling',
     wellnessSubtitle: 'Daily maternal mood check-ins, anxiety tracking, positive affirmations, and mindful support.',
     howAreYouFeeling: 'How are you feeling today?',
@@ -220,8 +196,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     journalPlaceholder: 'Write your thoughts, feelings, or sensations...',
     saveMoodLog: 'Save Daily Check-in',
     affirmationsTitle: 'Maternal Daily Affirmation',
-
-    // Soundscapes & Sleep
     sleepTitle: 'Sleep Center & Relaxing Soundscapes',
     sleepSubtitle: 'Web Audio ambient nature sound synthesizer and guided relaxation for restful sleep.',
     rainSound: 'Gentle Rain',
@@ -231,8 +205,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     lullabySound: 'Maternal Lullaby',
     playAll: 'Play Selected Sounds',
     stopAll: 'Mute All',
-
-    // Little Moments Vault
     vaultTitle: 'Little Moments & Ultrasound Vault',
     vaultSubtitle: 'Organize fetal ultrasounds, medical scan reports, bump photos, and sacred family memories.',
     uploadScan: 'Upload Ultrasound / Document',
@@ -241,8 +213,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     scanCaption: 'Caption or Medical Summary',
     saveMoment: 'Save to Vault',
     vaultDisclaimer: 'Note: Ultrasounds in this vault are private memories and do not substitute for clinical sonographer reports.',
-
-    // Partner Space
     partnerSanctuaryTitle: 'Partner Sanctuary & Collaboration',
     partnerSanctuarySubtitle: 'Caregiver tools for labor surge timing, kick monitoring, and supportive trimester missions.',
     partnerConnected: 'Couples Synchronized & Connected',
@@ -259,16 +229,12 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     unpairedNoticeBody: 'Maternal clinical records and ultrasound scans are sequestered until paired with the mother’s code.',
     enterMotherCode: 'Enter Mother’s Code to Connect:',
     connectSanctuaryBtn: 'Connect Sanctuary',
-
-    // Hospital Bag Checklist
     hospitalBagTitle: 'Hospital Bag Checklist',
     hospitalBagSubtitle: 'Categorized packing checklist for mother, baby, and partner by Week 35.',
     bagForMother: 'Mother’s Bag',
     bagForBaby: 'Baby’s Bag',
     bagForPartner: 'Partner’s Bag',
     addItem: 'Add Custom Item',
-
-    // Baby Names
     babyNamesTitle: 'Multilingual Baby Name Explorer',
     babyNamesSubtitle: 'Explore Indian and global baby names with cultural origins, meanings, and partner voting.',
     searchNames: 'Search names or meanings...',
@@ -278,14 +244,10 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     shortlist: 'Shortlist',
     meaning: 'Meaning',
     origin: 'Origin',
-
-    // Postpartum & Newborn
     postpartumTitle: 'Fourth Trimester Maternal Recovery',
     postpartumSubtitle: 'Clinical tracking for lochia bleeding, perineal/cesarean healing, hydration, and postpartum emotional score.',
     newbornCareTitle: 'Newborn Care Companion',
     newbornCareSubtitle: 'Track newborn breastfeeding intervals, diaper counts, sleep durations, and growth milestones.',
-
-    // Settings
     settingsTitle: 'Settings & Preferences',
     tabProfile: 'Profile',
     tabPregnancy: 'Pregnancy',
@@ -294,8 +256,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     tabAccount: 'Account',
     exportData: 'Export Medical JSON',
     resetDemo: 'Reset Demo State',
-
-    // Auth Screen
     authWelcome: 'Welcome to GarbhSarthi',
     authSubtitle: 'Every heartbeat, every milestone, every moment — together.',
     signInTab: 'Sign In',
@@ -309,11 +269,120 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     signInBtn: 'Sign In to Sanctuary',
     createAccountBtn: 'Create Secure Account',
     demoProfilesTitle: '1-Click Evaluation Demo Profiles',
-    privacyNote: 'Protected with Row Level Security & zero cross-partner data leakage.'
+    privacyNote: 'Protected with Row Level Security & zero cross-partner data leakage.',
+    dashboard: 'Home Dashboard',
+    'bloom-ai': 'Gnani AI Assistant',
+    'health-tracker': 'Vitals & Kick Counter',
+    'birth-plan': 'Birth Plan Builder',
+    'mood-wellness': 'Emotional Wellness',
+    relaxation: 'Sleep & Soundscapes',
+    'little-moments': 'Ultrasound & Moments Vault',
+    'partner-space': 'Partner Companion',
+    'hospital-checklist': 'Hospital Bag Checklist',
+    'baby-names': 'Multilingual Baby Names',
+    'baby-shower': 'Baby Shower & Ceremony',
+    'baby-shopping': 'Nursery Registry',
+    postpartum: 'Fourth Trimester Recovery',
+    'baby-care': 'Newborn Care Companion',
+    fetalEvolutionReference: 'Fetal Evolution & Developmental Reference',
+    trimester1: 'Trimester 1',
+    trimester2: 'Trimester 2',
+    trimester3: 'Trimester 3',
+    setAsCurrentWeek: 'Set as Current Week',
+    hadlockStandard: 'Hadlock & WHO Clinical Standards',
+    crl: 'Crown-to-Rump Length',
+    chl: 'Crown-to-Heel Length',
+    biologicalFocus: 'Biological & Carnegie Embryological Focus',
+    brainNervous: 'Brain & Nervous System',
+    cardiovascular: 'Cardiovascular & Visceral',
+    sensoryCranio: 'Sensory & Craniofacial',
+    pulmonaryMusculo: 'Pulmonary & Musculoskeletal',
+    safeMovement: 'Safe Activity Guidance',
+    nutritionFocus: 'Clinical Nutrition Focus',
+    weekMilestones: 'Gestational Milestones',
+    partnerReadiness: 'Partner Readiness',
+    laborContractionTimer: 'Labor Contraction Timer',
+    birthPlanRole: 'Birth Plan & Hospital Role',
+    partnerMission: 'Partner Mission & Readiness',
+    connectedSynced: 'Connected & Synced',
+    awaitingConnection: 'Awaiting Connection',
+    disconnect: 'Disconnect',
+    viewMotherDashboard: 'View Mother\'s Shared Dashboard',
+    goToPartnerSpace: 'Go to Partner Space →',
+    connectCode: 'Connect Code',
+    registeredMothers: 'Registered Available Mothers',
+    addTask: 'Add Task',
+    enterNewTask: 'Enter task title...',
+    addReminderBtn: 'Add Reminder',
+    noReminders: 'No reminders scheduled. Stay prepared for your next appointment.',
+    language: 'Language',
+    sharedDashboard: 'Shared Dashboard',
+    surgesLogged: 'Surges Logged',
+    reset: 'Reset',
+    all: 'All',
+    status: 'Status',
+    search: 'Search',
+    filter: 'Filter',
+    evidenceNutrition: 'Evidence-Based Maternal Clinical Nutrition',
+    personalizedTargets: 'Personalized Clinical Targets Active',
+    cravingType: 'Craving Type',
+    cravingDesc: 'Specific craving description',
+    physioExplanation: 'Physiological Explanation',
+    recommendation: 'Recommendation',
+    unusualCraving: 'Unusual Food Combinations',
+    nonFoodCraving: 'Non-Food Substance (PICA)',
+    bloodPressureSystolic: 'Blood Pressure (Systolic)',
+    bloodPressureDiastolic: 'Blood Pressure (Diastolic)',
+    currentWeight: 'Current Weight',
+    heartPulse: 'Heart Pulse',
+    bloodGlucose: 'Blood Glucose',
+    clinicalNotes: 'Clinical Notes or Observations',
+    saveVitalUpdate: 'Save Vital Update',
+    scheduleReminder: 'Schedule New Reminder',
+    doctorVisit: 'Doctor Visit',
+    ultrasoundScan: 'Ultrasound Scan',
+    medication: 'Medication',
+    vaccination: 'Vaccination',
+    hospitalPrep: 'Hospital Preparation',
+    date: 'Date',
+    time: 'Time',
+    glucose: 'Glucose',
+    notes: 'Notes',
+    kicks: 'Kicks',
+    tapKick: 'Tap on Kick',
+    recordVitals: 'Record Today\'s Vitals',
+    cardioMetabolic: 'Track cardiovascular & metabolic markers',
+    doctorOrLocation: 'Doctor or Location',
+    saveSchedule: 'Save Schedule',
+    familyCollab: 'Mother Sanctuary · Family & Caregiver Suite',
+    caregiverSuite: 'Partner Sanctuary · GarbaKosh Caregiver Suite',
+    rapidCaregiverTools: 'Rapid Caregiver Tools',
+    directActions: 'Direct actions for birth readiness',
+    partnerReadinessTitle: 'Partner Readiness Checklist',
+    physicalTasks: 'Physical tasks to relieve maternal anxiety',
+    ready: 'Ready',
+    carSeatTask: 'Infant car seat securely installed & inspected in vehicle',
+    hospitalBagTask: 'Partner overnight hospital bag & 10ft phone chargers packed',
+    birthPlanTask: 'Birth preferences and cord-cutting wishes memorized',
+    emergencyContactsTask: 'Pediatric triage & labor ward emergency contacts in speed dial',
+    fiveOneOneTask: '5-1-1 contraction rule understood for hospital departure',
+    recoveryRoomTask: 'Home recovery & newborn bassinet station sanitized and ready',
+    laborDeliveryPrep: 'Labor & Delivery Preparation',
+    printExportPdf: 'Print / Export PDF',
+    overallBagReadiness: 'Overall Hospital Bag Readiness',
+    packed: 'Packed',
+    laborTriage: 'Hospital Labor Triage',
+    allEssentials: 'All Essentials',
+    tapToMarkPacked: 'Tap item to mark as packed',
+    addCustomPacking: 'Add custom packing item...',
+    managePreferences: 'Manage your profile, pregnancy timeline, health preferences, and account security.',
+    dataSovereignty: 'Data Sovereignty & Medical Export',
+    exportJsonDesc: 'Download your complete maternal record, vitals logs, and memories as a clean JSON backup.',
+    resetDemoTitle: 'Reset to Baseline Demo State',
+    resetDemoDesc: 'Reset all local states, milestones, and sample records back to initial values.'
   },
 
   'kn-IN': {
-    // Brand & App
     appName: 'ಬ್ಲೂಮ್‌ನೆಸ್ಟ್',
     maternalSanctuary: 'ಮಾತೃ ಸಂರಕ್ಷಣಾಲಯ',
     tagline: 'ಪ್ರತಿಯೊಂದು ಹೃದಯಬಡಿತ, ಪ್ರತಿಯೊಂದು ಹೆಜ್ಜೆ, ಪ್ರತಿಯೊಂದು ಕ್ಷಣ — ಜೊತೆಯಾಗಿ.',
@@ -340,37 +409,30 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     today: 'ಇಂದು',
     viewAll: 'ಎಲ್ಲವನ್ನೂ ವೀಕ್ಷಿಸಿ',
     completed: 'ಪೂರ್ಣಗೊಂಡಿದೆ',
-
-    // Sidebar & Navigation
     clinicalTracking: 'ದೈನಂದಿನ ಮತ್ತು ವೈದ್ಯಕೀಯ ಮಾಹಿತಿ',
     homeDashboard: 'ಮುಖ್ಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
-    journey: '೪೦ ವಾರಗಳ ಪ್ರಯಾಣ',
-    bloomAi: 'ಜ್ಞಾನಿ ಎಐ ಸಹಾಯಕ',
+    journey: '೪೦-ವಾರದ ಪಯಣ',
+    bloomAi: 'ಜ್ಞಾನಿ AI ಸಹಾಯಕ',
     vitalsKicks: 'ಆರೋಗ್ಯ ಮತ್ತು ಮಗುವಿನ ಚಲನೆ',
     contractions: 'ಹೆರಿಗೆ ನೋವಿನ ಟೈಮರ್',
     birthPlan: 'ಹೆರಿಗೆ ಯೋಜನೆ (Birth Plan)',
-
     maternalHealth: 'ಮಾತೃ ಆರೋಗ್ಯ ಮತ್ತು ಕ್ಷೇಮ',
-    nutrition: 'ಪೌಷ್ಟಿಕ ಆಹಾರ ಮತ್ತು ಡಯೆಟ್',
-    exercise: 'ಗರ್ಭಧಾರಣಾ ವ್ಯಾಯಾಮ ಮತ್ತು ಯೋಗ',
+    nutrition: 'ಪೌಷ್ಟಿಕ ಆಹಾರ ಮತ್ತು ಡಯಟ್',
+    exercise: 'ವ್ಯಾಯಾಮ ಮತ್ತು ಕೀಗಲ್ಸ್',
     emotionalWellness: 'ಭಾವನಾತ್ಮಕ ಕ್ಷೇಮ ಮತ್ತು ಮನಃಶಾಂತಿ',
     soundscapes: 'ನಿದ್ರೆ ಮತ್ತು ಶಾಂತ ಧ್ವನಿಗಳು',
     memoryVault: 'ಅಲ್ಟ್ರಾಸೌಂಡ್ ಸ್ಕ್ಯಾನ್ ಸಂಗ್ರಹ',
-
     partnerFamily: 'ಸಂಗಾತಿ ಮತ್ತು ಕುಟುಂಬ ತಯಾರಿ',
     partnerCompanion: 'ಸಂಗಾತಿ ಸಂರಕ್ಷಣಾ ಕೊಠಡಿ',
     hospitalBag: 'ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್ ಪರಿಶೀಲನೆ',
     babyNames: 'ಮಗುವಿನ ಸುಂದರ ಹೆಸರುಗಳು',
     babyShower: 'ಸೀಮಂತ ಸಮಾರಂಭದ ಯೋಜನೆ',
     nurseryRegistry: 'ಮಗುವಿನ ಸಾಮಗ್ರಿಗಳ ಪಟ್ಟಿ',
-
     postpartumSettings: 'ಹೆರಿಗೆಯ ನಂತರದ ಆರೈಕೆ',
     fourthTrimester: 'ನಾಲ್ಕನೇ ತ್ರೈಮಾಸಿಕ ಚೇತರಿಕೆ',
     newbornCare: 'ನವಜಾತ ಶಿಶು ಆರೈಕೆ',
-    settings: 'ಸೆಟ್ಟಿಂಗ್ಸ್ ಮತ್ತು ಗೌಪ್ಯತೆ',
+    settings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಗೌಪ್ಯತೆ',
     emergencyProtocol: 'ತುರ್ತು ಚಿಕಿತ್ಸಾ ಪ್ರೋಟೋಕಾಲ್ (112)',
-
-    // Dashboard
     welcomeBack: 'ಮರಳಿ ಸುಸ್ವಾಗತ',
     babySizeOf: 'ಮಗು ಸರಿಸುಮಾರು ಈ ಹಣ್ಣಿನ ಗಾತ್ರದಲ್ಲಿದೆ',
     dueCountdown: 'ಹೆರಿಗೆ ದಿನದ ಕೌಂಟ್‌ಡೌನ್',
@@ -394,8 +456,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     kicksToday: 'ಇಂದಿನ ಚಲನೆಗಳು',
     logVitals: 'ಆರೋಗ್ಯ ದಾಖಲಿಸಿ',
     foodDiary: 'ಆಹಾರ ಡೈರಿ',
-
-    // 40-Week Journey
     journeyTitle: 'ನನ್ನ ಗರ್ಭಧಾರಣೆಯ ಸುಂದರ ಪ್ರಯಾಣ',
     journeySubtitle: '೪೦ ವಾರಗಳು ಮತ್ತು ೯ ತಿಂಗಳ ಅವಧಿಯಲ್ಲಿ ಮಗುವಿನ ಅಂಗಾಂಗ ಬೆಳವಣಿಗೆ ಮತ್ತು ತಾಯಿಯ ಶಾರೀರಿಕ ಬದಲಾವಣೆಗಳ ಸಂಪೂರ್ಣ ಮಾಹಿತಿ.',
     timeline40Weeks: '೪೦ ವಾರಗಳ ಟೈಮ್‌ಲೈನ್',
@@ -414,8 +474,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     weightMetric: 'ತೂಕ',
     crlCmp: 'ನೆತ್ತಿಯಿಂದ ಪೃಷ್ಠದವರೆಗೆ (CRL)',
     chlCmp: 'ನೆತ್ತಿಯಿಂದ ಹಿಮ್ಮಡಿಯವರೆಗೆ (CHL)',
-
-    // Monthly View
     monthOverview: 'ಮಾಸಿಕ ಸಾರಾಂಶ',
     majorMilestones: 'ಪ್ರಮುಖ ಬೆಳವಣಿಗೆಯ ಮೈಲಿಗಲ್ಲುಗಳು',
     maternalChanges: 'ತಾಯಿಯ ದೈಹಿಕ ಮತ್ತು ಭಾವನಾತ್ಮಕ ಬದಲಾವಣೆಗಳು',
@@ -425,8 +483,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     precautionsHeading: 'ಅಗತ್ಯ ಮುನ್ನೆಚ್ಚರಿಕೆಗಳು ಮತ್ತು ಅಪಾಯದ ಸೂಚನೆಗಳು',
     faqHeading: 'ಸಾಮಾನ್ಯ ಪ್ರಶ್ನೋತ್ತರಗಳು',
     weeklyTips: 'ಸಾಪ್ತಾಹಿಕ ವೈದ್ಯಕೀಯ ಸಲಹೆಗಳು',
-
-    // Gnani AI
     aiAssistantTitle: 'ಜ್ಞಾನಿ ಎಐ ಸಹಾಯಕ',
     aiAssistantSubtitle: 'ಗರ್ಭಧಾರಣೆ ಮತ್ತು ಶಿಶು ಆರೈಕೆಯ ಆಪ್ತ ವೈದ್ಯಕೀಯ ಮಾರ್ಗದರ್ಶಿ (ಜ್ಞಾನಿ.ಎಐ)',
     aiInputPlaceholder: 'ಕನ್ನಡದಲ್ಲಿ ಅಥವಾ ಯಾವುದೇ ಭಾಷೆಯಲ್ಲಿ ಜ್ಞಾನಿ ಎಐಗೆ ಪ್ರಶ್ನೆ ಕೇಳಿ...',
@@ -441,8 +497,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     filterLabour: 'ಹೆರಿಗೆ',
     filterNewborn: 'ನವಜಾತ ಶಿಶು',
     filterPostpartum: 'ಹೆರಿಗೆಯ ನಂತರ',
-
-    // Vitals & Kicks
     vitalsTitle: 'ಆರೋಗ್ಯ ಮಾಪನ ಮತ್ತು ಮಗುವಿನ ಚಲನೆಯ ಕೌಂಟರ್',
     vitalsSubtitle: 'ರಕ್ತದೊತ್ತಡ, ತೂಕ, ನಾಡಿಮಿಡಿತ ಮತ್ತು ದೈನಂದಿನ ಕಿಕ್ ಸಂಖ್ಯೆಯನ್ನು ದಾಖಲಿಸಿ.',
     kickCounterTitle: 'ಮಗುವಿನ ಕಿಕ್ ಎಣಿಕೆ ಸೆಷನ್',
@@ -457,8 +511,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     pulseBpmLabel: 'ನಾಡಿಮಿಡಿತ (bpm)',
     saveVitalRecord: 'ದಾಖಲೆ ಉಳಿಸಿ',
     vitalHistory: 'ಆರೋಗ್ಯ ಇತಿಹಾಸ',
-
-    // Labor Contraction Timer
     surgeTimerTitle: 'ಹೆರಿಗೆ ನೋವಿನ ಸಮಯ ನಿರ್ವಹಣೆ (Contraction Timer)',
     surgeTimerSubtitle: 'ಹೆರಿಗೆ ಸಂಕೋಚನಗಳ ಅವಧಿ, ಅಂತರ ಮತ್ತು ೫-೧-೧ ಆಸ್ಪತ್ರೆ ನಿರ್ಗಮನ ಮಾರ್ಗದರ್ಶನ.',
     startTimer: 'ನೋವು ಆರಂಭವಾಯಿತು',
@@ -473,8 +525,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     intensityLabel: 'ತೀವ್ರತೆ',
     rule511AlertTitle: '೫-೧-೧ ಸುವರ್ಣ ನಿಯಮ ಸಕ್ರಿಯವಾಗಿದೆ: ತಕ್ಷಣ ಆಸ್ಪತ್ರೆಗೆ ತೆರಳಿ!',
     rule511AlertBody: 'ನಿಮ್ಮ ಹೆರಿಗೆ ನೋವು ಪ್ರತಿ ೫ ನಿಮಿಷಕ್ಕೊಮ್ಮೆ ಬರುತ್ತಿದ್ದು, ಕನಿಷ್ಠ ೧ ನಿಮಿಷ ಕಾಲ ಇರುತ್ತಿದೆ ಮತ್ತು ೧ ಗಂಟೆಯಿಂದ ನಿರಂತರವಾಗಿದೆ. ತಕ್ಷಣ ಹೆರಿಗೆ ಆಸ್ಪತ್ರೆಗೆ ತೆರಳಿ.',
-
-    // Birth Plan
     birthPlanTitle: 'ಹೆರಿಗೆ ಯೋಜನೆ ಸೃಷ್ಟಿಕರ್ತ (Birth Plan)',
     birthPlanSubtitle: 'ಹೆರಿಗೆ ವಾತಾವರಣ, ನೋವು ನಿವಾರಣೆ ಮತ್ತು ನವಜಾತ ಶಿಶುವಿನ ಆರೈಕೆಯ ನಿಮ್ಮ ಆದ್ಯತೆಗಳನ್ನು ನಿರ್ಧರಿಸಿ.',
     printExportPlan: 'ಪ್ರಿಂಟ್ / ಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್',
@@ -484,8 +534,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     deliverySection: 'ಹೆರಿಗೆ ಹಂತ ಮತ್ತು ನಾಭಿನಾಳ ಕತ್ತರಿಸುವುದು',
     newbornCareSection: 'ಹುಟ್ಟಿದ ತಕ್ಷಣ ಮಗುವಿನ ಆರೈಕೆ',
     specialNotesLabel: 'ವೈದ್ಯರಿಗೆ ವಿಶೇಷ ಟಿಪ್ಪಣಿಗಳು',
-
-    // Nutrition & Cravings
     nutritionTitle: 'ಮಾತೃ ಪೌಷ್ಟಿಕ ಆಹಾರ ಮತ್ತು ಆಹಾರ ಡೈರಿ',
     nutritionSubtitle: 'ಗರ್ಭಧಾರಣಾ ವಾರಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಕ್ಯಾಲೋರಿಗಳು ಮತ್ತು ಪ್ರಮುಖ ಪೋಷಕಾಂಶಗಳ ಸಮಗ್ರ ನಿರ್ವಹಣೆ.',
     breakfast: 'ಮುಂಜಾನೆಯ ಉಪಹಾರ',
@@ -502,8 +550,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     sourCraving: 'ಹುಳಿ',
     picaWarningTitle: '🚨 ಪಿಕಾ ಎಚ್ಚರಿಕೆ: ತಕ್ಷಣ ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ',
     picaWarningBody: 'ಮಣ್ಣು, ಸೀಮೆಸುಣ್ಣ, ಬೂದಿ ತಿನ್ನಬೇಕೆಂಬ ಬಯಕೆಯು ತೀವ್ರ ಕಬ್ಬಿಣಾಂಶದ ಕೊರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ. ತಕ್ಷಣ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ.',
-
-    // Fitness & Exercise
     fitnessTitle: 'ಗರ್ಭಧಾರಣಾ ವ್ಯಾಯಾಮ ಮತ್ತು ಪೆಲ್ವಿಕ್ ಫ್ಲೋರ್ ಕೇಂದ್ರ',
     fitnessSubtitle: 'ತ್ರೈಮಾಸಿಕಕ್ಕೆ ಸುರಕ್ಷಿತ ಯೋಗಾಸನಗಳು ಮತ್ತು ಕೀಗೆಲ್ ಸ್ನಾಯುಗಳ ವ್ಯಾಯಾಮಗಳು.',
     kegelTitle: 'ಮಾರ್ಗದರ್ಶಿತ ಕೀಗೆಲ್ ವ್ಯಾಯಾಮ',
@@ -513,8 +559,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     difficultyLevel: 'ಹಂತ',
     markCompleted: 'ಪೂರ್ಣಗೊಳಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ',
     completedBadge: 'ಇಂದು ಮುಗಿದಿದೆ',
-
-    // Emotional Wellness
     wellnessTitle: 'ಭಾವನಾತ್ಮಕ ಕ್ಷೇಮ ಮತ್ತು ದಿನಚರಿ',
     wellnessSubtitle: 'ದೈನಂದಿನ ಮನಸ್ಥಿತಿ, ಒತ್ತಡ ನಿರ್ವಹಣೆ ಮತ್ತು ಧನಾತ್ಮಕ ಚಿಂತನೆಗಳು.',
     howAreYouFeeling: 'ಇಂದು ನಿಮ್ಮ ಮನಸ್ಥಿತಿ ಹೇಗಿದೆ?',
@@ -527,8 +571,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     journalPlaceholder: 'ನಿಮ್ಮ ಆಲೋಚನೆಗಳು ಅಥವಾ ಅನುಭವಗಳನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ...',
     saveMoodLog: 'ದಿನಚರಿ ಉಳಿಸಿ',
     affirmationsTitle: 'ದೈನಂದಿನ ಧನಾತ್ಮಕ ಧ್ಯಾನವಾಕ್ಯ',
-
-    // Soundscapes & Sleep
     sleepTitle: 'ನಿದ್ರಾ ಕೇಂದ್ರ ಮತ್ತು ಶಾಂತ ಧ್ವನಿಗಳು',
     sleepSubtitle: 'ಉತ್ತಮ ನಿದ್ರೆಗಾಗಿ ನೈಸರ್ಗಿಕ ಮಳೆ, ಸಮುದ್ರ ಅಲೆಗಳು ಮತ್ತು ಜೋಗುಳ ಧ್ವನಿಗಳು.',
     rainSound: 'ಮಳೆ ಹನಿಗಳು',
@@ -538,8 +580,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     lullabySound: 'ತಾಯಿಯ ಜೋಗುಳ',
     playAll: 'ಧ್ವನಿ ಆರಂಭಿಸಿ',
     stopAll: 'ಧ್ವನಿ ನಿಲ್ಲಿಸಿ',
-
-    // Little Moments Vault
     vaultTitle: 'ಅಮೂಲ್ಯ ಕ್ಷಣಗಳು ಮತ್ತು ಸ್ಕ್ಯಾನ್ ಸಂಗ್ರಹ',
     vaultSubtitle: 'ಅಲ್ಟ್ರಾಸೌಂಡ್ ಫೋಟೋಗಳು, ವೈದ್ಯಕೀಯ ವರದಿಗಳು ಮತ್ತು ನೆನಪುಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಿ.',
     uploadScan: 'ಸ್ಕ್ಯಾನ್ / ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
@@ -548,8 +588,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     scanCaption: 'ವಿವರಣೆ ಅಥವಾ ವೈದ್ಯಕೀಯ ಟಿಪ್ಪಣಿ',
     saveMoment: 'ಸಂಗ್ರಹದಲ್ಲಿ ಉಳಿಸಿ',
     vaultDisclaimer: 'ಗಮನಿಸಿ: ಇಲ್ಲಿರುವ ಚಿತ್ರಗಳು ನಿಮ್ಮ ಖಾಸಗಿ ನೆನಪುಗಳಾಗಿದ್ದು, ವೃತ್ತಿಪರ ವೈದ್ಯಕೀಯ ವರದಿಗೆ ಬದಲಿಯಲ್ಲ.',
-
-    // Partner Space
     partnerSanctuaryTitle: 'ಸಂಗಾತಿ ಸಹಯೋಗ ಮತ್ತು ಬೆಂಬಲ',
     partnerSanctuarySubtitle: 'ಹೆರಿಗೆ ನೋವಿನ ಸಮಯ ನಿರ್ವಹಣೆ ಮತ್ತು ಸಾಪ್ತಾಹಿಕ ಆರೈಕೆಯ ಮಾರ್ಗದರ್ಶಿ.',
     partnerConnected: 'ದಂಪತಿಗಳು ಯಶಸ್ವಿಯಾಗಿ ಸಂಪರ್ಕಗೊಂಡಿದ್ದಾರೆ',
@@ -566,16 +604,12 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     unpairedNoticeBody: 'ತಾಯಿಯ ಖಾಸಗಿ ವೈದ್ಯಕೀಯ ದಾಖಲೆಗಳು ಅವರ ಅನುಮತಿಯ ಕೋಡ್ ನಮೂದಿಸುವವರೆಗೆ ಸುರಕ್ಷಿತವಾಗಿರುತ್ತವೆ.',
     enterMotherCode: 'ಸಂಪರ್ಕಿಸಲು ತಾಯಿಯ ಕೋಡ್ ನಮೂದಿಸಿ:',
     connectSanctuaryBtn: 'ಸಂಪರ್ಕ ಕಲ್ಪಿಸಿ',
-
-    // Hospital Bag Checklist
     hospitalBagTitle: 'ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್ ಪರಿಶೀಲನಾ ಪಟ್ಟಿ',
     hospitalBagSubtitle: '೩೫ನೇ ವಾರಕ್ಕೆ ತಾಯಿ, ಮಗು ಮತ್ತು ಸಂಗಾತಿಯ ಅಗತ್ಯ ಸಾಮಗ್ರಿಗಳ ಪಟ್ಟಿ.',
     bagForMother: 'ತಾಯಿಯ ಬ್ಯಾಗ್',
     bagForBaby: 'ಮಗುವಿನ ಬ್ಯಾಗ್',
     bagForPartner: 'ಸಂಗಾತಿಯ ಬ್ಯಾಗ್',
     addItem: 'ಹೊಸ ವಸ್ತು ಸೇರಿಸಿ',
-
-    // Baby Names
     babyNamesTitle: 'ಮಗುವಿನ ಹೆಸರುಗಳ ಅನ್ವೇಷಣೆ',
     babyNamesSubtitle: 'ಸುಂದರ ಭಾರತೀಯ ಹೆಸರುಗಳು, ಅರ್ಥಗಳು ಮತ್ತು ಸಂಗಾತಿಯ ಮತದಾನ.',
     searchNames: 'ಹೆಸರು ಅಥವಾ ಅರ್ಥ ಹುಡುಕಿ...',
@@ -585,14 +619,10 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     shortlist: 'ಆಯ್ಕೆ ಪಟ್ಟಿ',
     meaning: 'ಅರ್ಥ',
     origin: 'ಮೂಲ',
-
-    // Postpartum & Newborn
     postpartumTitle: 'ನಾಲ್ಕನೇ ತ್ರೈಮಾಸಿಕದ ಮಾತೃ ಚೇತರಿಕೆ',
     postpartumSubtitle: 'ಹೆರಿಗೆಯ ನಂತರದ ರಕ್ತಸ್ರಾವ, ಗಾಯದ ಆರೈಕೆ ಮತ್ತು ಮಾನಸಿಕ ನೆಮ್ಮದಿಯ ಮೇಲ್ವಿಚಾರಣೆ.',
     newbornCareTitle: 'ನವಜಾತ ಶಿಶು ಆರೈಕೆ ಒಡನಾಡಿ',
     newbornCareSubtitle: 'ಎದೆಹಾಲುಣಿಸುವ ಸಮಯ, ಡೈಪರ್ ಬದಲಾವಣೆ ಮತ್ತು ನಿದ್ರೆಯ ಟ್ರ್ಯಾಕಿಂಗ್.',
-
-    // Settings
     settingsTitle: 'ಸೆಟ್ಟಿಂಗ್ಸ್ ಮತ್ತು ಆದ್ಯತೆಗಳು',
     tabProfile: 'ಪ್ರೊಫೈಲ್',
     tabPregnancy: 'ಗರ್ಭಧಾರಣೆ',
@@ -601,8 +631,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     tabAccount: 'ಖಾತೆ ನಿರ್ವಹಣೆ',
     exportData: 'ವೈದ್ಯಕೀಯ ಮಾಹಿತಿ ಡೌನ್‌ಲೋಡ್ (JSON)',
     resetDemo: 'ಡೆಮೊ ಮರುಹೊಂದಿಸಿ',
-
-    // Auth Screen
     authWelcome: 'ಬ್ಲೂಮ್‌ನೆಸ್ಟ್‌ಗೆ ಸುಸ್ವಾಗತ',
     authSubtitle: 'ಪ್ರತಿಯೊಂದು ಹೃದಯಬಡಿತ, ಪ್ರತಿಯೊಂದು ಹೆಜ್ಜೆ, ಪ್ರತಿಯೊಂದು ಕ್ಷಣ — ಜೊತೆಯಾಗಿ.',
     signInTab: 'ಲಾಗಿನ್ ಮಾಡಿ',
@@ -616,7 +644,117 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     signInBtn: 'ಸಂರಕ್ಷಣಾಲಯ ಪ್ರವೇಶಿಸಿ',
     createAccountBtn: 'ಸುರಕ್ಷಿತ ಖಾತೆ ಸೃಷ್ಟಿಸಿ',
     demoProfilesTitle: '೧-ಕ್ಲಿಕ್ ಪರೀಕ್ಷಾ ಪ್ರೊಫೈಲ್‌ಗಳು',
-    privacyNote: 'ಖಾಸಗಿ ಭದ್ರತೆ ಮತ್ತು ಶೂನ್ಯ ಮಾಹಿತಿ ಸೋರಿಕೆಯೊಂದಿಗೆ ಸುರಕ್ಷಿತವಾಗಿದೆ.'
+    privacyNote: 'ಖಾಸಗಿ ಭದ್ರತೆ ಮತ್ತು ಶೂನ್ಯ ಮಾಹಿತಿ ಸೋರಿಕೆಯೊಂದಿಗೆ ಸುರಕ್ಷಿತವಾಗಿದೆ.',
+    dashboard: 'ಮುಖ್ಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    'bloom-ai': 'ಜ್ಞಾನಿ AI ಸಹಾಯಕ',
+    'health-tracker': 'ಆರೋಗ್ಯ ಮತ್ತು ಕಿಕ್ ಎಣಿಕೆ',
+    'birth-plan': 'ಜನನ ಯೋಜನೆ ಬಿಲ್ಡರ್',
+    'mood-wellness': 'ಭಾವನಾತ್ಮಕ ಕ್ಷೇಮ',
+    relaxation: 'ನಿದ್ರೆ ಮತ್ತು ವಿಶ್ರಾಂತಿ ಧ್ವನಿಗಳು',
+    'little-moments': 'ಅಲ್ಟ್ರಾಸೌಂಡ್ ಮತ್ತು ನೆನಪುಗಳ ಖಜಾನೆ',
+    'partner-space': 'ಸಂಗಾತಿಯ ಸಹಯೋಗ',
+    'hospital-checklist': 'ಆಸ್ಪತ್ರೆಯ ಬ್ಯಾಗ್ ಪರಿಶೀಲನಾಪಟ್ಟಿ',
+    'baby-names': 'ಬಹುಭಾಷಾ ಮಗುವಿನ ಹೆಸರುಗಳು',
+    'baby-shower': 'ಸೀಮಂತ ಸಮಾರಂಭದ ಯೋಜನೆ',
+    'baby-shopping': 'ಮಗುವಿನ ವಸ್ತುಗಳ ಶಾಪಿಂಗ್',
+    postpartum: 'ಹೆರಿಗೆಯ ನಂತರದ ಆರೈಕೆ',
+    'baby-care': 'ನವಜಾತ ಶಿಶುವಿನ ಪಾಲನೆ',
+    fetalEvolutionReference: 'ಭ್ರೂಣದ ಬೆಳವಣಿಗೆ ಮತ್ತು ಹಂತಗಳ ವಿವರಣೆ',
+    trimester1: '೧ನೇ ತ್ರೈಮಾಸಿಕ',
+    trimester2: '೨ನೇ ತ್ರೈಮಾಸಿಕ',
+    trimester3: '೩ನೇ ತ್ರೈಮಾಸಿಕ',
+    setAsCurrentWeek: 'ಪ್ರಸ್ತುತ ವಾರವೆಂದು ನಿಗದಿಪಡಿಸಿ',
+    hadlockStandard: 'Hadlock ಮತ್ತು WHO ವೈದ್ಯಕೀಯ ಮಾನದಂಡಗಳು',
+    crl: 'ತಲೆಯಿಂದ ಪೃಷ್ಠದ ಉದ್ದ (CRL)',
+    chl: 'ತಲೆಯಿಂದ ಹಿಮ್ಮಡಿಯ ಉದ್ದ (CHL)',
+    biologicalFocus: 'ಭ್ರೂಣವಿಜ್ಞಾನ ಮತ್ತು ಜೈವಿಕ ಬೆಳವಣಿಗೆ',
+    brainNervous: 'ಮೆದುಳು ಮತ್ತು ನರಮಂಡಲ',
+    cardiovascular: 'ಹೃದಯ ಮತ್ತು ಆಂತರಿಕ ಅಂಗಗಳು',
+    sensoryCranio: 'ಜ್ಞಾನೇಂದ್ರಿಯಗಳು ಮತ್ತು ಮುಖರಚನೆ',
+    pulmonaryMusculo: 'ಶ್ವಾಸಕೋಶ ಮತ್ತು ಮೂಳೆ-ಸ್ನಾಯುಗಳು',
+    safeMovement: 'ಸುರಕ್ಷಿತ ವ್ಯಾಯಾಮ ಮಾರ್ಗದರ್ಶನ',
+    nutritionFocus: 'ಪೌಷ್ಟಿಕ ಆಹಾರದ ಮುಖ್ಯ ಗಮನ',
+    weekMilestones: 'ವಾರದ ಪ್ರಮುಖ ಬೆಳವಣಿಗೆಯ ಹಂತಗಳು',
+    partnerReadiness: 'ಸಂಗಾತಿಯ ಸನ್ನದ್ಧತೆ',
+    laborContractionTimer: 'ಹೆರಿಗೆ ನೋವಿನ ಟೈಮರ್',
+    birthPlanRole: 'ಜನನ ಯೋಜನೆ ಮತ್ತು ಆಸ್ಪತ್ರೆಯ ಪಾತ್ರ',
+    partnerMission: 'ಸಂಗಾತಿಯ ಕರ್ತವ್ಯ ಮತ್ತು ಸನ್ನದ್ಧತೆ',
+    connectedSynced: 'ಸಂಪರ್ಕಿತ ಮತ್ತು ಸಿಂಕ್ ಆಗಿದೆ',
+    awaitingConnection: 'ಸಂಪರ್ಕಕ್ಕಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ',
+    disconnect: 'ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ',
+    viewMotherDashboard: 'ತಾಯಿಯ ಹಂಚಿಕೊಂಡ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ವೀಕ್ಷಿಸಿ',
+    goToPartnerSpace: 'ಸಂಗಾತಿಯ ವಿಭಾಗಕ್ಕೆ ಹೋಗಿ →',
+    connectCode: 'ಕೋಡ್ ಸಂಪರ್ಕಿಸಿ',
+    registeredMothers: 'ನೋಂದಾಯಿತ ಲಭ್ಯವಿರುವ ತಾಯಂದಿರು',
+    addTask: 'ಹೊಸ ಕೆಲಸ ಸೇರಿಸಿ',
+    enterNewTask: 'ಕೆಲಸದ ವಿವರ ನಮೂದಿಸಿ...',
+    addReminderBtn: 'ಜ್ಞಾಪನೆ ಸೇರಿಸಿ',
+    noReminders: 'ಯಾವುದೇ ಜ್ಞಾಪನೆಗಳಿಲ್ಲ. ಮುಂದಿನ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗೆ ಸಿದ್ಧವಾಗಿರಿ.',
+    language: 'ಭಾಷೆ',
+    sharedDashboard: 'ಹಂಚಿಕೊಂಡ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    surgesLogged: 'ದಾಖಲಾದ ನೋವುಗಳು',
+    reset: 'ಮರುಹೊಂದಿಸಿ',
+    all: 'ಎಲ್ಲಾ',
+    status: 'ಸ್ಥಿತಿ',
+    search: 'ಹುಡುಕಿ',
+    filter: 'ಫಿಲ್ಟರ್',
+    evidenceNutrition: 'ವೈಜ್ಞಾನಿಕ ಆಧಾರಿತ ಮಾತೃ ಪೌಷ್ಟಿಕತೆ',
+    personalizedTargets: 'ವೈಯಕ್ತಿಕ ವೈದ್ಯಕೀಯ ಗುರಿಗಳು ಸಕ್ರಿಯವಾಗಿವೆ',
+    cravingType: 'ಬಯಕೆಯ ವಿಧ',
+    cravingDesc: 'ನಿರ್ದಿಷ್ಟ ಬಯಕೆಯ ವಿವರಣೆ',
+    physioExplanation: 'ಶಾರೀರಿಕ ವಿವರಣೆ',
+    recommendation: 'ಶಿಫಾರಸು',
+    unusualCraving: 'ವಿಲಕ್ಷಣ ಆಹಾರ ಸಂಯೋಜನೆಗಳು',
+    nonFoodCraving: 'ಆಹಾರವಲ್ಲದ ವಸ್ತುಗಳ ಸೇವನೆ (ಪಿಕಾ / PICA)',
+    bloodPressureSystolic: 'ರಕ್ತದೊತ್ತಡ (ಸಿಸ್ಟೊಲಿಕ್)',
+    bloodPressureDiastolic: 'ರಕ್ತದೊತ್ತಡ (ಡಯಾಸ್ಟೊಲಿಕ್)',
+    currentWeight: 'ಪ್ರಸ್ತುತ ತೂಕ',
+    heartPulse: 'ಹೃದಯ ಬಡಿತ',
+    bloodGlucose: 'ರಕ್ತದ ಸಕ್ಕರೆ ಪ್ರಮಾಣ',
+    clinicalNotes: 'ವೈದ್ಯಕೀಯ ಟಿಪ್ಪಣಿಗಳು',
+    saveVitalUpdate: 'ದಾಖಲೆಯನ್ನು ಉಳಿಸಿ',
+    scheduleReminder: 'ಹೊಸ ಜ್ಞಾಪನೆಯನ್ನು ನಿಗದಿಪಡಿಸಿ',
+    doctorVisit: 'ವೈದ್ಯರ ಭೇಟಿ',
+    ultrasoundScan: 'ಅಲ್ಟ್ರಾಸೌಂಡ್ ಸ್ಕ್ಯಾನ್',
+    medication: 'ಔಷಧ',
+    vaccination: 'ಲಸಿಕೆ',
+    hospitalPrep: 'ಆಸ್ಪತ್ರೆಯ ಸಿದ್ಧತೆ',
+    date: 'ದಿನಾಂಕ',
+    time: 'ಸಮಯ',
+    glucose: 'ಗ್ಲೂಕೋಸ್',
+    notes: 'ಟಿಪ್ಪಣಿಗಳು',
+    kicks: 'ಕಿಕ್‌ಗಳು',
+    tapKick: 'ಕಿಕ್ ಸ್ಪರ್ಶಿಸಿ',
+    recordVitals: 'ಇಂದಿನ ಆರೋಗ್ಯ ವಿವರಗಳನ್ನು ದಾಖಲಿಸಿ',
+    cardioMetabolic: 'ರಕ್ತದೊತ್ತಡ ಮತ್ತು ಚಯಾಪಚಯ ಸೂಚಕಗಳನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ',
+    doctorOrLocation: 'ವೈದ್ಯರು ಅಥವಾ ಆಸ್ಪತ್ರೆಯ ಸ್ಥಳ',
+    saveSchedule: 'ವೇಳಾಪಟ್ಟಿಯನ್ನು ಉಳಿಸಿ',
+    familyCollab: 'ತಾಯಿಯ ತಾಣ · ಕುಟುಂಬ ಮತ್ತು ಪಾಲಕರ ವಿಭಾಗ',
+    caregiverSuite: 'ಸಂಗಾತಿಯ ತಾಣ · ಗರ್ಭಕೋಶ ಪಾಲಕರ ವಿಭಾಗ',
+    rapidCaregiverTools: 'ತ್ವರಿತ ಪಾಲಕ ಪರಿಕರಗಳು',
+    directActions: 'ಹೆರಿಗೆ ಸನ್ನದ್ಧತೆಗೆ ಅಗತ್ಯ ಕ್ರಮಗಳು',
+    partnerReadinessTitle: 'ಸಂಗಾತಿಯ ಸನ್ನದ್ಧತೆಯ ಪರಿಶೀಲನಾಪಟ್ಟಿ',
+    physicalTasks: 'ತಾಯಿಯ ಆತಂಕವನ್ನು ನಿವಾರಿಸಲು ಪ್ರಾಯೋಗಿಕ ಕೆಲಸಗಳು',
+    ready: 'ಸಿದ್ಧವಾಗಿದೆ',
+    carSeatTask: 'ಕಾರಿನಲ್ಲಿ ಶಿಶು ಆಸನವನ್ನು (Car Seat) ಸುರಕ್ಷಿತವಾಗಿ ಅಳವಡಿಸಲಾಗಿದೆ',
+    hospitalBagTask: 'ಆಸ್ಪತ್ರೆಯ ಬ್ಯಾಗ್ ಮತ್ತು ಚಾರ್ಜರ್‌ಗಳನ್ನು ಪ್ಯಾಕ್ ಮಾಡಲಾಗಿದೆ',
+    birthPlanTask: 'ಜನನ ಯೋಜನೆ ಮತ್ತು ಹೊಕ್ಕುಳಬಳ್ಳಿ ಕತ್ತರಿಸುವ ಆಸೆಗಳನ್ನು ನೆನಪಿನಲ್ಲಿಡಲಾಗಿದೆ',
+    emergencyContactsTask: 'ತುರ್ತು ಸಂಪರ್ಕ ಸಂಖ್ಯೆಗಳು ಸ್ಪೀಡ್ ಡಯಲ್‌ನಲ್ಲಿವೆ',
+    fiveOneOneTask: 'ಆಸ್ಪತ್ರೆಗೆ ತೆರಳಲು 5-1-1 ಹೆರಿಗೆ ನಿಯಮವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲಾಗಿದೆ',
+    recoveryRoomTask: 'ಮನೆಯಲ್ಲಿ ಮಗುವಿನ ತೊಟ್ಟಿಲು ಮತ್ತು ತಾಯಿಯ ಚೇತರಿಕೆಯ ಕೋಣೆ ಸಿದ್ಧವಾಗಿದೆ',
+    laborDeliveryPrep: 'ಹೆರಿಗೆ ಮತ್ತು ಪ್ರಸವದ ಸಿದ್ಧತೆ',
+    printExportPdf: 'ಮುದ್ರಿಸಿ / PDF ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ',
+    overallBagReadiness: 'ಆಸ್ಪತ್ರೆ ಬ್ಯಾಗ್‌ನ ಒಟ್ಟಾರೆ ಸನ್ನದ್ಧತೆ',
+    packed: 'ಪ್ಯಾಕ್ ಮಾಡಲಾಗಿದೆ',
+    laborTriage: 'ಆಸ್ಪತ್ರೆಯ ಹೆರಿಗೆ ತುರ್ತು ವಿಭಾಗ',
+    allEssentials: 'ಎಲ್ಲಾ ಅಗತ್ಯ ವಸ್ತುಗಳು',
+    tapToMarkPacked: 'ಪ್ಯಾಕ್ ಆಗಿದೆ ಎಂದು ಗುರುತಿಸಲು ಸ್ಪರ್ಶಿಸಿ',
+    addCustomPacking: 'ಹೊಸ ಅಗತ್ಯ ವಸ್ತುವನ್ನು ಸೇರಿಸಿ...',
+    managePreferences: 'ನಿಮ್ಮ ಪ್ರೊಫೈಲ್, ಗರ್ಭಧಾರಣೆಯ ವೇಳಾಪಟ್ಟಿ ಮತ್ತು ಖಾತೆಯ ಭದ್ರತೆಯನ್ನು ನಿರ್ವಹಿಸಿ.',
+    dataSovereignty: 'ಡೇಟಾ ಸಾರ್ವಭೌಮತ್ವ ಮತ್ತು ವೈದ್ಯಕೀಯ ರಫ್ತು',
+    exportJsonDesc: 'ನಿಮ್ಮ ಸಂಪೂರ್ಣ ವೈದ್ಯಕೀಯ ದಾಖಲೆ ಮತ್ತು ಆರೋಗ್ಯ ವಿವರಗಳನ್ನು JSON ಬ್ಯಾಕಪ್ ಆಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.',
+    resetDemoTitle: 'ಮೂಲ ಡೆಮೊ ಸ್ಥಿತಿಗೆ ಮರುಹೊಂದಿಸಿ',
+    resetDemoDesc: 'ಎಲ್ಲಾ ಸ್ಥಳೀಯ ದಾಖಲೆಗಳು ಮತ್ತು ಸ್ಯಾಂಪಲ್ ಮಾಹಿತಿಯನ್ನು ಆರಂಭಿಕ ಮೌಲ್ಯಗಳಿಗೆ ಮರುಹೊಂದಿಸಿ.'
   },
 
   'hi-IN': {
@@ -646,35 +784,30 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     today: 'आज',
     viewAll: 'सभी देखें',
     completed: 'पूर्ण',
-
     clinicalTracking: 'दैनिक एवं चिकित्सकीय ट्रैकिंग',
     homeDashboard: 'होम डैशबोर्ड',
-    journey: '४०-सप्ताह की यात्रा',
-    bloomAi: 'ज्ञानी एआई सहायक',
+    journey: '40-सप्ताह की यात्रा',
+    bloomAi: 'ज्ञानी AI सहायक',
     vitalsKicks: 'स्वास्थ्य एवं शिशु किक काउंटर',
     contractions: 'प्रसव संकुचन टाइमर',
     birthPlan: 'बर्थ प्लान बिल्डर',
-
     maternalHealth: 'मातृ स्वास्थ्य एवं कल्याण',
-    nutrition: 'नैदानिक पोषण एवं आहार',
-    exercise: 'गर्भावस्था व्यायाम एवं कीगेल',
+    nutrition: 'पोषण और आहार',
+    exercise: 'प्रसवपूर्व व्यायाम और कीगल',
     emotionalWellness: 'भावनात्मक स्वास्थ्य एवं शांति',
     soundscapes: 'निद्रा एवं विश्राम ध्वनियां',
     memoryVault: 'अल्ट्रासाउंड एवं स्मृति वॉल्ट',
-
     partnerFamily: 'साथी एवं पारिवारिक तैयारी',
     partnerCompanion: 'पार्टनर साथी केंद्र',
     hospitalBag: 'अस्पताल बैग चेकलिस्ट',
     babyNames: 'बहुभाषी शिशु नाम संग्रह',
     babyShower: 'गोद भराई समारोह योजना',
     nurseryRegistry: 'शिशु सामग्री सूची',
-
     postpartumSettings: 'प्रसवोत्तर एवं सेटिंग्स',
     fourthTrimester: 'चौथा तिमाही स्वास्थ्य सुधार',
     newbornCare: 'नवजात शिशु देखभाल साथी',
-    settings: 'सेटिंग्स एवं गोपनीयता साझाकरण',
+    settings: 'सेटिंग्स और गोपनीयता',
     emergencyProtocol: 'आपातकालीन प्रोटोकॉल (112)',
-
     welcomeBack: 'स्वागत है',
     babySizeOf: 'शिशु का आकार लगभग इस फल के बराबर है',
     dueCountdown: 'प्रसव उल्टी गिनती',
@@ -698,7 +831,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     kicksToday: 'आज की किक',
     logVitals: 'स्वास्थ्य दर्ज करें',
     foodDiary: 'आहार डायरी',
-
     journeyTitle: 'मेरी गर्भावस्था यात्रा',
     journeySubtitle: '४० सप्ताह और ९ महीनों में शिशु के विकास और माँ के शारीरिक परिवर्तनों का संपूर्ण मार्गदर्शन।',
     timeline40Weeks: '४०-सप्ताह टाइमलाइन',
@@ -717,7 +849,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     weightMetric: 'वजन',
     crlCmp: 'सिर से कूल्हे तक (CRL)',
     chlCmp: 'सिर से एड़ी तक (CHL)',
-
     monthOverview: 'मासिक अवलोकन',
     majorMilestones: 'प्रमुख विकासात्मक पड़ाव',
     maternalChanges: 'माँ के शारीरिक एवं मानसिक बदलाव',
@@ -727,7 +858,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     precautionsHeading: 'महत्वपूर्ण सावधानियां एवं संकेत',
     faqHeading: 'अक्सर पूछे जाने वाले सवाल',
     weeklyTips: 'साप्ताहिक चिकित्सीय सुझाव',
-
     aiAssistantTitle: 'ज्ञानी एआई सहायक',
     aiAssistantSubtitle: 'गर्भावस्था और नवजात देखभाल की आत्मीय साथी (ज्ञानी.एआई)',
     aiInputPlaceholder: 'हिंदी या अपनी भाषा में ज्ञानी एआई से कोई भी सवाल पूछें...',
@@ -742,7 +872,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     filterLabour: 'प्रसव',
     filterNewborn: 'नवजात शिशु',
     filterPostpartum: 'प्रसवोत्तर',
-
     vitalsTitle: 'स्वास्थ्य माप एवं शिशु किक काउंटर',
     vitalsSubtitle: 'रक्तचाप, वजन, पल्स और दैनिक किक की सटीक ट्रैकिंग।',
     kickCounterTitle: 'किक काउंटिंग सत्र',
@@ -757,7 +886,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     pulseBpmLabel: 'पल्स (bpm)',
     saveVitalRecord: 'रिकॉर्ड सहेजें',
     vitalHistory: 'स्वास्थ्य इतिहास',
-
     surgeTimerTitle: 'प्रसव संकुचन टाइमर (Contraction Timer)',
     surgeTimerSubtitle: 'संकुचनों का अंतराल, अवधि और ५-१-१ अस्पताल प्रस्थान मार्गदर्शन।',
     startTimer: 'संकुचन शुरू',
@@ -772,7 +900,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     intensityLabel: 'तीव्रता',
     rule511AlertTitle: '५-१-१ नियम सक्रिय: तुरंत अस्पताल प्रस्थान करें!',
     rule511AlertBody: 'आपके संकुचन हर ५ मिनट में आ रहे हैं, कम से कम १ मिनट तक रहते हैं और १ घंटे से निरंतर हैं। तुरंत अस्पताल जाएं।',
-
     birthPlanTitle: 'बर्थ प्लान बिल्डर (प्रसव योजना)',
     birthPlanSubtitle: 'प्रसव कक्ष का वातावरण, दर्द निवारक प्राथमिकताएं और नवजात देखभाल की योजना।',
     printExportPlan: 'प्रिंट / पीडीएफ डाउनलोड',
@@ -782,7 +909,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     deliverySection: 'प्रसव एवं गर्भनाल काटना',
     newbornCareSection: 'जन्म के तुरंत बाद शिशु देखभाल',
     specialNotesLabel: 'डॉक्टर के लिए विशेष निर्देश',
-
     nutritionTitle: 'मातृ पोषण एवं आहार डायरी',
     nutritionSubtitle: 'गर्भावस्था सप्ताह के अनुसार कैलोरी, प्रोटीन और सूक्ष्म पोषक तत्वों का प्रबंधन।',
     breakfast: 'सुबह का नाश्ता',
@@ -799,7 +925,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     sourCraving: 'खट्टा',
     picaWarningTitle: '🚨 पिका चेतावनी: डॉक्टर से परामर्श आवश्यक',
     picaWarningBody: 'मिट्टी, चॉक, राख खाने की इच्छा शरीर में आयरन की भारी कमी का संकेत है। तुरंत डॉक्टर को सूचित करें।',
-
     fitnessTitle: 'गर्भावस्था फिटनेस एवं कीगेल केंद्र',
     fitnessSubtitle: 'तिमाही के अनुकूल सुरक्षित योगासन और पेल्विक फ्लोर कीगेल व्यायाम।',
     kegelTitle: 'मार्गदर्शित कीगेल व्यायाम',
@@ -809,7 +934,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     difficultyLevel: 'कठिनाई स्तर',
     markCompleted: 'पूर्ण चिह्नित करें',
     completedBadge: 'आज पूर्ण हुआ',
-
     wellnessTitle: 'भावनात्मक स्वास्थ्य एवं डायरी',
     wellnessSubtitle: 'दैनिक मनोदशा, तनाव स्तर और सकारात्मक दृष्टिकोण।',
     howAreYouFeeling: 'आज आप कैसा महसूस कर रही हैं?',
@@ -822,7 +946,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     journalPlaceholder: 'अपने विचार और अनुभव यहाँ लिखें...',
     saveMoodLog: 'डायरी सहेजें',
     affirmationsTitle: 'दैनिक सकारात्मक प्रेरणा',
-
     sleepTitle: 'निद्रा केंद्र एवं विश्राम ध्वनियां',
     sleepSubtitle: 'गहरी नींद के लिए वर्षा, सागर की लहरें और शांत लोरी।',
     rainSound: 'हल्की बारिश',
@@ -832,7 +955,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     lullabySound: 'मातृ लोरी',
     playAll: 'ध्वनि शुरू करें',
     stopAll: 'मौन करें',
-
     vaultTitle: 'अल्ट्रासाउंड एवं स्मृति वॉल्ट',
     vaultSubtitle: 'अल्ट्रासाउंड चित्र, मेडिकल रिपोर्ट्स और मातृत्व की यादें सुरक्षित रखें।',
     uploadScan: 'रिपोर्ट या फोटो अपलोड करें',
@@ -841,7 +963,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     scanCaption: 'विवरण या चिकित्सकीय सारांश',
     saveMoment: 'वॉल्ट में सहेजें',
     vaultDisclaimer: 'नोट: ये चित्र आपकी निजी यादें हैं और किसी आधिकारिक मेडिकल रिपोर्ट का विकल्प नहीं हैं।',
-
     partnerSanctuaryTitle: 'पार्टनर अभयारण्य एवं सहयोग',
     partnerSanctuarySubtitle: 'प्रसव संकुचन समय निर्धारण और साप्ताहिक देखभाल मिशन।',
     partnerConnected: 'जोड़ा सफलतापूर्वक जुड़ा हुआ है',
@@ -858,14 +979,12 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     unpairedNoticeBody: 'माँ का मेडिकल रिकॉर्ड पेयरिंग कोड दर्ज करने तक पूरी तरह सुरक्षित रहता है।',
     enterMotherCode: 'जुड़ने के लिए माँ का कोड दर्ज करें:',
     connectSanctuaryBtn: 'अभयारण्य से जुड़ें',
-
     hospitalBagTitle: 'अस्पताल बैग चेकलिस्ट',
     hospitalBagSubtitle: '३५वें सप्ताह तक माँ, शिशु और साथी के बैग की तैयारी।',
     bagForMother: 'माँ का बैग',
     bagForBaby: 'शिशु का बैग',
     bagForPartner: 'साथी का बैग',
     addItem: 'वस्तु जोड़ें',
-
     babyNamesTitle: 'शिशु नाम संग्रह',
     babyNamesSubtitle: 'भारतीय एवं वैश्विक नाम, उनके अर्थ और साथी वोटिंग।',
     searchNames: 'नाम या अर्थ खोजें...',
@@ -875,12 +994,10 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     shortlist: 'पसंदीदा सूची',
     meaning: 'अर्थ',
     origin: 'मूल',
-
     postpartumTitle: 'प्रसवोत्तर चतुर्थ तिमाही सुधार',
     postpartumSubtitle: 'प्रसवोत्तर रक्तस्राव, घाव की देखभाल और भावनात्मक स्वास्थ्य।',
     newbornCareTitle: 'नवजात शिशु देखभाल साथी',
     newbornCareSubtitle: 'स्तनपान अंतराल, डायपर गिनती और शिशु की नींद।',
-
     settingsTitle: 'सेटिंग्स एवं प्राथमिकताएं',
     tabProfile: 'प्रोफ़ाइल',
     tabPregnancy: 'गर्भावस्था',
@@ -889,7 +1006,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     tabAccount: 'खाता प्रबंधन',
     exportData: 'चिकित्सा डेटा डाउनलोड (JSON)',
     resetDemo: 'डेमो रीसेट करें',
-
     authWelcome: 'ब्लूमनेस्ट में आपका स्वागत है',
     authSubtitle: 'हर धड़कन, हर पड़ाव, हर पल — एक साथ।',
     signInTab: 'लॉग इन करें',
@@ -903,7 +1019,117 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     signInBtn: 'प्रवेश करें',
     createAccountBtn: 'सुरक्षित खाता बनाएं',
     demoProfilesTitle: '१-क्लिक टेस्ट प्रोफाइल',
-    privacyNote: 'पंक्ति स्तर सुरक्षा और शून्य डेटा रिसाव से सुरक्षित।'
+    privacyNote: 'पंक्ति स्तर सुरक्षा और शून्य डेटा रिसाव से सुरक्षित।',
+    dashboard: 'होम डैशबोर्ड',
+    'bloom-ai': 'ज्ञानी AI सहायक',
+    'health-tracker': 'महत्वपूर्ण लक्षण और किक काउंटर',
+    'birth-plan': 'जन्म योजना निर्माता',
+    'mood-wellness': 'मानसिक और भावनात्मक स्वास्थ्य',
+    relaxation: 'नींद और सुखदायक ध्वनियाँ',
+    'little-moments': 'अल्ट्रासाउंड और स्मृति कक्ष',
+    'partner-space': 'पार्टनर साथी',
+    'hospital-checklist': 'अस्पताल बैग चेकलिस्ट',
+    'baby-names': 'शिशु नाम खोजक',
+    'baby-shower': 'गोद भराई और संस्कार',
+    'baby-shopping': 'शिशु खरीदारी और रजिस्ट्री',
+    postpartum: 'प्रसवोत्तर देखभाल',
+    'baby-care': 'नवजात शिशु की देखभाल',
+    fetalEvolutionReference: 'भ्रूणीय विकास और विकासात्मक संदर्भ',
+    trimester1: 'पहला त्रैमासिक',
+    trimester2: 'दूसरा त्रैमासिक',
+    trimester3: 'तीसरा त्रैमासिक',
+    setAsCurrentWeek: 'वर्तमान सप्ताह के रूप में सेट करें',
+    hadlockStandard: 'हॅडलॉक और WHO नैदानिक मानक',
+    crl: 'सिर से नितंब की लंबाई (CRL)',
+    chl: 'सिर से एड़ी की लंबाई (CHL)',
+    biologicalFocus: 'भ्रूणविज्ञान और जैविक विकास',
+    brainNervous: 'मस्तिष्क और तंत्रिका तंत्र',
+    cardiovascular: 'हृदय और आंतरिक अंग',
+    sensoryCranio: 'इंद्रिय और कपाल-चेहरे का विकास',
+    pulmonaryMusculo: 'फेफड़े और पेशी-कंकाल प्रणाली',
+    safeMovement: 'सुरक्षित गतिविधि मार्गदर्शन',
+    nutritionFocus: 'नैदानिक पोषण पर ध्यान',
+    weekMilestones: 'सप्ताह के विकासात्मक पड़ाव',
+    partnerReadiness: 'पार्टनर तत्परता',
+    laborContractionTimer: 'प्रसव संकुचन टाइमर',
+    birthPlanRole: 'जन्म योजना और अस्पताल की भूमिका',
+    partnerMission: 'पार्टनर का मिशन और तत्परता',
+    connectedSynced: 'जुड़ा हुआ और सिंक किया गया',
+    awaitingConnection: 'कनेक्शन की प्रतीक्षा है',
+    disconnect: 'डिस्कनेक्ट करें',
+    viewMotherDashboard: 'माता का साझा डैशबोर्ड देखें',
+    goToPartnerSpace: 'पार्टनर स्पेस पर जाएं →',
+    connectCode: 'कोड कनेक्ट करें',
+    registeredMothers: 'पंजीकृत उपलब्ध माताएं',
+    addTask: 'नया कार्य जोड़ें',
+    enterNewTask: 'कार्य का शीर्षक दर्ज करें...',
+    addReminderBtn: 'रिमाइंडर जोड़ें',
+    noReminders: 'कोई रिमाइंडर निर्धारित नहीं है। अपनी अगली नियुक्ति के लिए तैयार रहें।',
+    language: 'भाषा',
+    sharedDashboard: 'साझा डैशबोर्ड',
+    surgesLogged: 'दर्ज किए गए संकुचन',
+    reset: 'रीसेट करें',
+    all: 'सभी',
+    status: 'स्थिति',
+    search: 'खोजें',
+    filter: 'फ़िल्टर',
+    evidenceNutrition: 'साक्ष्य-आधारित मातृ पोषण',
+    personalizedTargets: 'व्यक्तिगत नैदानिक लक्ष्य सक्रिय',
+    cravingType: 'क्रेविंग का प्रकार',
+    cravingDesc: 'विशिष्ट विवरण',
+    physioExplanation: 'शारीरिक स्पष्टीकरण',
+    recommendation: 'सलाह / सिफारिश',
+    unusualCraving: 'असामान्य भोजन संयोजन',
+    nonFoodCraving: 'गैर-खाद्य पदार्थ (पिका)',
+    bloodPressureSystolic: 'रक्तचाप (सिस्टोलिक)',
+    bloodPressureDiastolic: 'रक्तचाप (डायस्टोलिक)',
+    currentWeight: 'वर्तमान वजन',
+    heartPulse: 'हृदय गति (पल्स)',
+    bloodGlucose: 'ब्लड ग्लूकोज (शुगर)',
+    clinicalNotes: 'नैदानिक टिप्पणियां',
+    saveVitalUpdate: 'अपडेट सहेजें',
+    scheduleReminder: 'नया रिमाइंडर शेड्यूल करें',
+    doctorVisit: 'डॉक्टर से मिलना',
+    ultrasoundScan: 'अल्ट्रासाउंड स्कैन',
+    medication: 'दवा',
+    vaccination: 'टीकाकरण',
+    hospitalPrep: 'अस्पताल की तैयारी',
+    date: 'दिनांक',
+    time: 'समय',
+    glucose: 'ग्लूकोज',
+    notes: 'टिप्पणियां',
+    kicks: 'किक्स',
+    tapKick: 'किक पर टैप करें',
+    recordVitals: 'आज के महत्वपूर्ण लक्षण दर्ज करें',
+    cardioMetabolic: 'हृदय और चयापचय संकेतकों को ट्रैक करें',
+    doctorOrLocation: 'डॉक्टर या स्थान',
+    saveSchedule: 'शेड्यूल सहेजें',
+    familyCollab: 'मातृ अभयारण्य · परिवार और देखभालकर्ता सुइट',
+    caregiverSuite: 'पार्टनर अभयारण्य · केयरगिवर सुइट',
+    rapidCaregiverTools: 'त्वरित देखभाल उपकरण',
+    directActions: 'जन्म की तैयारी के लिए प्रत्यक्ष कदम',
+    partnerReadinessTitle: 'पार्टनर तत्परता चेकलिस्ट',
+    physicalTasks: 'मां की चिंता कम करने के लिए व्यावहारिक कार्य',
+    ready: 'तैयार',
+    carSeatTask: 'शिशु कार सीट वाहन में सुरक्षित रूप से स्थापित है',
+    hospitalBagTask: 'अस्पताल का बैग और चार्जर पैक हैं',
+    birthPlanTask: 'जन्म प्राथमिकताएं याद हैं',
+    emergencyContactsTask: 'आपातकालीन संपर्क स्पीड डायल पर हैं',
+    fiveOneOneTask: '5-1-1 नियम अच्छी तरह से समझ लिया है',
+    recoveryRoomTask: 'नवजात शिशु और मां के लिए कमरा तैयार है',
+    laborDeliveryPrep: 'प्रसव और डिलीवरी की तैयारी',
+    printExportPdf: 'प्रिंट / PDF डाउनलोड करें',
+    overallBagReadiness: 'अस्पताल बैग की कुल तैयारी',
+    packed: 'पैक किया गया',
+    laborTriage: 'अस्पताल प्रसव ट्राइएज',
+    allEssentials: 'सभी आवश्यक वस्तुएं',
+    tapToMarkPacked: 'पैक के रूप में चिह्नित करने के लिए टैप करें',
+    addCustomPacking: 'कस्टम पैकिंग आइटम जोड़ें...',
+    managePreferences: 'अपनी प्रोफ़ाइल, गर्भावस्था समयरेखा और खाता सुरक्षा प्रबंधित करें।',
+    dataSovereignty: 'डेटा संप्रभुता और मेडिकल निर्यात',
+    exportJsonDesc: 'अपने संपूर्ण मातृ रिकॉर्ड और महत्वपूर्ण आँकड़ों का JSON बैकअप डाउनलोड करें।',
+    resetDemoTitle: 'मूल डेमो स्थिति पर रीसेट करें',
+    resetDemoDesc: 'सभी स्थानीय डेटा और नमूना रिकॉर्ड को प्रारंभिक मानों पर रीसेट करें।'
   },
 
   'ta-IN': {
@@ -933,35 +1159,30 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     today: 'இன்று',
     viewAll: 'அனைத்தும்',
     completed: 'முடிந்தது',
-
     clinicalTracking: 'மருத்துவ & தினசரி கண்காணிப்பு',
     homeDashboard: 'முகப்பு பலகை',
-    journey: '40-வார பயணம்',
+    journey: '40-வாரப் பயணம்',
     bloomAi: 'ஞானி AI உதவியாளர்',
     vitalsKicks: 'உடல்நலம் & உதைப்புக் கணக்கீடு',
     contractions: 'பிரசவ வலி டைமர்',
     birthPlan: 'பிரசவ திட்ட வழிகாட்டி',
-
     maternalHealth: 'தாய்மை நலம் & ஆரோக்கியம்',
-    nutrition: 'ஊட்டச்சத்து & உணவு முறை',
-    exercise: 'கர்ப்பகால உடற்பயிற்சி & யோகா',
+    nutrition: 'மருத்துவ ஊட்டச்சத்து & உணவு',
+    exercise: 'மகப்பேறுக்கு முந்தைய உடற்பயிற்சி',
     emotionalWellness: 'மனநலம் & உணர்ச்சி அமைதி',
     soundscapes: 'தூக்கம் & அமைதியான ஒலிகள்',
     memoryVault: 'அல்ட்ராசவுண்ட் நினைவகம்',
-
     partnerFamily: 'துணைவர் & குடும்பத் தயாரிப்பு',
     partnerCompanion: 'துணைவர் புகலிடம்',
     hospitalBag: 'மருத்துவமனை பை சரிபார்ப்பு',
     babyNames: 'குழந்தை பெயர்கள்',
     babyShower: 'வளைகாப்பு விழா திட்டமிடல்',
     nurseryRegistry: 'குழந்தை பொருட்கள் பட்டியல்',
-
     postpartumSettings: 'பிரசவத்திற்குப் பிந்தைய நலம்',
     fourthTrimester: 'நான்காவது காலாண்டு மீட்பு',
     newbornCare: 'பச்சிளங்குழந்தை பராமரிப்பு',
     settings: 'அமைப்புகள் & தனியுரிமை',
     emergencyProtocol: 'அவசர சிகிச்சை நெறிமுறை (112)',
-
     welcomeBack: 'மீண்டும் நல்வரவு',
     babySizeOf: 'குழந்தை தோராயமாக இந்த பழத்தின் அளவில் உள்ளது',
     dueCountdown: 'பிரசவ நாள் கவுண்ட்டவுன்',
@@ -985,7 +1206,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     kicksToday: 'இன்றைய உதைப்புகள்',
     logVitals: 'அளவீடு பதிவுசெய்',
     foodDiary: 'உணவு டைரி',
-
     journeyTitle: 'என் கர்ப்பகாலப் பயணம்',
     journeySubtitle: '40 வாரங்கள் மற்றும் 9 மாதங்களில் குழந்தையின் வளர்ச்சி மற்றும் தாயின் உடல் மாற்றங்களின் முழுமையான வழிகாட்டி.',
     timeline40Weeks: '40-வார காலவரிசை',
@@ -1004,7 +1224,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     weightMetric: 'எடை',
     crlCmp: 'தலை முதல் பிட்டம் வரை (CRL)',
     chlCmp: 'தலை முதல் குதிகால் வரை (CHL)',
-
     monthOverview: 'மாதாந்திர மேலோட்டம்',
     majorMilestones: 'முக்கிய மைல்கற்கள்',
     maternalChanges: 'தாயின் உடல் மற்றும் மன மாற்றங்கள்',
@@ -1014,7 +1233,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     precautionsHeading: 'முக்கிய முன்னெச்சரிக்கைகள்',
     faqHeading: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
     weeklyTips: 'வாராந்திர மருத்துவக் குறிப்புகள்',
-
     aiAssistantTitle: 'ஞானி AI உதவியாளர்',
     aiAssistantSubtitle: 'கர்ப்பகாலம் மற்றும் குழந்தை பராமரிப்பு வழிகாட்டி (ஞானி.AI)',
     aiInputPlaceholder: 'தமிழில் அல்லது உங்கள் மொழியில் ஞானி AI-யிடம் கேளுங்கள்...',
@@ -1029,7 +1247,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     filterLabour: 'பிரசவம்',
     filterNewborn: 'பச்சிளங்குழந்தை',
     filterPostpartum: 'பிரசவத்திற்குப் பின்',
-
     vitalsTitle: 'உடல்நல அளவீடுகள் & உதைப்புக் கணக்கீடு',
     vitalsSubtitle: 'இரத்த அழுத்தம், எடை, நாடித்துடிப்பு மற்றும் குழந்தையின் அசைவுகளைக் கண்காணியுங்கள்.',
     kickCounterTitle: 'உதைப்பு கணக்கீட்டு அமர்வு',
@@ -1044,7 +1261,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     pulseBpmLabel: 'நாடித்துடிப்பு (bpm)',
     saveVitalRecord: 'சேமிக்கவும்',
     vitalHistory: 'அளவீட்டு வரலாறு',
-
     surgeTimerTitle: 'பிரசவ வலி டைமர் (Contraction Timer)',
     surgeTimerSubtitle: 'சுருக்கங்களின் இடைவெளி, காலம் மற்றும் 5-1-1 மருத்துவமனை புறப்பாடு வழிகாட்டுதல்.',
     startTimer: 'வலி தொடங்கியது',
@@ -1059,7 +1275,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     intensityLabel: 'தீவிரம்',
     rule511AlertTitle: '5-1-1 விதி நடைமுறையில் உள்ளது: உடனே மருத்துவமனை செல்லவும்!',
     rule511AlertBody: 'சுருக்கங்கள் ஒவ்வொரு 5 நிமிடங்களுக்கும் வந்து, குறைந்தது 1 நிமிடம் நீடித்து, 1 மணி நேரமாக தொடர்கிறது. உடனே மருத்துவமனைக்குச் செல்லுங்கள்.',
-
     birthPlanTitle: 'பிரசவ திட்ட வழிகாட்டி',
     birthPlanSubtitle: 'பிரசவ அறை சூழல், வலி நிவாரண விருப்பங்கள் மற்றும் குழந்தை பராமரிப்பு விருப்பங்களைத் தேர்வுசெய்யுங்கள்.',
     printExportPlan: 'அச்சிடு / PDF பதிவிறக்கு',
@@ -1069,7 +1284,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     deliverySection: 'பிரசவம் & தொப்புள்கொடி',
     newbornCareSection: 'பிறந்த குழந்தை பராமரிப்பு',
     specialNotesLabel: 'மருத்துவருக்கு சிறப்புக் குறிப்புகள்',
-
     nutritionTitle: 'தாய்மை ஊட்டச்சத்து & உணவு டைரி',
     nutritionSubtitle: 'கர்ப்பகால வாரத்திற்கு ஏற்ப கலோரிகள் மற்றும் சத்துக்களின் சமச்சீர் மேலாண்மை.',
     breakfast: 'காலை உணவு',
@@ -1086,7 +1300,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     sourCraving: 'புளிப்பு',
     picaWarningTitle: '🚨 பிகா எச்சரிக்கை: மருத்துவரை உடனே அணுகவும்',
     picaWarningBody: 'மண், சாம்பல், சுண்ணாம்பு சாப்பிடத் தோன்றுவது இரும்புச்சத்து குறைபாட்டின் அறிகுறி. உடனே மருத்துவரை அணுகவும்.',
-
     fitnessTitle: 'கர்ப்பகால உடற்பயிற்சி & யோகா மையம்',
     fitnessSubtitle: 'பாதுகாப்பான யோகாசனங்கள் மற்றும் இடுப்புத் தசைக்கான கீகல் பயிற்சிகள்.',
     kegelTitle: 'கீகல் பயிற்சி வழிகாட்டல்',
@@ -1096,7 +1309,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     difficultyLevel: 'நிலை',
     markCompleted: 'முடிந்தது என குறி',
     completedBadge: 'இன்று முடிந்தது',
-
     wellnessTitle: 'மனநலம் & உணர்ச்சி டைரி',
     wellnessSubtitle: 'தினசரி மனநிலை, மனஅழுத்த மேலாண்மை மற்றும் நேர்மறை எண்ணங்கள்.',
     howAreYouFeeling: 'இன்று நீங்கள் எப்படி உணர்கிறீர்கள்?',
@@ -1109,7 +1321,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     journalPlaceholder: 'உங்கள் உணர்வுகளையும் அனுபவங்களையும் எழுதுங்கள்...',
     saveMoodLog: 'டைரி சேமிக்கவும்',
     affirmationsTitle: 'தினசரி நேர்மறை வாக்கு',
-
     sleepTitle: 'தூக்க மையம் & அமைதி ஒலிகள்',
     sleepSubtitle: 'ஆழ்ந்த தூக்கத்திற்கான மழை, அலை மற்றும் தாலாட்டு ஒலிகள்.',
     rainSound: 'மழை தூறல்',
@@ -1119,7 +1330,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     lullabySound: 'தாய்மைத் தாலாட்டு',
     playAll: 'ஒலி தொடங்கு',
     stopAll: 'முடக்கு',
-
     vaultTitle: 'அல்ட்ராசவுண்ட் நினைவகம்',
     vaultSubtitle: 'அல்ட்ராசவுண்ட் படங்கள் மற்றும் மருத்துவ ஆவணங்களை பாதுகாப்பாக வையுங்கள்.',
     uploadScan: 'ஸ்கேன் / படம் பதிவேற்று',
@@ -1128,7 +1338,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     scanCaption: 'விளக்கம் அல்லது குறிப்பு',
     saveMoment: 'சேமிக்கவும்',
     vaultDisclaimer: 'குறிப்பு: இவை உங்கள் தனிப்பட்ட நினைவுகளே அன்றி அதிகாரப்பூர்வ மருத்துவ அறிக்கை அல்ல.',
-
     partnerSanctuaryTitle: 'துணைவர் புகலிடம் & ஒத்துழைப்பு',
     partnerSanctuarySubtitle: 'பிரசவ வலி கண்காணிப்பு மற்றும் வாராந்திர பராமரிப்பு வழிகாட்டல்.',
     partnerConnected: 'தம்பதிகள் வெற்றிகரமாக இணைக்கப்பட்டுள்ளனர்',
@@ -1145,14 +1354,12 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     unpairedNoticeBody: 'தாயின் குறியீட்டை உள்ளிட்ட பின்னரே மருத்துவ ஆவணங்கள் காட்டப்படும்.',
     enterMotherCode: 'இணைக்க தாயின் குறியீட்டை உள்ளிடவும்:',
     connectSanctuaryBtn: 'இணைக்கவும்',
-
     hospitalBagTitle: 'மருத்துவமனை பை சரிபார்ப்பு',
     hospitalBagSubtitle: '35வது வாரத்தில் தாய், குழந்தை மற்றும் துணைவருக்கான தயாரிப்பு பட்டியல்.',
     bagForMother: 'தாயின் பை',
     bagForBaby: 'குழந்தையின் பை',
     bagForPartner: 'துணைவரின் பை',
     addItem: 'பொருளைச் சேர்',
-
     babyNamesTitle: 'குழந்தை பெயர்கள்',
     babyNamesSubtitle: 'அழகிய பெயர்கள், அர்த்தங்கள் மற்றும் வாக்களிப்பு.',
     searchNames: 'பெயர் அல்லது பொருள் தேடுக...',
@@ -1162,12 +1369,10 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     shortlist: 'விருப்பப் பட்டியல்',
     meaning: 'பொருள்',
     origin: 'மூலம்',
-
     postpartumTitle: 'நான்காவது காலாண்டு மீட்பு',
     postpartumSubtitle: 'பிரசவத்திற்குப் பிந்தைய இரத்தப்போக்கு மற்றும் மனநல கண்காணிப்பு.',
     newbornCareTitle: 'பச்சிளங்குழந்தை பராமரிப்பு',
     newbornCareSubtitle: 'தாய்ப்பால் நேரம், டயப்பர்கள் மற்றும் தூக்க கண்காணிப்பு.',
-
     settingsTitle: 'அமைப்புகள் & விருப்பங்கள்',
     tabProfile: 'சுயவிவரம்',
     tabPregnancy: 'கர்ப்பகாலம்',
@@ -1176,7 +1381,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     tabAccount: 'கணக்கு மேலாண்மை',
     exportData: 'மருத்துவத் தகவலைப் பதிவிறக்கு (JSON)',
     resetDemo: 'டெமோ மீட்டமை',
-
     authWelcome: 'ப்ளூம்நெஸ்ட்டிற்கு நல்வரவு',
     authSubtitle: 'ஒவ்வொரு இதயத்துடிப்பும், ஒவ்வொரு மைல்கல்லும், ஒவ்வொரு தருணமும் — ஒன்றாக.',
     signInTab: 'உள்நுழைக',
@@ -1190,7 +1394,117 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     signInBtn: 'புகலிடத்திற்குள் நுழைக',
     createAccountBtn: 'பாதுகாப்பான கணக்கு தொடங்கு',
     demoProfilesTitle: '1-கிளிக் சோதனை சுயவிவரங்கள்',
-    privacyNote: 'தனியுரிமை மற்றும் பூஜ்ஜிய தரவு கசிவு பாதுகாப்பால் பாதுகாக்கப்பட்டது.'
+    privacyNote: 'தனியுரிமை மற்றும் பூஜ்ஜிய தரவு கசிவு பாதுகாப்பால் பாதுகாக்கப்பட்டது.',
+    dashboard: 'முகப்பு பலகை',
+    'bloom-ai': 'ஞானி AI உதவியாளர்',
+    'health-tracker': 'உயிராதாரங்கள் & கிக் கவுண்டர்',
+    'birth-plan': 'பிரசவத் திட்ட உருவாக்கம்',
+    'mood-wellness': 'மனநலம் & நல்வாழ்வு',
+    relaxation: 'தூக்கம் & அமைதி ஒலிகள்',
+    'little-moments': 'அல்ட்ராசவுண்ட் & நினைவுகள் பெட்டகம்',
+    'partner-space': 'துணைவர் பிரிவு',
+    'hospital-checklist': 'மருத்துவமனைப் பை சரிபார்ப்புப் பட்டியல்',
+    'baby-names': 'குழந்தை பெயர்கள்',
+    'baby-shower': 'வளைகாப்பு விழாத் திட்டம்',
+    'baby-shopping': 'குழந்தை பொருட்கள் பட்டியல்',
+    postpartum: 'பிரசவத்திற்குப் பிந்தைய மீட்பு',
+    'baby-care': 'புதிதாகப் பிறந்த குழந்தை பராமரிப்பு',
+    fetalEvolutionReference: 'கரு வளர்ச்சி & பரிணாமக் குறிப்பு',
+    trimester1: 'முதல் மூன்று மாதம்',
+    trimester2: 'இரண்டாம் மூன்று மாதம்',
+    trimester3: 'மூன்றாம் மூன்று மாதம்',
+    setAsCurrentWeek: 'தற்போதைய வாரமாக அமை',
+    hadlockStandard: 'Hadlock & WHO மருத்துவத் தரம்',
+    crl: 'தலை முதல் பிட்டம் வரை நீளம் (CRL)',
+    chl: 'தலை முதல் குதிகால் வரை நீளம் (CHL)',
+    biologicalFocus: 'கருவியல் மற்றும் உயிரியல் கவனம்',
+    brainNervous: 'மூளை மற்றும் நரம்பு மண்டலம்',
+    cardiovascular: 'இதய மற்றும் உள்ளுறுப்புகள்',
+    sensoryCranio: 'புலன்கள் மற்றும் முக வளர்ச்சி',
+    pulmonaryMusculo: 'நுரையீரல் மற்றும் தசை-எலும்பு',
+    safeMovement: 'பாதுகாப்பான உடற்பயிற்சி வழிகாட்டல்',
+    nutritionFocus: 'மருத்துவ ஊட்டச்சத்துக் கவனம்',
+    weekMilestones: 'வாரத்தின் மைல்கற்கள்',
+    partnerReadiness: 'துணைவர் தயார்நிலை',
+    laborContractionTimer: 'பிரசவ வலி டைமர்',
+    birthPlanRole: 'பிரசவத் திட்டம் மற்றும் மருத்துவமனைப் பங்கு',
+    partnerMission: 'துணைவரின் பணி மற்றும் தயார்நிலை',
+    connectedSynced: 'இணைக்கப்பட்டது & ஒத்திசைக்கப்பட்டது',
+    awaitingConnection: 'இணைப்பிற்காகக் காத்திருக்கிறது',
+    disconnect: 'துண்டிக்கவும்',
+    viewMotherDashboard: 'தாயின் பகிரப்பட்ட பலகையைக் காண்க',
+    goToPartnerSpace: 'துணைவர் பகுதிக்குச் செல்லவும் →',
+    connectCode: 'குறியீட்டை இணைக்கவும்',
+    registeredMothers: 'பதிவுசெய்யப்பட்ட தாய்மார்கள்',
+    addTask: 'பணி சேர்க்க',
+    enterNewTask: 'பணியின் தலைப்பை உள்ளிடவும்...',
+    addReminderBtn: 'நினைவூட்டல் சேர்க்க',
+    noReminders: 'நினைவூட்டல்கள் எதுவும் இல்லை. அடுத்த மருத்துவ சந்திப்புக்கு தயாராக இருங்கள்.',
+    language: 'மொழி',
+    sharedDashboard: 'பகிரப்பட்ட பலகை',
+    surgesLogged: 'பதிவான வலிகள்',
+    reset: 'மீட்டமை',
+    all: 'அனைத்தும்',
+    status: 'நிலை',
+    search: 'தேடவும்',
+    filter: 'வடிகட்டு',
+    evidenceNutrition: 'ஆதாரப்பூர்வ மகப்பேறு ஊட்டச்சத்து',
+    personalizedTargets: 'தனிப்பயனாக்கப்பட்ட மருத்துவ இலக்குகள்',
+    cravingType: 'ஏக்கத்தின் வகை',
+    cravingDesc: 'குறிப்பிட்ட விளக்கம்',
+    physioExplanation: 'உடலியல் விளக்கம்',
+    recommendation: 'பரிந்துரை',
+    unusualCraving: 'வழக்கத்திற்கு மாறான உணவு சேர்க்கைகள்',
+    nonFoodCraving: 'உணவு அல்லாத பொருட்கள் (பிகா)',
+    bloodPressureSystolic: 'இரத்த அழுத்தம் (சிஸ்டாலிக்)',
+    bloodPressureDiastolic: 'இரத்த அழுத்தம் (டயஸ்டாலிக்)',
+    currentWeight: 'தற்போதைய எடை',
+    heartPulse: 'இதயத் துடிப்பு',
+    bloodGlucose: 'இரத்த சர்க்கரை',
+    clinicalNotes: 'மருத்துவக் குறிப்புகள்',
+    saveVitalUpdate: 'பதிவைச் சேமிக்கவும்',
+    scheduleReminder: 'புதிய நினைவூட்டல் அட்டவணை',
+    doctorVisit: 'மருத்துவர் சந்திப்பு',
+    ultrasoundScan: 'அல்ட்ராசவுண்ட் ஸ்கேன்',
+    medication: 'மருந்து',
+    vaccination: 'தடுப்பூசி',
+    hospitalPrep: 'மருத்துவமனை தயாரிப்பு',
+    date: 'தேதி',
+    time: 'நேரம்',
+    glucose: 'குளுக்கோஸ்',
+    notes: 'குறிப்புகள்',
+    kicks: 'உதைப்புகள்',
+    tapKick: 'உதையைத் தொடவும்',
+    recordVitals: 'இன்றைய உயிராதாரங்களை பதிவு செய்க',
+    cardioMetabolic: 'இதய மற்றும் வளர்சிதை மாற்ற குறிகாட்டிகளைக் கண்காணிக்கவும்',
+    doctorOrLocation: 'மருத்துவர் அல்லது இடம்',
+    saveSchedule: 'அட்டவணையைச் சேமிக்கவும்',
+    familyCollab: 'தாய் சரணாலயம் · குடும்பம் & பராமரிப்பாளர் பிரிவு',
+    caregiverSuite: 'துணைவர் சரணாலயம் · பராமரிப்பாளர் பிரிவு',
+    rapidCaregiverTools: 'விரைவான பராமரிப்பாளர் கருவிகள்',
+    directActions: 'பிரசவத் தயாரிப்புக்கான நேரடி நடவடிக்கைகள்',
+    partnerReadinessTitle: 'துணைவர் தயார்நிலை சரிபார்ப்புப் பட்டியல்',
+    physicalTasks: 'தாயின் கவலையைப் போக்கும் நடைமுறைப் பணிகள்',
+    ready: 'தயார்',
+    carSeatTask: 'காரில் குழந்தை இருக்கை பாதுகாப்பாக பொருத்தப்பட்டுள்ளது',
+    hospitalBagTask: 'மருத்துவமனைப் பை மற்றும் சார்ஜர்கள் பேக் செய்யப்பட்டுள்ளன',
+    birthPlanTask: 'பிரசவ விருப்பங்கள் நினைவில் உள்ளன',
+    emergencyContactsTask: 'அவசர எண்கள் சேமிக்கப்பட்டுள்ளன',
+    fiveOneOneTask: '5-1-1 பிரசவ விதி புரிந்து கொள்ளப்பட்டது',
+    recoveryRoomTask: 'குழந்தை தொட்டில் மற்றும் அறை தயாராக உள்ளது',
+    laborDeliveryPrep: 'பிரசவம் & பிரசவ தயாரிப்பு',
+    printExportPdf: 'அச்சிடு / PDF பதிவிறக்கு',
+    overallBagReadiness: 'மருத்துவமனை பையின் ஒட்டுமொத்த தயார்நிலை',
+    packed: 'பேக் செய்யப்பட்டது',
+    laborTriage: 'மருத்துவமனை பிரசவ அவசர பிரிவு',
+    allEssentials: 'அனைத்து அத்தியாவசியங்கள்',
+    tapToMarkPacked: 'பேக் செய்யப்பட்டதாகக் குறிக்க தொடவும்',
+    addCustomPacking: 'தனிப்பயன் பொருளைச் சேர்க்கவும்...',
+    managePreferences: 'உங்கள் சுயவிவரம் மற்றும் கணக்கு பாதுகாப்பை நிர்வகிக்கவும்.',
+    dataSovereignty: 'தரவு இறையாண்மை மற்றும் மருத்துவ ஏற்றுமதி',
+    exportJsonDesc: 'உங்கள் முழுமையான மருத்துவ பதிவுகளை JSON கோப்பாக பதிவிறக்கவும்.',
+    resetDemoTitle: 'அடிப்படை டெமோ நிலைக்கு மீட்டமை',
+    resetDemoDesc: 'அனைத்து உள்ளூர் பதிவுகளையும் ஆரம்ப நிலைக்கு மீட்டமைக்கவும்.'
   },
 
   'te-IN': {
@@ -1220,35 +1534,30 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     today: 'ఈ రోజు',
     viewAll: 'అన్నీ చూడండి',
     completed: 'పూర్తయింది',
-
     clinicalTracking: 'రోజువారీ & వైద్య ట్రాకింగ్',
     homeDashboard: 'హోమ్ డాష్‌బోర్డ్',
-    journey: '40 వారాల ప్రయాణం',
-    bloomAi: 'జ్ఞాని AI సహాయకుడు',
+    journey: '40-వారాల ప్రయాణం',
+    bloomAi: 'జ్ఞాని AI సహాయకురాలు',
     vitalsKicks: 'ఆరోగ్యం & బేబీ కిక్స్',
-    contractions: 'కాన్పు నొప్పుల టైమర్',
+    contractions: 'ప్రసవ నొప్పుల టైమర్',
     birthPlan: 'బర్త్ ప్లాన్ బిల్డర్',
-
     maternalHealth: 'మాతృ ఆరోగ్యం & శ్రేయస్సు',
     nutrition: 'పోషకాహారం & డైట్',
-    exercise: 'గర్భధారణ వ్యాయామం & యోగా',
+    exercise: 'గర్భధారణ వ్యాయామాలు & కీగెల్స్',
     emotionalWellness: 'మానసిక ప్రశాంతత',
     soundscapes: 'నిద్ర & ప్రశాంత శబ్దాలు',
     memoryVault: 'అల్ట్రాసౌండ్ స్కానింగ్ గ్యాలరీ',
-
     partnerFamily: 'భాగస్వామి & కుటుంబ సంసిద్ధత',
     partnerCompanion: 'భాగస్వామి కేర్ సెంటర్',
     hospitalBag: 'హాస్పిటల్ బ్యాగ్ చెక్‌లిస్ట్',
     babyNames: 'శిశువు పేర్లు',
     babyShower: 'శ్రీమంతం వేడుక ప్లానర్',
     nurseryRegistry: 'శిశువు వస్తువుల జాబితా',
-
     postpartumSettings: 'ప్రసవానంతర సంరక్షణ',
     fourthTrimester: 'నాల్గవ త్రైమాసిక రికవరీ',
     newbornCare: 'నవజాత శిశు సంరక్షణ',
-    settings: 'సెట్టింగ్‌లు & గోప్యత',
+    settings: 'సెట్టింగులు & గోప್ಯత',
     emergencyProtocol: 'అత్యవసర ప్రోటోకాల్ (112)',
-
     welcomeBack: 'స్వాగతం',
     babySizeOf: 'శిశువు పరిమాణం సుమారు ఈ పండు పరిమాణంలో ఉంటుంది',
     dueCountdown: 'ప్రసవ కౌంట్‌డౌన్',
@@ -1272,7 +1581,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     kicksToday: 'నేటి కిక్స్',
     logVitals: 'ఆరోగ్యం నమోదు చేయండి',
     foodDiary: 'ఆహార డైరీ',
-
     journeyTitle: 'నా గర్భధారణ ప్రయాణం',
     journeySubtitle: '40 వారాలు మరియు 9 నెలల్లో శిశువు అభివృద్ధి మరియు తల్లి శారీరక మార్పుల పూర్తి గైడ్.',
     timeline40Weeks: '40 వారాల టైమ్‌లైన్',
@@ -1291,7 +1599,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     weightMetric: 'బరువు',
     crlCmp: 'తల నుండి పిరుదుల వరకు (CRL)',
     chlCmp: 'తల నుండి మడమల వరకు (CHL)',
-
     monthOverview: 'నెలవారీ అవలోకనం',
     majorMilestones: 'ప్రధాన మైలురాళ్ళు',
     maternalChanges: 'తల్లి శారీరక మరియు మానసిక మార్పులు',
@@ -1301,7 +1608,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     precautionsHeading: 'ముఖ్యమైన జాగ్రత్తలు',
     faqHeading: 'తరచుగా అడిగే ప్రశ్నలు',
     weeklyTips: 'వారపు చిట్కాలు',
-
     aiAssistantTitle: 'జ్ఞాని AI సహాయకుడు',
     aiAssistantSubtitle: 'గర్భధారణ మరియు శిశు సంరక్షణ సహాయకురాలు (జ్ఞాని.AI)',
     aiInputPlaceholder: 'తెలుగులో జ్ఞాని AIని ఏదైనా అడగండి...',
@@ -1316,7 +1622,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     filterLabour: 'ప్రసవం',
     filterNewborn: 'నవజాత శిశువు',
     filterPostpartum: 'ప్రసవానంతరం',
-
     vitalsTitle: 'ఆరోగ్య వివరాలు & బేబీ కిక్ కౌంటర్',
     vitalsSubtitle: 'రక్తపోటు, బరువు, నాడి రేటు మరియు శిశువు కదలికలను ట్రాక్ చేయండి.',
     kickCounterTitle: 'కిక్ లెక్కింపు సెషన్',
@@ -1331,7 +1636,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     pulseBpmLabel: 'నాడి రేటు (bpm)',
     saveVitalRecord: 'సేవ్ చేయండి',
     vitalHistory: 'ఆరోగ్య చరిత్ర',
-
     surgeTimerTitle: 'కాన్పు నొప్పుల టైమర్ (Contraction Timer)',
     surgeTimerSubtitle: 'నొప్పుల వ్యవధి, విరామం మరియు 5-1-1 హాస్పిటల్ నిష్క్రమణ గైడ్.',
     startTimer: 'నొప్పి ప్రారంభమైంది',
@@ -1346,7 +1650,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     intensityLabel: 'తీవ్రత',
     rule511AlertTitle: '5-1-1 నియమం సక్రియంగా ఉంది: వెంటనే ఆసుపత్రికి వెళ్ళండి!',
     rule511AlertBody: 'మీ నొప్పులు ప్రతి 5 నిమిషాలకు ఒకసారి వచ్చి, కనీసం 1 నిమిషం ఉండి, 1 గంట పాటు కొనసాగుతున్నాయి. వెంటనే ఆసుపత్రికి వెళ్ళండి.',
-
     birthPlanTitle: 'బర్త్ ప్లాన్ బిల్డర్',
     birthPlanSubtitle: 'ప్రసవ గది వాతావరణం, నొప్పి నివారణ ప్రాధాన్యతలు మరియు సంరక్షణ ప్రణాళిక.',
     printExportPlan: 'ప్రింట్ / PDF డౌన్‌లోడ్',
@@ -1356,7 +1659,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     deliverySection: 'ప్రసవం & బొడ్డుతాడు కత్తిరించడం',
     newbornCareSection: 'పుట్టిన వెంటనే శిశు సంరక్షణ',
     specialNotesLabel: 'డాక్టర్‌కు ప్రత్యేక సూచనలు',
-
     nutritionTitle: 'మాతృ పోషకాహారం & డైరీ',
     nutritionSubtitle: 'గర్భధారణ వారానికి అనుగుణంగా కేలరీలు మరియు పోషకాల నిర్వహణ.',
     breakfast: 'ఉదయం అల్పాహారం',
@@ -1373,7 +1675,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     sourCraving: 'పులుపు',
     picaWarningTitle: '🚨 పికా హెచ్చరిక: వెంటనే వైద్యుడిని సంప్రదించండి',
     picaWarningBody: 'మట్టి, సుద్ద తినాలనిపించడం తీవ్రమైన ఐరన్ లోపాన్ని సూచిస్తుంది. వెంటనే వైద్యుడికి తెలపండి.',
-
     fitnessTitle: 'వ్యాయామం & పెల్విక్ ఫ్లోర్ కేంద్రం',
     fitnessSubtitle: 'సురక్షితమైన యోగాసనాలు మరియు కీగెల్ వ్యాయామాలు.',
     kegelTitle: 'కీగెల్ వ్యాయామ గైడ్',
@@ -1383,7 +1684,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     difficultyLevel: 'స్థాయి',
     markCompleted: 'పూర్తయినట్లు గుర్తించండి',
     completedBadge: 'ఈ రోజు పూర్తయింది',
-
     wellnessTitle: 'మానసిక ప్రశాంతత & డైరీ',
     wellnessSubtitle: 'రోజువారీ మానసిక స్థితి, ఒత్తిడి నిర్వహణ మరియు సానుకూల ఆలోచనలు.',
     howAreYouFeeling: 'ఈ రోజు మీరు ఎలా భావిస్తున్నారు?',
@@ -1396,7 +1696,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     journalPlaceholder: 'మీ ఆలోచనలను ఇక్కడ రాయండి...',
     saveMoodLog: 'సేవ్ చేయండి',
     affirmationsTitle: 'సానుకూల ప్రేరణ',
-
     sleepTitle: 'నిద్ర కేంద్రం & ప్రశాంత శబ్దాలు',
     sleepSubtitle: 'గాఢ నిద్ర కోసం వర్షం, సముద్రపు అలలు మరియు జోలపాట.',
     rainSound: 'చిరుజల్లులు',
@@ -1406,7 +1705,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     lullabySound: 'జోలపాట',
     playAll: 'శబ్దం ప్రారంభించండి',
     stopAll: 'మ్యూట్ చేయండి',
-
     vaultTitle: 'అల్ట్రాసౌండ్ స్కానింగ్ గ్యాలరీ',
     vaultSubtitle: 'అల్ట్రాసౌండ్ చిత్రాలు మరియు వైద్య నివేదికలను భద్రపరుచుకోండి.',
     uploadScan: 'స్కాన్ / ఫోటో అప్‌లోడ్ చేయండి',
@@ -1415,7 +1713,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     scanCaption: 'వివరణ లేదా సారాంశం',
     saveMoment: 'గ్యాలరీలో సేవ్ చేయండి',
     vaultDisclaimer: 'గమనిక: ఈ చిత్రాలు మీ వ్యక్తిగత జ్ఞాపకాలు మాత్రమే మరియు అధికారిక వైద్య నివేదికకు ప్రత్యామ్నాయం కాదు.',
-
     partnerSanctuaryTitle: 'భాగస్వామి సంరక్షణ & సహకారం',
     partnerSanctuarySubtitle: 'నొప్పుల సమయం లెక్కింపు మరియు వారపు కేర్‌గివర్ మిషన్లు.',
     partnerConnected: 'భార్యాభర్తలు విజయవంతంగా కనెక్ట్ అయ్యారు',
@@ -1432,14 +1729,12 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     unpairedNoticeBody: 'తల్లి కోడ్ నమోదు చేసే వరకు వైద్య రికార్డులు సురక్షితంగా ఉంటాయి.',
     enterMotherCode: 'కనెక్ట్ కావడానికి తల్లి కోడ్ నమోదు చేయండి:',
     connectSanctuaryBtn: 'కనెక్ట్ చేయండి',
-
     hospitalBagTitle: 'హాస్పిటల్ బ్యాగ్ చెక్‌లిస్ట్',
     hospitalBagSubtitle: '35వ వారం నాటికి తల్లి, బిడ్డ మరియు భాగస్వామి కోసం సిద్ధత.',
     bagForMother: 'తల్లి బ్యాగ్',
     bagForBaby: 'శిశువు బ్యాగ్',
     bagForPartner: 'భాగస్వామి బ్యాగ్',
     addItem: 'వస్తువును జోడించండి',
-
     babyNamesTitle: 'శిశువు పేర్లు',
     babyNamesSubtitle: 'అందమైన పేర్లు, అర్థాలు మరియు ఓటింగ్.',
     searchNames: 'పేరు లేదా అర్థం శోధించండి...',
@@ -1449,12 +1744,10 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     shortlist: 'ఎంపికల జాబితా',
     meaning: 'అర్థం',
     origin: 'మూలం',
-
     postpartumTitle: 'నాల్గవ త్రైమాసిక రికవరీ',
     postpartumSubtitle: 'ప్రసవానంతర రక్తస్రావం మరియు మానసిక ఆరోగ్య పర్యవేక్షణ.',
     newbornCareTitle: 'నవజాత శిశు సంరక్షణ',
     newbornCareSubtitle: 'తల్లిపాలు ఇచ్చే సమయం, డైపర్లు మరియు నిద్ర పర్యవేక్షణ.',
-
     settingsTitle: 'సెట్టింగ్‌లు & ప్రాధాన్యతలు',
     tabProfile: 'ప్రొఫైల్',
     tabPregnancy: 'గర్భధారణ',
@@ -1463,7 +1756,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     tabAccount: 'ఖాతా నిర్వహణ',
     exportData: 'మెడికల్ డేటా డౌన్‌లోడ్ (JSON)',
     resetDemo: 'డెమో రీసెట్',
-
     authWelcome: 'బ్లూమ్‌నెస్ట్‌కు స్వాగతం',
     authSubtitle: 'ప్రతి గుండె చప్పుడు, ప్రతి మైలురాయి, ప్రతి క్షణం — కలసికట్టుగా.',
     signInTab: 'లాగిన్ అవ్వండి',
@@ -1477,7 +1769,117 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     signInBtn: 'ప్రవేశించండి',
     createAccountBtn: 'ఖాతా సృష్టించండి',
     demoProfilesTitle: '1-క్లిక్ టెస్ట్ ప్రొఫైల్స్',
-    privacyNote: 'రో లెవల్ సెక్యూరిటీ మరియు జీరో డేటా లీకేజ్‌తో సురక్షితం.'
+    privacyNote: 'రో లెవల్ సెక్యూరిటీ మరియు జీరో డేటా లీకేజ్‌తో సురక్షితం.',
+    dashboard: 'హోమ్ డాష్‌బోర్డ్',
+    'bloom-ai': 'జ్ఞాని AI సహాయకురాలు',
+    'health-tracker': 'వైటల్స్ & కిక్ కౌంటర్',
+    'birth-plan': 'బర్త్ ప్లాన్ బిల్డర్',
+    'mood-wellness': 'మానసిక ఆరోగ్యం',
+    relaxation: 'నిద్ర & శబ్దాలు',
+    'little-moments': 'అల్ట్రాసౌండ్ & జ్ఞాపకాల ఖజానా',
+    'partner-space': 'భాగస్వామి సహకారం',
+    'hospital-checklist': 'ఆసుపత్రి బ్యాగ్ చెక్‌లిస్ట్',
+    'baby-names': 'శిశువు పేర్లు',
+    'baby-shower': 'సీమంతం & వేడుక',
+    'baby-shopping': 'నర్సరీ రిజిస్ట్రీ',
+    postpartum: 'ప్రసవానంతర రికవరీ',
+    'baby-care': 'నవజాత శిశు సంరక్షణ',
+    fetalEvolutionReference: 'భ్రూణ పరిణామం & అభివృద్ధి వివరాలు',
+    trimester1: 'మొదటి త్రైమాసికం',
+    trimester2: 'రెండవ త్రైಮಾసికం',
+    trimester3: 'మూడవ త్రైమాసికం',
+    setAsCurrentWeek: 'ప్రస్తుత వారంగా సెట్ చేయండి',
+    hadlockStandard: 'Hadlock & WHO వైద్య ప్రమాణాలు',
+    crl: 'తల నుండి పిరుదుల పొడవు (CRL)',
+    chl: 'తల నుండి మడమ పొడవు (CHL)',
+    biologicalFocus: 'భ్రూణశాస్త్రం మరియు జీవసంబంధ దృష్టి',
+    brainNervous: 'మెదడు మరియు నాడీ వ్యవస్థ',
+    cardiovascular: 'గుండె మరియు అంతర్గత అవయవాలు',
+    sensoryCranio: 'జ్ఞానేంద్రియాలు మరియు ముఖ నిర్మాణం',
+    pulmonaryMusculo: 'ఊపిరితిత్తులు & కండరాల వ్యవస్థ',
+    safeMovement: 'సురక్షితమైన శారీరక శ్రమ మార్గదర్శకాలు',
+    nutritionFocus: 'పోషకాహార దృష్టి',
+    weekMilestones: 'వారపు ఎదుగుదల మైలురాళ్ళు',
+    partnerReadiness: 'భాగస్వామి సంసిద్ధత',
+    laborContractionTimer: 'ప్రసవ నొప్పుల టైಮರ್',
+    birthPlanRole: 'బర్త్ ప్లాన్ & ఆసుపత్రి బాధ్యతలు',
+    partnerMission: 'భాగస్వామి కర్తవ్యం & సంసిద్ధత',
+    connectedSynced: 'కనెక్ట్ అయింది & సింక్ చేయబడింది',
+    awaitingConnection: 'కనెక్షన్ కోసం నిరీక్షణ',
+    disconnect: 'డిస్‌కనెక్ట్ చేయండి',
+    viewMotherDashboard: 'తల్లి షేర్ చేసిన డాష్‌బోర్డ్ చూడండి',
+    goToPartnerSpace: 'భాగస్వామి విభాగానికి వెళ్ళండి →',
+    connectCode: 'కోడ్‌ను కనెక్ట్ చేయండి',
+    registeredMothers: 'రిజిస్టర్ అయిన తల్లులు',
+    addTask: 'పనిని జోడించండి',
+    enterNewTask: 'పని శీర్షికను నమోదు చేయండి...',
+    addReminderBtn: 'రిమైండర్ జోడించండి',
+    noReminders: 'రిమైండర్‌లు లేవు. మీ తదుపరి అపాయింట్‌మెంట్ కోసం సిద్ధంగా ఉండండి.',
+    language: 'భాష',
+    sharedDashboard: 'షేర్ చేసిన డాష్‌బోర్డ్',
+    surgesLogged: 'నమోదైన నొప్పులు',
+    reset: 'రీసెట్ చేయండి',
+    all: 'అన్నీ',
+    status: 'స్థితి',
+    search: 'వెతకండి',
+    filter: 'ఫిల్టర్',
+    evidenceNutrition: 'ఆధారిత మాతృ పోషకాహారం',
+    personalizedTargets: 'వ్యక్తిగత వైద్య లక్ష్యాలు సక్రియం',
+    cravingType: 'కోరిక రకం',
+    cravingDesc: 'నిర్దిష్ట వివరణ',
+    physioExplanation: 'శారీరక వివరణ',
+    recommendation: 'సిఫార్సు',
+    unusualCraving: 'అసాధారణ ఆహార కలయికలు',
+    nonFoodCraving: 'ఆహారం కాని పదార్థాలు (పికా)',
+    bloodPressureSystolic: 'రక్తపోటు (సిస్టోలిక్)',
+    bloodPressureDiastolic: 'రక్తపోటు (డయాస్టోలిక్)',
+    currentWeight: 'ప్రస్తుత బరువు',
+    heartPulse: 'గుండె స్పందన',
+    bloodGlucose: 'రక్తంలో గ్లూకోజ్',
+    clinicalNotes: 'వైద్య గమనికలు',
+    saveVitalUpdate: 'నమోదును సేవ్ చేయండి',
+    scheduleReminder: 'కొత్త రిమైండర్‌ను షెడ్యూల్ చేయండి',
+    doctorVisit: 'డాక్టర్ అపాయింట్‌మెంట్',
+    ultrasoundScan: 'అల్ట్రాసౌండ్ స్కాన్',
+    medication: 'మందులు',
+    vaccination: 'టీకాలు',
+    hospitalPrep: 'ఆసుపత్రి సన్నాహాలు',
+    date: 'తేదీ',
+    time: 'సమయం',
+    glucose: 'గ్లూకోజ్',
+    notes: 'గమనికలు',
+    kicks: 'కిక్స్',
+    tapKick: 'కిక్ తాకండి',
+    recordVitals: 'నేటి వైటల్స్ నమోదు చేయండి',
+    cardioMetabolic: 'రక్తపోటు మరియు జీవక్రియ సూచికలను ట్రాక్ చేయండి',
+    doctorOrLocation: 'డాక్టర్ లేదా స్థలం',
+    saveSchedule: 'షెడ్యూల్ సేవ్ చేయండి',
+    familyCollab: 'మాతృధామం · కుటుంబ & సంరక్షకుల విభాగం',
+    caregiverSuite: 'భాగస్వామి ధామం · సంరక్షకుల విభాగం',
+    rapidCaregiverTools: 'శీఘ్ర సంరక్షక సాధనాలు',
+    directActions: 'జనన సన్నద్ధత కోసం ప్రత్యక్ష చర్యలు',
+    partnerReadinessTitle: 'భాగస్వామి సంసిద్ధత చెక్‌లిస్ట్',
+    physicalTasks: 'తల్లి ఆందోళనను తగ్గించే కార్యాచరణలు',
+    ready: 'సిద్ధం',
+    carSeatTask: 'వాహనంలో బేబీ కార్ సీట్ సురక్షితంగా అమర్చబడింది',
+    hospitalBagTask: 'ఆసుపత్రి బ్యాగ్ మరియు ఛార్జర్‌లు సిద్ధం చేయబడ్డాయి',
+    birthPlanTask: 'డెలివరీ ప్రాధాన్యతలు గుర్తుంచుకోబడ్డాయి',
+    emergencyContactsTask: 'అత్యవసర కాంటాక్ట్‌లు సేవ్ చేయబడ్డాయి',
+    fiveOneOneTask: '5-1-1 నిబంధన అర్థమైంది',
+    recoveryRoomTask: 'శిశువు ఉయ్యాల మరియు గది సిద్ధంగా ఉన్నాయి',
+    laborDeliveryPrep: 'ప్రసవ మరియు డెలివరీ సన్నాహాలు',
+    printExportPdf: 'ప్రింట్ / PDF డౌన్‌లోడ్',
+    overallBagReadiness: 'ఆసుపత్రి బ్యాగ్ మొత్తం సంసిద్ధత',
+    packed: 'ప్యాక్ చేయబడింది',
+    laborTriage: 'ఆసుపత్రి లేబర్ ఎమర్జెన్సీ విభాగం',
+    allEssentials: 'అన్ని అవసరమైన వస్తువులు',
+    tapToMarkPacked: 'ప్యాక్ చేసినట్లు గుర్తించడానికి తాకండి',
+    addCustomPacking: 'కొత్త వస్తువును జోడించండి...',
+    managePreferences: 'మీ ప్రొఫైల్ మరియు ఖాతా భద్రతను నిర్వహించండి.',
+    dataSovereignty: 'డేటా సార్వభౌమత్వం మరియు మెడికల్ ఎగుమతి',
+    exportJsonDesc: 'మీ పూర్తి వైద్య రికార్డులను JSON బ్యాకప్‌గా డౌన్‌లోడ్ చేయండి.',
+    resetDemoTitle: 'ప్రాథమిక డెమో స్థితికి రీసెట్ చేయండి',
+    resetDemoDesc: 'అన్ని రికార్డులను ప్రారంభ విలువలకు రీసెట్ చేయండి.'
   },
 
   'ml-IN': {
@@ -1507,35 +1909,30 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     today: 'ഇന്ന്',
     viewAll: 'എല്ലാം കാണുക',
     completed: 'പൂർത്തിയായി',
-
     clinicalTracking: 'ദൈനംദിന മെഡിക്കൽ ട്രാക്കിംഗ്',
     homeDashboard: 'ഹോം ഡാഷ്‌ബോർഡ്',
-    journey: '40 ആഴ്ചത്തെ യാത്ര',
+    journey: '40-ആഴ്ചത്തെ യാത്ര',
     bloomAi: 'ജ്ഞാനി AI അസിസ്റ്റന്റ്',
     vitalsKicks: 'ആരോഗ്യം & കുഞ്ഞിന്റെ ചലനം',
     contractions: 'പ്രസവവേദന ടൈമർ',
     birthPlan: 'ബർത്ത് പ്ലാൻ ബിൽഡർ',
-
     maternalHealth: 'മാതൃ ആരോഗ്യം & ക്ഷേമം',
-    nutrition: 'പോഷകാഹാരം & ഡയറ്റ്',
-    exercise: 'ഗർഭകാല വ്യായാമങ്ങൾ & യോഗ',
+    nutrition: 'പോഷകാഹാരവും ഭക്ഷണക്രമവും',
+    exercise: 'ഗർഭകാല വ്യായാമങ്ങൾ',
     emotionalWellness: 'മാനസികാരോഗ്യം',
     soundscapes: 'ഉറക്കം & ശാന്തമായ ശബ്ദങ്ങൾ',
     memoryVault: 'അൾട്രാസൗണ്ട് സ്കാൻ ഗാലറി',
-
     partnerFamily: 'പങ്കാളി & കുടുംബ തയ്യാറെടുപ്പ്',
     partnerCompanion: 'പങ്കാളി കെയർ സെന്റർ',
     hospitalBag: 'ഹോസ്പിറ്റൽ ബാഗ് ചെക്ക്‌ലിസ്റ്റ്',
     babyNames: 'കുഞ്ഞിന്റെ പേരുകൾ',
     babyShower: 'ബേബി ഷവർ പ്ലാനർ',
     nurseryRegistry: 'കുഞ്ഞുസാമഗ്രികളുടെ ലിസ്റ്റ്',
-
     postpartumSettings: 'പ്രസവാനന്തര പരിചരണം',
     fourthTrimester: 'നാലാം ത്രൈമാസ റിക്കവറി',
     newbornCare: 'നവജാതശിശു പരിചരണം',
-    settings: 'ക്രമീകരണങ്ങളും സ്വകാര്യതയും',
+    settings: 'ക്രമീകരണങ്ങൾ',
     emergencyProtocol: 'അടിയന്തര പ്രോട്ടോക്കോൾ (112)',
-
     welcomeBack: 'സ്വാഗതം',
     babySizeOf: 'കുഞ്ഞിന്റെ വലിപ്പം ഏകദേശം ഈ പഴത്തിന്റെ അത്രയാണ്',
     dueCountdown: 'പ്രസവ കൗണ്ട്ഡൗൺ',
@@ -1559,7 +1956,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     kicksToday: 'ഇന്നത്തെ ചലനങ്ങൾ',
     logVitals: 'അളവുകൾ രേഖപ്പെടുത്തുക',
     foodDiary: 'ഭക്ഷണ ഡയറി',
-
     journeyTitle: 'എന്റെ ഗർഭകാല യാത്ര',
     journeySubtitle: '40 ആഴ്ചകളിലും 9 മാസങ്ങളിലുമായി കുഞ്ഞിന്റെ വളർച്ചയും അമ്മയുടെ ശാരീരിക മാറ്റങ്ങളും വിശദമായി.',
     timeline40Weeks: '40 ആഴ്ചത്തെ ടൈംലൈൻ',
@@ -1578,7 +1974,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     weightMetric: 'ഭാരം',
     crlCmp: 'തല മുതൽ നിതംബം വരെ (CRL)',
     chlCmp: 'തല മുതൽ ഉപ്പൂറ്റി വരെ (CHL)',
-
     monthOverview: 'പ്രതിമാസ അവലോകനം',
     majorMilestones: 'പ്രധാന നാഴികക്കല്ലുകൾ',
     maternalChanges: 'അമ്മയുടെ ശാരീരിക-മാനസിക മാറ്റങ്ങൾ',
@@ -1588,7 +1983,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     precautionsHeading: 'പ്രധാന മുൻകരുതലുകൾ',
     faqHeading: 'സാധാരണ ചോദ്യങ്ങൾ',
     weeklyTips: 'പ്രതിവാര നുറുങ്ങുകൾ',
-
     aiAssistantTitle: 'ജ്ഞാനി AI അസിസ്റ്റന്റ്',
     aiAssistantSubtitle: 'ഗർഭകാല & നവജാതശിശു പരിചരണ സഹായി (ജ്ഞാനി.AI)',
     aiInputPlaceholder: 'മലയാളത്തിൽ ജ്ഞാനി AI-യോട് ചോദിക്കൂ...',
@@ -1603,7 +1997,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     filterLabour: 'പ്രസവം',
     filterNewborn: 'നവജാതശിശു',
     filterPostpartum: 'പ്രസവാനന്തരം',
-
     vitalsTitle: 'ആരോഗ്യ വിവരങ്ങൾ & കിക്ക് കൗണ്ടർ',
     vitalsSubtitle: 'രക്തസമ്മർദ്ദം, ഭാരം, ഹൃദയമിടിപ്പ്, കുഞ്ഞിന്റെ ചലനം എന്നിവ ട്രാക്ക് ചെയ്യുക.',
     kickCounterTitle: 'കിക്ക് കൗണ്ടിംഗ് സെഷൻ',
@@ -1618,7 +2011,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     pulseBpmLabel: 'ഹൃദയമിടിപ്പ് (bpm)',
     saveVitalRecord: 'സേവ് ചെയ്യുക',
     vitalHistory: 'ആരോഗ്യ ചരിത്രം',
-
     surgeTimerTitle: 'പ്രസവവേദന ടൈമർ (Contraction Timer)',
     surgeTimerSubtitle: 'വേദനയുടെ ദൈർഘ്യം, ഇടവേള, 5-1-1 ആശുപത്രി യാത്ര നിർദ്ദേശങ്ങൾ.',
     startTimer: 'വേദന തുടങ്ങി',
@@ -1633,7 +2025,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     intensityLabel: 'തീവ്രത',
     rule511AlertTitle: '5-1-1 സുവർണ്ണ നിയമം: ഉടൻ ആശുപത്രിയിലേക്ക് പോകുക!',
     rule511AlertBody: 'ഓരോ 5 മിനിറ്റിലും വേദന വരികയും, 1 മിനിറ്റ് നീണ്ടുനിൽക്കുകയും, 1 മണിക്കൂർ തുടരുകയും ചെയ്യുന്നു. ഉടൻ ആശുപത്രിയിലേക്ക് തിരിക്കുക.',
-
     birthPlanTitle: 'ബർത്ത് പ്ലാൻ ബിൽഡർ',
     birthPlanSubtitle: 'പ്രസവമുറി അന്തരീക്ഷം, വേദന സംഹാരികൾ, കുഞ്ഞിന്റെ പരിചരണം എന്നിവ മുൻകൂട്ടി ആസൂത്രണം ചെയ്യുക.',
     printExportPlan: 'പ്രിന്റ് / PDF ഡൗൺലോഡ്',
@@ -1643,7 +2034,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     deliverySection: 'പ്രസവവും പൊക്കിൾക്കൊടിയും',
     newbornCareSection: 'ജനനശേഷമുള്ള പരിചരണം',
     specialNotesLabel: 'ഡോക്ടർക്കുള്ള പ്രത്യേക കുറിപ്പുകൾ',
-
     nutritionTitle: 'മാതൃ പോഷകാഹാരം & ഡയറി',
     nutritionSubtitle: 'ആഴ്ചക്കനുസരിച്ചുള്ള കലോറിയും പോഷകങ്ങളും കൃത്യമായി കൈകാര്യം ചെയ്യുക.',
     breakfast: 'പ്രഭാതഭക്ഷണം',
@@ -1660,7 +2050,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     sourCraving: 'പുളി',
     picaWarningTitle: '🚨 പിക്ക മുന്നറിയിപ്പ്: ഉടൻ ഡോക്ടറെ കാണുക',
     picaWarningBody: 'മണ്ണ്, ചോക്ക് എന്നിവ കഴിക്കാനുള്ള തോന്നൽ രക്തക്കുറവിന്റെ ലക്ഷണമാണ്. ഉടൻ ഡോക്ടറെ അറിയിക്കുക.',
-
     fitnessTitle: 'ഗർഭകാല വ്യായാമവും യോഗയും',
     fitnessSubtitle: 'സുരക്ഷിതമായ യോഗാസനങ്ങളും പെൽവിക് ഫ്ലോർ കീഗൽ വ്യായാമങ്ങളും.',
     kegelTitle: 'കീഗൽ വ്യായാമ പരിശീലനം',
@@ -1670,7 +2059,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     difficultyLevel: 'ലെവൽ',
     markCompleted: 'പൂർത്തിയായതായി അടയാളപ്പെടുത്തുക',
     completedBadge: 'ഇന്ന് പൂർത്തിയായി',
-
     wellnessTitle: 'മാനസികാരോഗ്യം & ഡയറി',
     wellnessSubtitle: 'ദൈനംദിന മാനസികാവസ്ഥ, സ്ട്രെസ്സ് മാനേജ്മെന്റ്, പോസിറ്റീവ് ചിന്തകൾ.',
     howAreYouFeeling: 'ഇന്ന് എന്തു തോന്നുന്നു?',
@@ -1683,7 +2071,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     journalPlaceholder: 'നിങ്ങളുടെ ചിന്തകൾ ഇവിടെ കുറിക്കുക...',
     saveMoodLog: 'സേവ് ചെയ്യുക',
     affirmationsTitle: 'ദൈനംദിന പ്രചോദനം',
-
     sleepTitle: 'ഉറക്ക കേന്ദ്രം & ശാന്തമായ ശബ്ദങ്ങൾ',
     sleepSubtitle: 'നല്ല ഉറക്കത്തിനായി മഴ, കടൽത്തിരമാലകൾ, താരാട്ടുപാട്ട്.',
     rainSound: 'മഴത്തുള്ളികൾ',
@@ -1693,7 +2080,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     lullabySound: 'താരാട്ടുപാട്ട്',
     playAll: 'പ്ലേ ചെയ്യുക',
     stopAll: 'മ്യൂട്ട് ചെയ്യുക',
-
     vaultTitle: 'അൾട്രാസൗണ്ട് സ്കാൻ ഗാലറി',
     vaultSubtitle: 'അൾട്രാസൗണ്ട് ചിത്രങ്ങളും മെഡിക്കൽ രേഖകളും ഭദ്രമായി സൂക്ഷിക്കുക.',
     uploadScan: 'ഫോട്ടോ / സ്കാൻ അപ്‌ലോഡ് ചെയ്യുക',
@@ -1702,7 +2088,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     scanCaption: 'വിവരണം',
     saveMoment: 'സേവ് ചെയ്യുക',
     vaultDisclaimer: 'ശ്രദ്ധിക്കുക: ഇവ നിങ്ങളുടെ സ്വകാര്യ ഓർമ്മകൾ മാത്രമാണ്, ഔദ്യോഗിക മെഡിക്കൽ റിപ്പോർട്ടല്ല.',
-
     partnerSanctuaryTitle: 'പങ്കാളിയുടെ സംരക്ഷണം & സഹകരണം',
     partnerSanctuarySubtitle: 'പ്രസവവേദന സമയനിർണ്ണയവും പ്രതിവാര പരിചരണ ദൗത്യങ്ങളും.',
     partnerConnected: 'ദമ്പതികൾ ബന്ധിപ്പിച്ചിരിക്കുന്നു',
@@ -1719,14 +2104,12 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     unpairedNoticeBody: 'അമ്മയുടെ അനുമതി കോഡ് ലഭിക്കുന്നതുവരെ മെഡിക്കൽ രേഖകൾ സുരക്ഷിതമായിരിക്കും.',
     enterMotherCode: 'അമ്മയുടെ കോഡ് നൽകുക:',
     connectSanctuaryBtn: 'കണക്റ്റ് ചെയ്യുക',
-
     hospitalBagTitle: 'ഹോസ്പിറ്റൽ ബാഗ് ചെക്ക്‌ലിസ്റ്റ്',
     hospitalBagSubtitle: '35-ാം ആഴ്ചയോടെ അമ്മ, കുഞ്ഞ്, പങ്കാളി എന്നിവരുടെ ഒരുക്കങ്ങൾ.',
     bagForMother: 'അമ്മയ്ക്കുള്ള ബാഗ്',
     bagForBaby: 'കുഞ്ഞിനുള്ള ബാഗ്',
     bagForPartner: 'പങ്കാളിക്കുള്ള ബാഗ്',
     addItem: 'വസ്തു ചേർക്കുക',
-
     babyNamesTitle: 'കുഞ്ഞിന്റെ പേരുകൾ',
     babyNamesSubtitle: 'സുന്ദരമായ പേരുകൾ, അർത്ഥങ്ങൾ, വോട്ടിംഗ്.',
     searchNames: 'പേരോ അർത്ഥമോ തിരയുക...',
@@ -1736,12 +2119,10 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     shortlist: 'ഷോർട്ട്‌ലിസ്റ്റ്',
     meaning: 'അർത്ഥം',
     origin: 'ഉത്ഭവം',
-
     postpartumTitle: 'നാലാം ത്രൈമാസ റിക്കവറി',
     postpartumSubtitle: 'പ്രസവാനന്തര രക്തസ്രാവവും മാനസികാരോഗ്യവും.',
     newbornCareTitle: 'നവജാതശിശു പരിചരണം',
     newbornCareSubtitle: 'മുലയൂട്ടൽ സമയം, ഡയപ്പറുകൾ, ഉറക്കം.',
-
     settingsTitle: 'ക്രമീകരണങ്ങളും മുൻഗണനകളും',
     tabProfile: 'പ്രൊഫൈൽ',
     tabPregnancy: 'ഗർഭധാരണം',
@@ -1750,7 +2131,6 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     tabAccount: 'അക്കൗണ്ട് മാനേജ്മെന്റ്',
     exportData: 'മെഡിക്കൽ ഡാറ്റ ഡൗൺലോഡ് (JSON)',
     resetDemo: 'ഡെമോ പുനഃസജ്ജീകരിക്കുക',
-
     authWelcome: 'ബ്ലൂംനെസ്റ്റിലേക്ക് സ്വാഗതം',
     authSubtitle: 'ഓരോ ഹൃദയമിടിപ്പും, ഓരോ നാഴികക്കല്ലും, ഓരോ നിമിഷവും — ഒന്നിച്ചു.',
     signInTab: 'ലോഗിൻ ചെയ്യുക',
@@ -1764,13 +2144,188 @@ export const TRANSLATIONS: Record<SupportedLanguageCode, TranslationDictionary> 
     signInBtn: 'പ്രവേശിക്കുക',
     createAccountBtn: 'സുരക്ഷിതമായ അക്കൗണ്ട് സൃഷ്ടിക്കുക',
     demoProfilesTitle: '1-ക്ലിക്ക് പരീക്ഷണ അക്കൗണ്ടുകൾ',
-    privacyNote: 'സ്വകാര്യതയും സുരക്ഷിതത്വവും ഉറപ്പുവരുത്തിയിരിക്കുന്നു.'
+    privacyNote: 'സ്വകാര്യതയും സുരക്ഷിതത്വവും ഉറപ്പുവരുത്തിയിരിക്കുന്നു.',
+    dashboard: 'ഹോം ഡാഷ്‌ബോർഡ്',
+    'bloom-ai': 'ജ്ഞാനി AI അസിസ്റ്റന്റ്',
+    'health-tracker': 'വൈറ്റലുകളും കിക്ക് കൗണ്ടറും',
+    'birth-plan': 'ജനന പദ്ധതി നിർമ്മാതാവ്',
+    'mood-wellness': 'മാനസികാരോഗ്യം',
+    relaxation: 'ഉറക്കവും ശാന്തമായ ശബ്ദങ്ങളും',
+    'little-moments': 'അൾട്രാസൗണ്ടും ഓർമ്മകളും',
+    'partner-space': 'പങ്കാളി സഹായം',
+    'hospital-checklist': 'ആശുപത്രി ബാഗ് ചെക്ക്‌ലിസ്റ്റ്',
+    'baby-names': 'കുഞ്ഞു പേരുകൾ',
+    'baby-shower': 'ബേബി ഷവർ പ്ലാനർ',
+    'baby-shopping': 'നഴ്സറി രജിസ്ട്രി',
+    postpartum: 'പ്രസവാനന്തര വീണ്ടെടുക്കൽ',
+    'baby-care': 'നവജാത ശിശു പരിപാലനം',
+    fetalEvolutionReference: 'ഭ്രൂണ വികാസവും ഘട്ടങ്ങളും',
+    trimester1: 'ഒന്നാം ത്രൈമാസികം',
+    trimester2: 'രണ്ടാം ത്രൈമാസികം',
+    trimester3: 'മൂന്നാം ത്രൈമാസികം',
+    setAsCurrentWeek: 'നിലവിലെ ആഴ്ചയായി ക്രമീകരിക്കുക',
+    hadlockStandard: 'Hadlock & WHO മെഡിക്കൽ മാനദണ്ഡങ്ങൾ',
+    crl: 'തല മുതൽ നിതംബം വരെയുള്ള നീളം (CRL)',
+    chl: 'തല മുതൽ കുതികാൽ വരെയുള്ള നീളം (CHL)',
+    biologicalFocus: 'ഭ്രൂണശാസ്ത്രവും ജൈവ വികാസവും',
+    brainNervous: 'തലച്ചോറും നാഡീവ്യവസ്ഥയും',
+    cardiovascular: 'ഹൃദയവും ആന്തരാവയവങ്ങളും',
+    sensoryCranio: 'ഇന്ദ്രിയങ്ങളും മുഖ വികാസവും',
+    pulmonaryMusculo: 'ശ്വാസകോശവും പേശി-അസ്ഥികൂടവും',
+    safeMovement: 'സുരക്ഷിതമായ വ്യായാമ മാർഗ്ഗനിർദ്ദേശങ്ങൾ',
+    nutritionFocus: 'പോഷകാഹാര ശ്രദ്ധ',
+    weekMilestones: 'ഈ ആഴ്ചയിലെ പ്രധാന നാഴികക്കല്ലുകൾ',
+    partnerReadiness: 'പങ്കാളിയുടെ സന്നദ്ധത',
+    laborContractionTimer: 'പ്രസവവേദന ടൈമർ',
+    birthPlanRole: 'ജനന പദ്ധതിയും ആശുപത്രി പങ്കും',
+    partnerMission: 'പങ്കാളിയുടെ ದೌತ್ಯವು ಸನ್ನದ್ಧತೆಯು',
+    connectedSynced: 'കണക്റ്റ് ചെയ്തു, സമന്വയിപ്പിച്ചു',
+    awaitingConnection: 'കണക്ഷനായി കാത്തിരിക്കുന്നു',
+    disconnect: 'വിച്ഛേദിക്കുക',
+    viewMotherDashboard: 'അമ്മയുടെ പങ്കിട്ട ഡാഷ്‌ബോർഡ് കാണുക',
+    goToPartnerSpace: 'പങ്കാളി സ്പേസിലേക്ക് പോകുക →',
+    connectCode: 'കോഡ് കണക്റ്റ് ചെയ്യുക',
+    registeredMothers: 'രജിസ്റ്റർ ചെയ്ത അമ്മമാർ',
+    addTask: 'ടാസ്‌ക് ചേർക്കുക',
+    enterNewTask: 'ടാസ്‌കിന്റെ പേര് നൽകുക...',
+    addReminderBtn: 'ഓർമ്മപ്പെടുത്തൽ ചേർക്കുക',
+    noReminders: 'ഓർമ്മപ്പെടുത്തലുകൾ ഷെഡ്യൂൾ ചെയ്തിട്ടില്ല.',
+    language: 'ഭാഷ',
+    sharedDashboard: 'പങ്കിട്ട ഡാഷ്‌ബോർഡ്',
+    surgesLogged: 'രേഖപ്പെടുത്തിയ സങ്കോചങ്ങൾ',
+    reset: 'റീസെറ്റ് ചെയ്യുക',
+    all: 'എല്ലാം',
+    status: 'നില',
+    search: 'തിരയുക',
+    filter: 'ഫിൽട്ടർ',
+    evidenceNutrition: 'ശാസ്ത്രീയ ഗർഭകാല പോഷകാഹാരം',
+    personalizedTargets: 'വ്യക്തിഗത മെഡിക്കൽ ലക്ഷ്യങ്ങൾ',
+    cravingType: 'കൊതിയുടെ തരം',
+    cravingDesc: 'പ്രത്യേക വിവരണം',
+    physioExplanation: 'ശാരീരിക വിശദീകരണം',
+    recommendation: 'ശുപാർശ',
+    unusualCraving: 'സാധാരണമല്ലാത്ത ഭക്ഷണ ചേരുവകൾ',
+    nonFoodCraving: 'ഭക്ഷണമല്ലാത്ത വസ്തുക്കൾ (പിക്ക)',
+    bloodPressureSystolic: 'രക്തസമ്മർദ്ദം (സിസ്റ്റോളിക്)',
+    bloodPressureDiastolic: 'രക്തസമ്മർദ്ദം (ഡയസ്റ്റോളിക്)',
+    currentWeight: 'നിലവിലെ ഭാരം',
+    heartPulse: 'ഹൃദയമിടിപ്പ്',
+    bloodGlucose: 'രക്തത്തിലെ പഞ്ചസാര',
+    clinicalNotes: 'മെഡിക്കൽ കുറിപ്പുകൾ',
+    saveVitalUpdate: 'രേഖപ്പെടുത്തുക',
+    scheduleReminder: 'പുതിയ ഓർമ്മപ്പെടുത്തൽ',
+    doctorVisit: 'ഡോക്ടർ സന്ദർശനം',
+    ultrasoundScan: 'അൾട്രാസൗണ്ട് സ്കാൻ',
+    medication: 'മരുന്നുകൾ',
+    vaccination: 'വാക്സിനേഷൻ',
+    hospitalPrep: 'ആശുപത്രി ഒരുക്കം',
+    date: 'തീയതി',
+    time: 'സമയം',
+    glucose: 'ഗ്ലൂക്കോസ്',
+    notes: 'കുറിപ്പുകൾ',
+    kicks: 'കിക്കുകൾ',
+    tapKick: 'കിക്കിൽ സ്പർശിക്കുക',
+    recordVitals: 'ഇന്നത്തെ ആരോഗ്യ വിവരങ്ങൾ രേഖപ്പെടുത്തുക',
+    cardioMetabolic: 'രക്തസമ്മർദ്ദവും ഉപാപചയ അടയാളങ്ങളും നിരീക്ഷിക്കുക',
+    doctorOrLocation: 'ഡോക്ടർ അല്ലെങ്കിൽ സ്ഥലം',
+    saveSchedule: 'ഷെഡ്യൂൾ സംരക്ഷിക്കുക',
+    familyCollab: 'മാതൃ സങ്കേതം · കുടുംബവും പരിചരണ വിഭാഗവും',
+    caregiverSuite: 'പങ്കാളി സങ്കേതം · പരിചരണ വിഭാഗം',
+    rapidCaregiverTools: 'ദ്രുത പരിചരണ ഉപകരണങ്ങൾ',
+    directActions: 'പ്രസവ സന്നദ്ധതയ്ക്കുള്ള നേരിട്ടുള്ള നടപടികൾ',
+    partnerReadinessTitle: 'പങ്കാളിയുടെ സന്നദ്ധത ചെക്ക്‌ലിസ്റ്റ്',
+    physicalTasks: 'അമ്മയുടെ ആശങ്ക കുറയ്ക്കുന്നതിനുള്ള പ്രായോഗിക പ്രവർത്തനങ്ങൾ',
+    ready: 'തയ്യാർ',
+    carSeatTask: 'വാഹനത്തിൽ ബേബി കാർ സീറ്റ് സുരക്ഷിതമായി ഘടിപ്പിച്ചു',
+    hospitalBagTask: 'ആശുപത്രി ബാഗും ചാർജറുകളും തയ്യാറാക്കി',
+    birthPlanTask: 'പ്രസവ മുൻഗണനകൾ ഓർമ്മയിലുണ്ട്',
+    emergencyContactsTask: 'അടിയന്തര നമ്പറുകൾ സേവ് ചെയ്തിട്ടുണ്ട്',
+    fiveOneOneTask: '5-1-1 പ്രസവ നിയമം മനസ്സിലാക്കി',
+    recoveryRoomTask: 'കുഞ്ഞിന്റെ തൊട്ടിലും മുറിയും സജ്ജമാക്കി',
+    laborDeliveryPrep: 'പ്രസവ ഒരുക്കങ്ങൾ',
+    printExportPdf: 'പ്രിന്റ് / PDF ഡൗൺലോഡ്',
+    overallBagReadiness: 'ആശുപത്രി ബാഗിന്റെ പൂർണ്ണ സജ്ജീകരണം',
+    packed: 'പാക്ക് ചെയ്തു',
+    laborTriage: 'ആശുപത്രി ലേബർ ട്രയേജ്',
+    allEssentials: 'എല്ലാ അവശ്യസാധനങ്ങളും',
+    tapToMarkPacked: 'പാക്ക് ചെയ്തതായി അടയാളപ്പെടുത്താൻ സ്പർശിക്കുക',
+    addCustomPacking: 'പുതിയ സാധനം ചേർക്കുക...',
+    managePreferences: 'നിങ്ങളുടെ പ്രൊഫൈലും അക്കൗണ്ട് സുരക്ഷയും കൈകാര്യം ചെയ്യുക.',
+    dataSovereignty: 'ഡാറ്റ പരമാധികാരവും മെഡിക്കൽ കയറ്റുമതിയും',
+    exportJsonDesc: 'നിങ്ങളുടെ സമ്പൂർണ്ണ മെഡിക്കൽ രേഖകൾ JSON ബാക്കപ്പായി ഡൗൺലോഡ് ചെയ്യുക.',
+    resetDemoTitle: 'പ്രാഥമിക ഡെമോ അവസ്ഥയിലേക്ക് റീസെറ്റ് ചെയ്യുക',
+    resetDemoDesc: 'എല്ലാ ലോക്കൽ രേഖകളും പ്രാരംഭ മൂല്യങ്ങളിലേക്ക് റീസെറ്റ് ചെയ്യുക.'
   }
+
 };
 
 /**
+ * Canonical route & tab ID to translation key mapping.
+ */
+export const TAB_TO_KEY_MAP: Record<string, string> = {
+  'dashboard': 'homeDashboard',
+  'journey': 'journey',
+  'bloom-ai': 'bloomAi',
+  'bloomAi': 'bloomAi',
+  'health-tracker': 'vitalsKicks',
+  'healthTracker': 'vitalsKicks',
+  'vitals-kicks': 'vitalsKicks',
+  'vitalsKicks': 'vitalsKicks',
+  'contractions': 'contractions',
+  'birth-plan': 'birthPlan',
+  'birthPlan': 'birthPlan',
+  'nutrition': 'nutrition',
+  'exercise': 'exercise',
+  'mood-wellness': 'emotionalWellness',
+  'moodWellness': 'emotionalWellness',
+  'emotionalWellness': 'emotionalWellness',
+  'relaxation': 'soundscapes',
+  'soundscapes': 'soundscapes',
+  'little-moments': 'memoryVault',
+  'littleMoments': 'memoryVault',
+  'memoryVault': 'memoryVault',
+  'partner-space': 'partnerCompanion',
+  'partnerSpace': 'partnerCompanion',
+  'partnerCompanion': 'partnerCompanion',
+  'hospital-checklist': 'hospitalBag',
+  'hospitalChecklist': 'hospitalBag',
+  'hospitalBag': 'hospitalBag',
+  'baby-names': 'babyNames',
+  'babyNames': 'babyNames',
+  'baby-shower': 'babyShower',
+  'babyShower': 'babyShower',
+  'baby-shopping': 'nurseryRegistry',
+  'babyShopping': 'nurseryRegistry',
+  'nurseryRegistry': 'nurseryRegistry',
+  'postpartum': 'fourthTrimester',
+  'fourthTrimester': 'fourthTrimester',
+  'baby-care': 'newbornCare',
+  'babyCare': 'newbornCare',
+  'newbornCare': 'newbornCare',
+  'settings': 'settings'
+};
+
+// Merge extended phrases and clinical terms into TRANSLATIONS dictionary
+for (const [lang, phrases] of Object.entries(EXTENDED_PHRASES)) {
+  const code = lang as SupportedLanguageCode;
+  if (TRANSLATIONS[code]) {
+    Object.assign(TRANSLATIONS[code], phrases);
+  }
+}
+
+for (const [lang, phrases] of Object.entries(COMMON_PHRASES)) {
+  const code = lang as SupportedLanguageCode;
+  if (TRANSLATIONS[code]) {
+    Object.assign(TRANSLATIONS[code], phrases);
+  }
+}
+
+export { getLocalizedWeekData };
+
+/**
  * Intelligent localized translation lookup.
- * Supports exact key lookup, case-insensitive key lookup, and text-based lookup.
+ * Supports exact key lookup, canonical route/tab keys, case-insensitive lookup,
+ * English-value reverse lookup, extended phrases, and fuzzy punctuation-free matching.
  */
 export const getTranslation = (lang: string, keyOrText: string, fallback?: string): string => {
   if (!keyOrText) return fallback || '';
@@ -1778,22 +2333,118 @@ export const getTranslation = (lang: string, keyOrText: string, fallback?: strin
   const currentDict = TRANSLATIONS[code] || TRANSLATIONS['en-US'];
   const enDict = TRANSLATIONS['en-US'];
 
-  // 1. Direct dictionary match
+  // 1. Direct dictionary match by exact key
   if (currentDict[keyOrText]) {
     return currentDict[keyOrText];
   }
 
-  // 2. Direct English dictionary match -> find value in current language
+  // 2. Direct extended phrases & common phrases match
+  if (EXTENDED_PHRASES[code] && EXTENDED_PHRASES[code][keyOrText]) {
+    return EXTENDED_PHRASES[code][keyOrText];
+  }
+  if (COMMON_PHRASES[code] && COMMON_PHRASES[code][keyOrText]) {
+    return COMMON_PHRASES[code][keyOrText];
+  }
+
+  // 3. Dynamic template matches (e.g. "X mins apart", "Allow my partner... (Name)")
   if (code !== 'en-US') {
-    // If keyOrText is already an English value (e.g. "40-Week Timeline")
-    for (const [k, enVal] of Object.entries(enDict)) {
-      if (enVal.toLowerCase() === keyOrText.trim().toLowerCase()) {
-        if (currentDict[k]) return currentDict[k];
+    const minsMatch = keyOrText.match(/^(\d+(?:\.\d+)?)\s*mins\s*apart$/i);
+    if (minsMatch) {
+      const minsSuffix = currentDict['mins apart'] || 'mins apart';
+      return `${minsMatch[1]} ${minsSuffix}`;
+    }
+
+    const partnerSideMatch = keyOrText.match(/^My partner by my side at all times\s*\(([^)]+)\)$/i);
+    if (partnerSideMatch) {
+      const base = currentDict['My partner by my side at all times'] || 'My partner by my side at all times';
+      return `${base} (${partnerSideMatch[1]})`;
+    }
+
+    const partnerCordMatch = keyOrText.match(/^Allow my partner to cut the cord\s*\(([^)]+)\)$/i);
+    if (partnerCordMatch) {
+      const base = currentDict['Allow my partner to cut the cord'] || 'Allow my partner to cut the cord';
+      return `${base} (${partnerCordMatch[1]})`;
+    }
+
+    const logToMatch = keyOrText.match(/^\+?\s*Log to\s+(.+)$/i);
+    if (logToMatch) {
+      const meal = logToMatch[1].trim().toLowerCase();
+      const fullKey = `+ Log to ${meal}`;
+      if (currentDict[fullKey]) return currentDict[fullKey];
+      if (currentDict[`Log to ${meal}`]) return `+ ${currentDict[`Log to ${meal}`]}`;
+      const localizedMeal = currentDict[meal] || meal;
+      return `+ ${localizedMeal} ${currentDict['logTo'] || 'ಸೇರಿಸಿ'}`;
+    }
+  }
+
+  // 4. Canonical tab/route ID match
+  if (TAB_TO_KEY_MAP[keyOrText]) {
+    const canonicalKey = TAB_TO_KEY_MAP[keyOrText];
+    if (currentDict[canonicalKey]) return currentDict[canonicalKey];
+    if (enDict[canonicalKey]) return enDict[canonicalKey];
+  }
+
+  const trimmedInput = keyOrText.trim();
+  const lowerInput = trimmedInput.toLowerCase();
+
+  // 5. Case-insensitive lookup in current dictionary
+  if (currentDict[trimmedInput]) return currentDict[trimmedInput];
+
+  // 6. Delimiter-normalized key match
+  const normalizedKey = lowerInput.replace(/[-_\s]+/g, '');
+  for (const [k, v] of Object.entries(currentDict)) {
+    if (k.toLowerCase().replace(/[-_\s]+/g, '') === normalizedKey) {
+      return v;
+    }
+  }
+
+  // 6b. Long sentence prefix/substring match
+  if (trimmedInput.length > 25 && code !== 'en-US') {
+    const inputPrefix = lowerInput.slice(0, 35);
+    for (const [k, v] of Object.entries(currentDict)) {
+      if (k.length > 25 && k.toLowerCase().slice(0, 35) === inputPrefix) {
+        return v;
       }
     }
   }
 
-  // 3. Fallback to English dictionary
+  // 7. Reverse English dictionary value match
+  if (code !== 'en-US') {
+    for (const [k, enVal] of Object.entries(enDict)) {
+      if (enVal.trim().toLowerCase() === lowerInput) {
+        if (currentDict[k]) return currentDict[k];
+      }
+    }
+
+    // 8. Check EXTENDED_PHRASES & COMMON_PHRASES reverse lookup
+    const allEn = { ...(EXTENDED_PHRASES['en-US'] || {}), ...(COMMON_PHRASES['en-US'] || {}) };
+    const allCur = { ...(EXTENDED_PHRASES[code] || {}), ...(COMMON_PHRASES[code] || {}) };
+    for (const [k, enVal] of Object.entries(allEn)) {
+      if (enVal.trim().toLowerCase() === lowerInput || k.toLowerCase() === lowerInput) {
+        if (allCur[k]) return allCur[k];
+      }
+    }
+
+    // 9. Fuzzy match without punctuation
+    const strippedInput = lowerInput.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+    if (strippedInput.length > 2) {
+      for (const [k, enVal] of Object.entries(enDict)) {
+        const strippedEnVal = enVal.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+        if (strippedEnVal === strippedInput && currentDict[k]) {
+          return currentDict[k];
+        }
+      }
+
+      for (const [k, enVal] of Object.entries(allEn)) {
+        const strippedEnVal = enVal.trim().toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+        if (strippedEnVal === strippedInput && allCur[k]) {
+          return allCur[k];
+        }
+      }
+    }
+  }
+
+  // 10. Fallback to English dictionary
   if (enDict[keyOrText]) {
     return enDict[keyOrText];
   }

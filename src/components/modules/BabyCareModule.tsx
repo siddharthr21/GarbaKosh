@@ -176,7 +176,7 @@ export const BabyCareModule: React.FC = () => {
         <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
           <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
             <Clock className="w-4 h-4 text-gray-600" />
-            Today’s Newborn Activity Stream
+            {t('Today’s Newborn Activity Stream', 'Today’s Newborn Activity Stream')}
           </h3>
 
           <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
@@ -190,11 +190,11 @@ export const BabyCareModule: React.FC = () => {
                     {act.type === 'breastfeeding' ? '🤱' : act.type === 'bottle' ? '🍼' : act.type === 'sleep' ? '💤' : '🚼'}
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 capitalize">{act.type.replace('-', ' ')}</h4>
+                    <h4 className="font-bold text-gray-900 capitalize">{t(act.type.replace('-', ' '), act.type.replace('-', ' '))}</h4>
                     <p className="text-[11px] text-gray-500">
-                      {act.durationMinutes ? `${act.durationMinutes} mins · ` : ''}
+                      {act.durationMinutes ? `${act.durationMinutes} ${t('mins', 'mins')} · ` : ''}
                       {act.amountMl ? `${act.amountMl} ml · ` : ''}
-                      {act.notes || 'Normal routine'}
+                      {t(act.notes || 'Normal routine', act.notes || 'Normal routine')}
                     </p>
                   </div>
                 </div>
@@ -203,8 +203,8 @@ export const BabyCareModule: React.FC = () => {
                   <span className="text-[10px] font-mono text-gray-400 font-semibold">{act.time}</span>
                   <button
                     onClick={() => deleteBabyActivity(act.id)}
-                    title="Delete entry"
-                    aria-label="Delete entry"
+                    title={t('Delete entry', 'Delete entry')}
+                    aria-label={t('Delete entry', 'Delete entry')}
                     className="p-1 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -220,30 +220,30 @@ export const BabyCareModule: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-indigo-600" />
-          Pediatric Care Knowledge & Safe Sleep
+          {t('Pediatric Care Knowledge & Safe Sleep', 'Pediatric Care Knowledge & Safe Sleep')}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           <div className="p-4 bg-blue-50/60 rounded-2xl border border-blue-100 space-y-1.5">
-            <h4 className="font-bold text-blue-900">Why Newborns Sneeze:</h4>
+            <h4 className="font-bold text-blue-900">{t('Why Newborns Sneeze:', 'Why Newborns Sneeze:')}</h4>
             <p className="text-blue-950/80 leading-relaxed">
-              Newborn nasal passages are microscopic. Sneezing is their only natural physiological reflex to clear out lint, dust, and amniotic fluid residue—not a sign of illness.
+              {t('Why Newborns Sneeze Desc', 'Newborn nasal passages are microscopic. Sneezing is their only natural physiological reflex to clear out lint, dust, and amniotic fluid residue—not a sign of illness.')}
             </p>
           </div>
 
           <div className="p-4 bg-purple-50/60 rounded-2xl border border-purple-100 space-y-1.5">
-            <h4 className="font-bold text-purple-900">The Safe Sleep ABCs:</h4>
-            <p className="text-purple-950/80 leading-relaxed">
-              <strong>A:</strong> Alone (no pillows, stuffed animals, or loose blankets).<br />
-              <strong>B:</strong> on their Back for every sleep.<br />
-              <strong>C:</strong> in an uncluttered Crib with a firm mattress.
-            </p>
+            <h4 className="font-bold text-purple-900">{t('The Safe Sleep ABCs:', 'The Safe Sleep ABCs:')}</h4>
+            <div className="text-purple-950/80 leading-relaxed space-y-1">
+              <p><strong>A:</strong> {t('Safe Sleep A', 'Alone (no pillows, stuffed animals, or loose blankets).')}</p>
+              <p><strong>B:</strong> {t('Safe Sleep B', 'on their Back for every sleep.')}</p>
+              <p><strong>C:</strong> {t('Safe Sleep C', 'in an uncluttered Crib with a firm mattress.')}</p>
+            </div>
           </div>
 
           <div className="p-4 bg-teal-50/60 rounded-2xl border border-teal-100 space-y-1.5">
-            <h4 className="font-bold text-teal-900">Burping Techniques:</h4>
+            <h4 className="font-bold text-teal-900">{t('Burping Techniques:', 'Burping Techniques:')}</h4>
             <p className="text-teal-950/80 leading-relaxed">
-              Hold baby upright over your shoulder or seated on your lap with your hand supporting their chin. Gentle cupped pats on the back help release swallowed air bubbles.
+              {t('Burping Techniques Desc', 'Hold baby upright over your shoulder or seated on your lap with your hand supporting their chin. Gentle cupped pats on the back help release swallowed air bubbles.')}
             </p>
           </div>
         </div>
@@ -253,22 +253,22 @@ export const BabyCareModule: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
           <Award className="w-5 h-5 text-emerald-600" />
-          National Pediatric Immunization Roadmap
+          {t('National Pediatric Immunization Roadmap', 'National Pediatric Immunization Roadmap')}
         </h3>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-gray-200 text-gray-400 uppercase font-bold text-[10px]">
-                <th className="py-2.5 px-3">Age Window</th>
-                <th className="py-2.5 px-3">Recommended Vaccines</th>
-                <th className="py-2.5 px-3">Status</th>
+                <th className="py-2.5 px-3">{t('Age Window', 'Age Window')}</th>
+                <th className="py-2.5 px-3">{t('Recommended Vaccines', 'Recommended Vaccines')}</th>
+                <th className="py-2.5 px-3">{t('Status', 'Status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {VACCINATION_ROADMAP.map((item, idx) => (
                 <tr key={idx} className="hover:bg-gray-50/50">
-                  <td className="py-3 px-3 font-bold text-gray-900">{item.age}</td>
+                  <td className="py-3 px-3 font-bold text-gray-900">{t(item.age, item.age)}</td>
                   <td className="py-3 px-3 text-gray-700">
                     <div className="flex flex-wrap gap-1.5">
                       {item.vaccines.map((v, vidx) => (
@@ -286,7 +286,7 @@ export const BabyCareModule: React.FC = () => {
                         ? 'bg-blue-100 text-blue-800'
                         : 'bg-gray-100 text-gray-600'
                     }`}>
-                      {item.status}
+                      {t(item.status, item.status)}
                     </span>
                   </td>
                 </tr>

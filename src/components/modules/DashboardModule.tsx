@@ -135,13 +135,13 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             <div>
               <p className="text-xs font-bold text-foreground">
                 {currentUser?.isPaired
-                  ? `Caregiver Suite: Synchronized with ${profile.name}'s Pregnancy Sanctuary`
-                  : 'Caregiver Suite: Unpaired Partner Sanctuary (Zero Data Leakage Active)'}
+                  ? `${t('caregiverSuiteSync', 'Caregiver Suite: Synchronized with')} ${profile.name}'s ${t('maternalSanctuary', 'Pregnancy Sanctuary')}`
+                  : t('unpairedCaregiverSuite', 'Caregiver Suite: Unpaired Partner Sanctuary (Zero Data Leakage Active)')}
               </p>
               <p className="text-[11px] text-muted-foreground">
                 {currentUser?.isPaired
-                  ? 'Labor surge timing, kick counting, and weekly caregiver missions are synchronized.'
-                  : 'Maternal records remain isolated until authorized by an eligible expecting mother.'}
+                  ? t('caregiverSyncSub', 'Labor surge timing, kick counting, and weekly caregiver missions are synchronized.')
+                  : t('unpairedCaregiverSub', 'Maternal records remain isolated until authorized by an eligible expecting mother.')}
               </p>
             </div>
           </div>
@@ -154,7 +154,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   className="px-3.5 py-1.5 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>🌸</span>
-                  <span>View Mother's Shared Dashboard</span>
+                  <span>{t('viewMotherDashboard', "View Mother's Shared Dashboard")}</span>
                 </button>
                 <button
                   onClick={() => {
@@ -164,7 +164,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   }}
                   className="px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-rose-50 text-rose-600 text-xs font-bold transition-all cursor-pointer"
                 >
-                  Disconnect
+                  {t('disconnect', 'Disconnect')}
                 </button>
               </>
             ) : (
@@ -172,7 +172,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 onClick={() => onNavigateTab('partner-space')}
                 className="px-3.5 py-1.5 rounded-xl bg-accent text-white text-xs font-bold transition-all shadow-xs"
               >
-                Go to Partner Space →
+                {t('goToPartnerSpace', 'Go to Partner Space →')}
               </button>
             )}
           </div>
@@ -199,14 +199,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
-                    <ShieldAlert className="w-4 h-4" /> Data Sequestered · Unpaired Partner Account
+                    <ShieldAlert className="w-4 h-4" /> {t('dataSequesteredTitle', 'Data Sequestered · Unpaired Partner Account')}
                   </span>
                   <p className="text-xs text-muted-foreground max-w-xl">
-                    Maternal clinical records, ultrasounds, and vitals are protected by cryptographic account isolation. Enter your partner's code below or choose an available mother.
+                    {t('dataSequesteredDesc', 'Maternal clinical records, ultrasounds, and vitals are protected by cryptographic account isolation. Enter your partner\'s code below or choose an available mother.')}
                   </p>
                 </div>
                 <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-card border border-border text-foreground shrink-0 self-start sm:self-auto">
-                  Your Code: {currentUser.uniqueCode}
+                  {t('yourCode', 'Your Code')}: {currentUser.uniqueCode}
                 </span>
               </div>
 
@@ -225,7 +225,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   type="text"
                   value={manualMotherCode}
                   onChange={e => setManualMotherCode(e.target.value.toUpperCase())}
-                  placeholder="Enter Mother's Code (e.g. MAMA-4819 for Priya, MAMA-6314 for Diya)"
+                  placeholder={t('enterMotherCodePlaceholder', "Enter Mother's Code (e.g. MAMA-4819 for Priya, MAMA-6314 for Diya)")}
                   className="w-full sm:flex-1 px-3.5 py-2 rounded-xl bg-card border border-input text-xs font-mono font-bold tracking-wider placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-accent"
                 />
                 <button
@@ -233,7 +233,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   disabled={!manualMotherCode.trim()}
                   className="w-full sm:w-auto px-5 py-2 rounded-xl bg-accent hover:bg-accent-hover text-white text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50 shrink-0"
                 >
-                  Connect Code
+                  {t('connectCode', 'Connect Code')}
                 </button>
               </form>
             </div>
@@ -244,14 +244,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 <div>
                   <h3 className="font-serif font-bold text-foreground text-sm flex items-center gap-2">
                     <Users className="w-4 h-4 text-accent" />
-                    <span>Registered Available Mothers (Eligible for 1-to-1 Pairing)</span>
+                    <span>{t('registeredMothersTitle', 'Registered Available Mothers (Eligible for 1-to-1 Pairing)')}</span>
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Connect with your partner using her invitation code or directly from this authorized directory. Paired mothers are automatically excluded.
+                    {t('registeredMothersDesc', 'Connect with your partner using her invitation code or directly from this authorized directory. Paired mothers are automatically excluded.')}
                   </p>
                 </div>
                 <span className="px-2.5 py-1 rounded-full bg-primary-soft text-primary text-[11px] font-bold shrink-0">
-                  {availableMothers.filter(m => m.isAvailable).length} Available
+                  {availableMothers.filter(m => m.isAvailable).length} {t('available', 'Available')}
                 </span>
               </div>
 
@@ -275,18 +275,18 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                               ? 'bg-emerald-100 text-emerald-800'
                               : 'bg-stone-200 text-stone-700'
                           }`}>
-                            {isAvailable ? 'Available' : 'Already Connected'}
+                            {isAvailable ? t('available', 'Available') : t('alreadyConnected', 'Already Connected')}
                           </span>
                         </div>
                         <p className="text-muted-foreground text-[11px]">
-                          Week {mother.gestationalWeek} · Due {mother.estimatedDueDate}
+                          {t('week', 'Week')} {mother.gestationalWeek} · {t('due', 'Due')} {mother.estimatedDueDate}
                         </p>
                         <span className="font-mono text-[10px] text-muted-foreground block">
-                          Code: {mother.code}
+                          {t('code', 'Code')}: {mother.code}
                         </span>
                         {!isAvailable && mother.pairedPartnerName && (
                           <span className="text-[10px] text-stone-500 italic block">
-                            Paired with {mother.pairedPartnerName}
+                            {t('pairedWith', 'Paired with')} {mother.pairedPartnerName}
                           </span>
                         )}
                       </div>
@@ -302,12 +302,12 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                           disabled={connectingMotherId === mother.id}
                           className="w-full py-2 bg-accent hover:bg-accent-hover text-white rounded-xl font-bold transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-1"
                         >
-                          <span>Connect with {mother.name.split(' ')[0]}</span>
+                          <span>{t('connectWith', 'Connect with')} {mother.name.split(' ')[0]}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       ) : (
                         <div className="py-1.5 text-center text-[11px] font-semibold text-muted-foreground bg-muted/40 rounded-xl">
-                          Not available for pairing
+                          {t('notAvailableForPairing', 'Not available for pairing')}
                         </div>
                       )}
                     </div>
@@ -323,20 +323,20 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
           <div className="space-y-2 max-w-xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-soft text-accent text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Week {currentWeek} · Partner Readiness</span>
+              <span>{t('week', 'Week')} {currentWeek} · {t('partnerReadiness', 'Partner Readiness')}</span>
             </span>
             <h1 className="text-2xl md:text-3xl font-serif font-black text-foreground">
               Hello, {partnerName}! 🌿
             </h1>
             <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-              {profile.name.split(' ')[0]} and your baby ({profile.babyNickname || 'Little Bean'}) are in <strong>Week {currentWeek}</strong>. Baby is approximately the size of an <strong>{weekInfo.babySizeFruit} {weekInfo.fruitEmoji}</strong>.
+              {profile.name.split(' ')[0]} and your baby ({profile.babyNickname || 'Little Bean'}) are in <strong>{t('week', 'Week')} {currentWeek}</strong>. {t('babySizeOf', 'Baby is approximately the size of an')} <strong>{weekInfo.babySizeFruit} {weekInfo.fruitEmoji}</strong>.
             </p>
           </div>
 
           <div className="p-4 bg-card/90 backdrop-blur-md rounded-3xl border border-border shadow-soft text-center shrink-0 min-w-[170px]">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground block">Due Date Countdown</span>
+            <span className="text-[10px] uppercase font-bold text-muted-foreground block">{t('dueCountdown', 'Due Date Countdown')}</span>
             <div className="text-3xl font-black text-foreground my-1">{daysRemaining}</div>
-            <span className="text-[10px] text-muted-foreground">days until {profile.estimatedDueDate}</span>
+            <span className="text-[10px] text-muted-foreground">{t('daysUntil', 'days until')} {profile.estimatedDueDate}</span>
           </div>
         </div>
 
@@ -345,10 +345,10 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
           <div className="p-4 rounded-3xl bg-semantic-danger/10 border-2 border-semantic-danger text-foreground space-y-2 animate-pulse">
             <div className="flex items-center gap-2 text-semantic-danger font-bold text-xs uppercase tracking-wider">
               <ShieldAlert className="w-5 h-5" />
-              <span>5-1-1 Rule Active: Prepare for Hospital Departure</span>
+              <span>{t('rule511AlertTitle', '5-1-1 Rule Active: Prepare for Hospital Departure')}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Contractions have reached the 5-1-1 threshold. Verify the car seat is installed, grab both packed bags, and phone hospital triage.
+              {t('rule511AlertBody', 'Contractions have reached the 5-1-1 threshold. Verify the car seat is installed, grab both packed bags, and phone hospital triage.')}
             </p>
           </div>
         )}
@@ -364,14 +364,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 <Timer className="w-5 h-5" />
               </div>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-accent-soft text-accent">
-                {contractions.length} Surges Logged
+                {contractions.length} {t('surgesLogged', 'Surges Logged')}
               </span>
             </div>
             <h3 className="font-serif font-bold text-foreground text-sm group-hover:text-accent transition-colors">
-              Labor Contraction Timer
+              {t('laborContractionTimer', 'Labor Contraction Timer')}
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Time her labor surges with live stopwatch and automatic 5-1-1 rule hospital departure guidance.
+              {t('surgeTimerSubtitle', 'Time her labor surges with live stopwatch and automatic 5-1-1 rule hospital departure guidance.')}
             </p>
           </div>
 
@@ -383,10 +383,10 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               <ScrollText className="w-5 h-5" />
             </div>
             <h3 className="font-serif font-bold text-foreground text-sm group-hover:text-primary transition-colors">
-              Birth Plan & Hospital Role
+              {t('birthPlanRole', 'Birth Plan & Hospital Role')}
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Review her pain relief choices, lighting preferences, and partner cord-cutting instructions.
+              {t('birthPlanSubtitle', 'Review her pain relief choices, lighting preferences, and partner cord-cutting instructions.')}
             </p>
           </div>
 
@@ -398,7 +398,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               <Footprints className="w-5 h-5 text-emerald-600" />
             </div>
             <h3 className="font-serif font-bold text-foreground text-sm group-hover:text-primary transition-colors">
-              Partner Mission & Readiness
+              {t('partnerMission', 'Partner Mission & Readiness')}
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Trimester-adaptive caregiver advice, hospital checklist, and couple synchronization permissions.
@@ -448,7 +448,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 onClick={() => onNavigateTab('settings')}
                 className="px-3 py-1.5 rounded-xl bg-muted/60 hover:bg-muted text-foreground font-bold transition-all shadow-2xs cursor-pointer"
               >
-                Manage Permissions
+                {t('managePermissions', 'Manage Permissions')}
               </button>
               <button
                 onClick={() => {
@@ -458,7 +458,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 }}
                 className="px-3 py-1.5 rounded-xl bg-card border border-border hover:bg-rose-50 text-rose-600 font-bold transition-all cursor-pointer"
               >
-                Disconnect
+                {t('disconnect', 'Disconnect')}
               </button>
             </>
           ) : (
@@ -466,7 +466,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               onClick={() => onNavigateTab('settings')}
               className="px-3 py-1.5 rounded-xl bg-primary text-white font-bold transition-all shadow-xs cursor-pointer"
             >
-              Share Pairing Code →
+              {t('sharePairingCode', 'Share Pairing Code →')}
             </button>
           )}
         </div>
@@ -492,7 +492,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 onClick={() => onNavigateTab('health-tracker')}
                 className="text-xs text-primary hover:text-primary-hover font-semibold"
               >
-                Log Vitals
+                {t('logVitals', 'Log Vitals')}
               </button>
             </div>
 
@@ -504,7 +504,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   <span className="text-[10px] font-normal text-muted-foreground">mmHg</span>
                 </div>
                 <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded-md bg-primary-soft text-primary font-bold">
-                  Normal Range
+                  {t('normalRange', 'Normal Range')}
                 </span>
               </div>
 
@@ -525,17 +525,17 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   {latestVital.pulseBpm}{' '}
                   <span className="text-[10px] font-normal text-muted-foreground">bpm</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground">Normal rhythm</span>
+                <span className="text-[10px] text-muted-foreground">{t('normalRhythm', 'Normal rhythm')}</span>
               </div>
 
               <div className="p-3 bg-muted/30 rounded-2xl border border-border">
                 <span className="text-[11px] text-muted-foreground font-medium">{t('kicksToday')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.kickCount || 18}{' '}
-                  <span className="text-[10px] font-normal text-muted-foreground">kicks</span>
+                  <span className="text-[10px] font-normal text-muted-foreground">{t('kicks', 'kicks')}</span>
                 </div>
                 <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded-md bg-primary-soft text-primary font-bold">
-                  Active & Responsive
+                  {t('activeResponsive', 'Active & Responsive')}
                 </span>
               </div>
             </div>
@@ -543,10 +543,10 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
             <div className="p-3 bg-muted/40 rounded-2xl border border-border text-xs text-foreground space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
                 <ShieldCheck className="w-4 h-4 text-primary" />
-                <span>Active Prescription Reminder</span>
+                <span>{t('activePrescriptionReminder', 'Active Prescription Reminder')}</span>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Ferrous Ascorbate 100mg & Vitamin D3 due at 8:30 PM. Remember: avoid taking calcium and iron together.
+                {t('prescriptionDetail', 'Ferrous Ascorbate 100mg & Vitamin D3 due at 8:30 PM. Remember: avoid taking calcium and iron together.')}
               </p>
             </div>
           </div>
@@ -581,14 +581,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 onClick={decrementWater}
                 className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground rounded-xl text-xs font-bold transition-colors"
               >
-                - 1 Glass
+                - 1 {t('glasses', 'Glass')}
               </button>
-              <span className="text-xs text-muted-foreground font-medium">Goal: 2.5 Liters daily</span>
+              <span className="text-xs text-muted-foreground font-medium">{t('goalLiters', 'Goal: 2.5 Liters daily')}</span>
               <button
                 onClick={incrementWater}
                 className="px-3 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
               >
-                + 1 Glass
+                + 1 {t('glasses', 'Glass')}
               </button>
             </div>
           </div>
@@ -637,12 +637,12 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   </button>
                   <div className="flex-1 text-xs">
                     <p className={`font-semibold ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                      {task.title}
+                      {t(task.title)}
                     </p>
                     {task.time && (
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
                         <Clock className="w-3 h-3" />
-                        {task.time}
+                        {t(task.time)}
                       </span>
                     )}
                   </div>
@@ -655,7 +655,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 type="text"
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
-                placeholder="Add daily prenatal task..."
+                placeholder={t('enterNewTask', 'Add daily prenatal task...')}
                 className="flex-1 text-xs px-3 py-2 bg-muted/30 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <button
@@ -679,7 +679,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 onClick={() => onNavigateTab('nutrition')}
                 className="text-xs text-primary hover:text-primary-hover font-semibold"
               >
-                Food Diary
+                {t('foodDiary', 'Food Diary')}
               </button>
             </div>
 
@@ -726,7 +726,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 onClick={() => onNavigateTab('health-tracker')}
                 className="text-xs text-accent hover:underline font-semibold"
               >
-                View All
+                {t('viewAll', 'View All')}
               </button>
             </div>
 
@@ -737,13 +737,13 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                   className="p-3 bg-muted/30 rounded-2xl border border-border space-y-1"
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-foreground">{rem.title}</span>
+                    <span className="font-bold text-foreground">{t(rem.title)}</span>
                     <span className="px-2 py-0.5 bg-card text-foreground rounded-md font-semibold text-[10px] border border-border">
                       {rem.date}
                     </span>
                   </div>
                   {rem.doctorOrLocation && (
-                    <p className="text-[11px] text-muted-foreground">{rem.doctorOrLocation} · {rem.time}</p>
+                    <p className="text-[11px] text-muted-foreground">{t(rem.doctorOrLocation)} · {t(rem.time)}</p>
                   )}
                 </div>
               ))}
@@ -751,98 +751,98 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
 
             <button
               onClick={() => onNavigateTab('bloom-ai')}
-              className="w-full py-2.5 bg-primary-soft hover:bg-primary-soft/80 text-primary rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-primary-soft hover:bg-primary-soft/80 text-primary rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Ask Gnani AI questions for next doctor visit</span>
+              <span>{t('askGnaniDoctorQuestions', 'Ask Gnani AI questions for next doctor visit')}</span>
             </button>
           </div>
 
           {/* Complete Suite Feature Shortcuts */}
           <div className="bg-card rounded-4xl p-5 border border-border shadow-soft space-y-3">
             <h3 className="text-xs font-serif font-bold uppercase tracking-wider text-muted-foreground">
-              All GarbhSarthi Maternal Modules
+              {t('allMaternalModules', 'All GarbhSarthi Maternal Modules')}
             </h3>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 onClick={() => onNavigateTab('contractions')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">⏱️</span>
-                Surge Timer (5-1-1)
+                {t('contractions', 'Surge Timer (5-1-1)')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('birth-plan')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">📜</span>
-                Birth Plan Builder
+                {t('birthPlan', 'Birth Plan Builder')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('relaxation')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">🎧</span>
-                Sleep & Soundscapes
+                {t('soundscapes', 'Sleep & Soundscapes')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('little-moments')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">📸</span>
-                Ultrasound Vault
+                {t('memoryVault', 'Ultrasound Vault')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('hospital-checklist')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">🧳</span>
-                Hospital Bag List
+                {t('hospitalBag', 'Hospital Bag List')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('baby-names')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">📖</span>
-                Baby Names Explorer
+                {t('babyNames', 'Baby Names Explorer')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('baby-shower')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">🎉</span>
-                Baby Shower Planner
+                {t('babyShower', 'Baby Shower Planner')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('baby-care')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">👶</span>
-                Newborn Care Tracker
+                {t('newbornCare', 'Newborn Care Tracker')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('postpartum')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">🌸</span>
-                Fourth Trimester
+                {t('fourthTrimester', 'Fourth Trimester')}
               </button>
 
               <button
                 onClick={() => onNavigateTab('baby-shopping')}
-                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all"
+                className="p-2.5 bg-muted/20 hover:bg-muted/50 rounded-2xl border border-border font-semibold text-foreground text-left transition-all cursor-pointer"
               >
                 <span className="text-sm block mb-0.5">🛍️</span>
-                Nursery Registry
+                {t('nurseryRegistry', 'Nursery Registry')}
               </button>
             </div>
           </div>

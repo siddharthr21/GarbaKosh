@@ -22,6 +22,7 @@ export const BabyNamesModule: React.FC = () => {
     voteName,
     addCustomBabyName,
     activeRole,
+    selectedLanguage,
     t
   } = useApp();
 
@@ -61,9 +62,14 @@ export const BabyNamesModule: React.FC = () => {
   };
 
   const filteredNames = babyNames.filter(item => {
+    const locName = item.localizedNames?.[selectedLanguage] || '';
+    const locMeaning = item.localizedMeanings?.[selectedLanguage] || '';
+
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      locName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.meaning.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      locMeaning.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.origin.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesGender = selectedGender === 'all' || item.gender === selectedGender;
@@ -290,6 +296,13 @@ export const BabyNamesModule: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredNames.map(name => {
           const totalScore = (name.motherVote || 0) + (name.partnerVote || 0);
+          const localizedName = (selectedLanguage !== 'en-US' && name.localizedNames?.[selectedLanguage])
+            ? name.localizedNames[selectedLanguage]
+            : name.name;
+          const localizedMeaning = (selectedLanguage !== 'en-US' && name.localizedMeanings?.[selectedLanguage])
+            ? name.localizedMeanings[selectedLanguage]
+            : name.meaning;
+          const hasDifferentScript = selectedLanguage !== 'en-US' && name.localizedNames?.[selectedLanguage];
 
           return (
             <div
@@ -299,7 +312,10 @@ export const BabyNamesModule: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl font-black text-gray-900">{name.name}</span>
+                    <span className="text-xl font-black text-gray-900">{localizedName}</span>
+                    {hasDifferentScript && (
+                      <span className="text-xs text-gray-400 font-semibold">({name.name})</span>
+                    )}
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                       name.gender === 'girl'
                         ? 'bg-rose-100 text-rose-700'
@@ -331,7 +347,7 @@ export const BabyNamesModule: React.FC = () => {
                 </div>
 
                 <p className="text-xs text-gray-700 leading-relaxed font-medium">
-                  <strong>Meaning:</strong> {name.meaning}
+                  <strong>{t('meaning', 'Meaning')}:</strong> {localizedMeaning}
                 </p>
 
                 {name.culturalContext && (
