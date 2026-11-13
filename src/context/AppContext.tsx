@@ -717,25 +717,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
 
       // 3. User Authentication Session & Profile
-      const session = getStorage('auth_session');
-      if (session) {
-        try {
-          const parsed = JSON.parse(session);
-          if (parsed && parsed.id) {
-            setCurrentUser(parsed);
-            setIsAuthenticated(true);
-            if (parsed.profile) {
-              setProfile(parsed.profile);
-            }
-          }
-        } catch (e) {}
-      } else {
-        const savedProfile = getStorage('profile');
-        if (savedProfile) {
-          try {
-            setProfile(JSON.parse(savedProfile));
-          } catch (e) {}
-        }
+      // Always present the login page first when opening the website
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+      if (typeof window !== 'undefined') {
+        removeStorage('auth_session');
+        removeStorage('bloomnest_auth_session');
       }
 
       // 4. Language
