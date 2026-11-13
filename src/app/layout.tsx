@@ -19,6 +19,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (localStorage.getItem('garbhsarthi_theme') === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-background text-foreground selection:bg-blush-200 antialiased" suppressHydrationWarning>
         <AppProvider>
           {children}

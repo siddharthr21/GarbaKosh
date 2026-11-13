@@ -681,18 +681,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Client-Side Safe Hydration Effect: Runs once after DOM hydration to restore user session without SSR mismatch
   useEffect(() => {
     try {
-      // 1. Theme
+      // 1. Theme: Default to Warm Ivory sanctuary; only switch if user explicitly chose dark mode
       const savedTheme = localStorage.getItem('garbhsarthi_theme') as 'light' | 'dark' | null;
-      if (savedTheme === 'dark' || savedTheme === 'light') {
-        setThemeState(savedTheme);
-        if (savedTheme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      } else if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      if (savedTheme === 'dark') {
         setThemeState('dark');
         document.documentElement.classList.add('dark');
+      } else {
+        setThemeState('light');
+        document.documentElement.classList.remove('dark');
       }
 
       // 2. Accounts Registry
