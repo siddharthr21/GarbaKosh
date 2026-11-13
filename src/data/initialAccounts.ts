@@ -166,9 +166,36 @@ export const DEFAULT_UNPAIRED_MOTHER_DIYA: UserAccount = {
   }
 };
 
+export const DEFAULT_EVALUATOR_ACCOUNT: UserAccount = {
+  id: 'usr_evaluator_hsp',
+  name: 'Dr. Sunita (Clinical Evaluator)',
+  email: 'evaluator@garbhsarthi.com',
+  role: 'partner',
+  uniqueCode: 'HSP-9920',
+  partnerLinkedCode: 'MAMA-2026',
+  isPaired: true,
+  profile: {
+    ...INITIAL_PROFILE,
+    id: 'usr_evaluator_hsp',
+    name: 'Dr. Sunita (Clinical Evaluator)',
+    email: 'evaluator@garbhsarthi.com',
+    role: 'partner',
+    partnerProfile: {
+      name: 'Siri Rao',
+      email: 'siri@garbhsarthi.com',
+      relationship: 'Patient (Expecting Mother)',
+      phone: '+91 98450 12345',
+      pairingCode: 'MAMA-2026',
+      isConnected: true,
+      pairedAt: '2026-06-18T10:00:00Z'
+    }
+  }
+};
+
 export const INITIAL_ACCOUNTS: UserAccount[] = [
   DEFAULT_MOTHER_ACCOUNT,
   DEFAULT_PARTNER_ACCOUNT,
+  DEFAULT_EVALUATOR_ACCOUNT,
   DEFAULT_UNPAIRED_MOTHER_PRIYA,
   DEFAULT_UNPAIRED_MOTHER_DIYA,
   DEFAULT_UNPAIRED_PARTNER_ACCOUNT
