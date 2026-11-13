@@ -33,6 +33,7 @@ export const BabyShoppingModule: React.FC = () => {
   const [wishlist, setWishlist] = useState<string[]>(['p1', 'p4', 'p9']);
   const [onlyOrganic, setOnlyOrganic] = useState(false);
   const [addedNotice, setAddedNotice] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   // Selected product for detailed modal view
   const [selectedProductModal, setSelectedProductModal] = useState<BabyProduct | null>(null);
@@ -325,21 +326,21 @@ export const BabyShoppingModule: React.FC = () => {
               <div className="space-y-3">
                 {/* Product Photo Box with fallback and interactive overlay */}
                 <div className="h-48 rounded-2xl overflow-hidden bg-gray-50 relative group/img border border-gray-100">
-                  <img
-                    src={prod.imageUrl}
-                    alt={prod.name}
-                    className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                      const parent = (e.target as HTMLElement).parentElement;
-                      if (parent) {
-                        const fallback = document.createElement('div');
-                        fallback.className = 'w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 text-amber-800 p-4 text-center';
-                        fallback.innerHTML = `<span class="text-4xl mb-1">${prod.imageEmoji || '👶'}</span><span class="text-[11px] font-bold text-gray-700">${prod.brand}</span>`;
-                        parent.appendChild(fallback);
-                      }
-                    }}
-                  />
+                  {failedImages[prod.id] ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 text-amber-800 p-4 text-center">
+                      <span className="text-4xl mb-1">{prod.imageEmoji || '👶'}</span>
+                      <span className="text-[11px] font-bold text-gray-700">{prod.brand}</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={prod.imageUrl}
+                      alt={prod.name}
+                      className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
+                      onError={() => {
+                        setFailedImages(prev => ({ ...prev, [prod.id]: true }));
+                      }}
+                    />
+                  )}
 
                   {/* Wishlist toggle */}
                   <button
