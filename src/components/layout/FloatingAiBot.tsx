@@ -473,7 +473,7 @@ export const FloatingAiBot: React.FC<FloatingAiBotProps> = ({
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-40 px-4 py-3 bg-gradient-to-r from-purple-600 via-primary to-accent text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer hover:scale-105 group border border-white/20"
+          className="fixed bottom-22 sm:bottom-20 lg:bottom-6 right-4 sm:right-6 z-40 px-4 py-3 bg-gradient-to-r from-purple-600 via-primary to-accent text-white rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer hover:scale-105 group border border-white/20 tap-bounce"
           title="Open Gnani AI Assistant"
         >
           <div className="relative">

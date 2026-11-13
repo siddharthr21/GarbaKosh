@@ -451,6 +451,37 @@
   animation: cleavageShimmer 2.5s ease-in-out infinite;
 }
 
+/* UI/UX Micro-Interactions & Modern Spatial Depth */
+.hover-card-lift {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+}
+
+.hover-card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -10px rgba(47, 52, 48, 0.08), 0 4px 10px -2px rgba(47, 52, 48, 0.04);
+}
+
+.dark .hover-card-lift:hover {
+  box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.45), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
+}
+
+.tap-bounce {
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tap-bounce:active {
+  transform: scale(0.97);
+}
+
+/* Glassmorphic border glow */
+.glow-primary {
+  box-shadow: 0 0 20px -3px rgba(122, 154, 126, 0.25);
+}
+
+.dark .glow-primary {
+  box-shadow: 0 0 20px -3px rgba(133, 180, 138, 0.2);
+}
+
 /* Delicate scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

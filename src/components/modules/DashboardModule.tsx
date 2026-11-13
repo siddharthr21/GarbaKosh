@@ -49,6 +49,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
     toggleChecklistTask,
     addChecklistTask,
     vitals,
+    addVitalRecord,
     meals,
     waterGlasses,
     incrementWater,
@@ -478,11 +479,40 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
         estimatedDueDate={profile.estimatedDueDate}
       />
 
+      {/* Quick Maternal Shortcuts Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
+        {[
+          { id: 'health-tracker', label: t('vitalsKicks', 'Log Vitals'), icon: Activity, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/50' },
+          { id: 'contractions', label: t('contractions', 'Contractions'), icon: Timer, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/50' },
+          { id: 'nutrition', label: t('nutrition', 'Meal Plans'), icon: Apple, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/50' },
+          { id: 'birth-plan', label: t('birthPlan', 'Birth Plan'), icon: ScrollText, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-900/50' },
+          { id: 'hospital-checklist', label: t('hospitalBag', 'Hospital Bag'), icon: Footprints, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-900/50' },
+          { id: 'bloom-ai', label: t('bloomAi', 'Ask AI Care'), icon: Sparkles, color: 'text-primary bg-primary-soft dark:bg-primary/20 border-primary/30' },
+        ].map(shortcut => {
+          const Icon = shortcut.icon;
+          return (
+            <button
+              key={shortcut.id}
+              type="button"
+              onClick={() => onNavigateTab(shortcut.id)}
+              className="flex items-center gap-2 p-2.5 rounded-2xl bg-card border border-border/80 hover:border-primary/40 shadow-2xs hover-card-lift tap-bounce transition-all text-left cursor-pointer group"
+            >
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center border shrink-0 transition-transform group-hover:scale-110 ${shortcut.color}`}>
+                <Icon className="w-4 h-4" />
+              </div>
+              <span className="text-xs font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                {shortcut.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Main Grid: Health Overview, Checklist, Nutrition, Appointments */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Health Overview & Vitals */}
         <div className="space-y-6">
-          <div className="bg-card rounded-4xl p-5 border border-border shadow-soft space-y-4">
+          <div className="bg-card rounded-4xl p-5 border border-border shadow-soft space-y-4 hover-card-lift">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-serif font-bold text-foreground flex items-center gap-2">
                 <Activity className="w-4 h-4 text-accent" />
@@ -490,14 +520,14 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
               </h3>
               <button
                 onClick={() => onNavigateTab('health-tracker')}
-                className="text-xs text-primary hover:text-primary-hover font-semibold"
+                className="text-xs text-primary hover:text-primary-hover font-bold tap-bounce"
               >
-                {t('logVitals', 'Log Vitals')}
+                {t('logVitals', 'Log Vitals')} →
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-muted/30 rounded-2xl border border-border">
+              <div className="p-3 bg-muted/30 dark:bg-card/40 rounded-2xl border border-border/80 transition-all hover:border-primary/30">
                 <span className="text-[11px] text-muted-foreground font-medium">{t('bloodPressure')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.bloodPressureSys}/{latestVital.bloodPressureDia}{' '}
@@ -508,7 +538,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 </span>
               </div>
 
-              <div className="p-3 bg-muted/30 rounded-2xl border border-border">
+              <div className="p-3 bg-muted/30 dark:bg-card/40 rounded-2xl border border-border/80 transition-all hover:border-accent/30">
                 <span className="text-[11px] text-muted-foreground font-medium">{t('weight')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.weightKg}{' '}
@@ -519,20 +549,41 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigateTab 
                 </span>
               </div>
 
-              <div className="p-3 bg-muted/30 rounded-2xl border border-border">
+              <div className="p-3 bg-muted/30 dark:bg-card/40 rounded-2xl border border-border/80 transition-all">
                 <span className="text-[11px] text-muted-foreground font-medium">{t('pulse')}</span>
                 <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
                   {latestVital.pulseBpm}{' '}
                   <span className="text-[10px] font-normal text-muted-foreground">bpm</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground">{t('normalRhythm', 'Normal rhythm')}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">{t('normalRhythm', 'Normal rhythm')}</span>
               </div>
 
-              <div className="p-3 bg-muted/30 rounded-2xl border border-border">
-                <span className="text-[11px] text-muted-foreground font-medium">{t('kicksToday')}</span>
-                <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
-                  {latestVital.kickCount || 18}{' '}
-                  <span className="text-[10px] font-normal text-muted-foreground">{t('kicks', 'kicks')}</span>
+              <div className="p-3 bg-muted/30 dark:bg-card/40 rounded-2xl border border-border/80 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-muted-foreground font-medium">{t('kicksToday')}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        addVitalRecord({
+                          date: new Date().toISOString(),
+                          bloodPressureSys: latestVital.bloodPressureSys || 118,
+                          bloodPressureDia: latestVital.bloodPressureDia || 78,
+                          weightKg: latestVital.weightKg || profile.currentWeightKg,
+                          pulseBpm: latestVital.pulseBpm || 78,
+                          kickCount: (latestVital.kickCount || 0) + 1
+                        });
+                      }}
+                      className="text-[10px] font-bold px-2 py-0.5 bg-primary text-white rounded-lg hover:bg-primary-hover tap-bounce cursor-pointer shadow-2xs"
+                      title="Quick record 1 kick"
+                    >
+                      +1 Kick
+                    </button>
+                  </div>
+                  <div className="text-lg font-mono font-extrabold text-foreground mt-0.5">
+                    {latestVital.kickCount || 18}{' '}
+                    <span className="text-[10px] font-normal text-muted-foreground">{t('kicks', 'kicks')}</span>
+                  </div>
                 </div>
                 <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded-md bg-primary-soft text-primary font-bold">
                   {t('activeResponsive', 'Active & Responsive')}

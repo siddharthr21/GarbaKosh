@@ -42,10 +42,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex-1 py-1.5 px-2 rounded-full flex flex-col items-center justify-center transition-all ${
+              className={`flex-1 py-1.5 px-2 rounded-full flex flex-col items-center justify-center transition-all tap-bounce cursor-pointer ${
                 isActive
                   ? 'bg-primary text-white font-bold shadow-xs scale-105'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
               }`}
             >
               <Icon className="w-4 h-4 mb-0.5" />
@@ -57,7 +57,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         {/* More Menu Pill */}
         <button
           onClick={onOpenMobileMenu}
-          className="flex-1 py-1.5 px-2 rounded-full flex flex-col items-center justify-center text-muted-foreground hover:text-foreground transition-all"
+          className="flex-1 py-1.5 px-2 rounded-full flex flex-col items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all tap-bounce cursor-pointer"
         >
           <Menu className="w-4 h-4 mb-0.5" />
           <span className="text-[10px] tracking-tight">{t('viewAll', 'More')}</span>

@@ -569,37 +569,40 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
           <button
             type="button"
             onClick={() => handleWeekChange(8)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer tap-bounce ${
               selectedTrimester === 1
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40'
-                : 'text-stone-400 hover:text-stone-200'
+                ? 'bg-amber-500/25 text-amber-200 border border-amber-400/50 shadow-xs'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
             }`}
+            title="Trimester 1 (Weeks 1 to 12)"
           >
-            {t('trimester1', 'Trimester 1')}
+            {t('trimester1', 'Trimester 1')} <span className="text-[10px] opacity-75 font-normal">W1-12</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleWeekChange(20)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer tap-bounce ${
               selectedTrimester === 2
-                ? 'bg-primary/20 text-primary-soft border border-primary/40'
-                : 'text-stone-400 hover:text-stone-200'
+                ? 'bg-primary/25 text-primary-soft border border-primary/50 shadow-xs'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
             }`}
+            title="Trimester 2 (Weeks 13 to 27)"
           >
-            {t('trimester2', 'Trimester 2')}
+            {t('trimester2', 'Trimester 2')} <span className="text-[10px] opacity-75 font-normal">W13-27</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleWeekChange(34)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer tap-bounce ${
               selectedTrimester === 3
-                ? 'bg-rose-500/20 text-rose-300 border border-rose-400/40'
-                : 'text-stone-400 hover:text-stone-200'
+                ? 'bg-rose-500/25 text-rose-200 border border-rose-400/50 shadow-xs'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
             }`}
+            title="Trimester 3 (Weeks 28 to 40)"
           >
-            {t('trimester3', 'Trimester 3')}
+            {t('trimester3', 'Trimester 3')} <span className="text-[10px] opacity-75 font-normal">W28-40</span>
           </button>
         </div>
       </div>
@@ -801,45 +804,45 @@ export const FetalWeeklyHero: React.FC<FetalWeeklyHeroProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             {/* System 1: Brain & Nervous System */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/70 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-amber-900">
-                <Brain className="w-3.5 h-3.5 text-amber-700" />
+            <div className="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-900/40 space-y-1.5 hover-card-lift">
+              <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
+                <Brain className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
                 <span>{t('brainNervous', 'Brain & Nervous System')}</span>
               </div>
-              <p className="text-stone-700 leading-relaxed font-normal">
+              <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-normal">
                 {t(evolutionRef.brainNervousSystem)}
               </p>
             </div>
 
             {/* System 2: Cardiovascular & Internal Organs */}
-            <div className="p-3.5 rounded-2xl bg-rose-50/60 border border-rose-200/70 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-rose-900">
-                <Activity className="w-3.5 h-3.5 text-rose-700" />
+            <div className="p-3.5 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/70 dark:border-rose-900/40 space-y-1.5 hover-card-lift">
+              <div className="flex items-center gap-1.5 font-bold text-rose-900 dark:text-rose-200">
+                <Activity className="w-3.5 h-3.5 text-rose-700 dark:text-rose-400 shrink-0" />
                 <span>{t('cardiovascular', 'Cardiovascular & Visceral Organs')}</span>
               </div>
-              <p className="text-stone-700 leading-relaxed font-normal">
+              <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-normal">
                 {t(evolutionRef.cardiovascularVisceral)}
               </p>
             </div>
 
             {/* System 3: Sensory & Craniofacial Architecture */}
-            <div className="p-3.5 rounded-2xl bg-sky-50/60 border border-sky-200/70 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-sky-900">
-                <Eye className="w-3.5 h-3.5 text-sky-700" />
+            <div className="p-3.5 rounded-2xl bg-sky-50/60 dark:bg-sky-950/20 border border-sky-200/70 dark:border-sky-900/40 space-y-1.5 hover-card-lift">
+              <div className="flex items-center gap-1.5 font-bold text-sky-900 dark:text-sky-200">
+                <Eye className="w-3.5 h-3.5 text-sky-700 dark:text-sky-400 shrink-0" />
                 <span>{t('sensoryCranio', 'Sensory & Craniofacial Development')}</span>
               </div>
-              <p className="text-stone-700 leading-relaxed font-normal">
+              <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-normal">
                 {t(evolutionRef.sensoryCraniofacial)}
               </p>
             </div>
 
             {/* System 4: Pulmonary & Musculoskeletal */}
-            <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/70 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-emerald-900">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+            <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-900/40 space-y-1.5 hover-card-lift">
+              <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                 <span>{t('pulmonaryMusculo', 'Pulmonary & Musculoskeletal')}</span>
               </div>
-              <p className="text-stone-700 leading-relaxed font-normal">
+              <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-normal">
                 {t(evolutionRef.pulmonaryMusculoskeletal)}
               </p>
             </div>

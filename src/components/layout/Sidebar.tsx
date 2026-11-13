@@ -202,9 +202,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <button
                       key={item.id}
                       onClick={() => handleSelect(item.id)}
-                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all group ${
+                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all group tap-bounce cursor-pointer relative ${
                         isActive
-                          ? 'bg-primary/10 text-primary font-bold shadow-2xs'
+                          ? 'bg-primary/10 text-primary font-bold shadow-2xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-primary'
                           : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
                       }`}
                     >
