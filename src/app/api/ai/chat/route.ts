@@ -105,6 +105,17 @@ Guidelines:
 • [Specific follow-up question 3]`;
 }
 
+function normalizeLanguage(lang?: string): SupportedLanguageCode {
+  if (!lang) return 'en-US';
+  const l = lang.toLowerCase().trim();
+  if (l.startsWith('kn')) return 'kn-IN';
+  if (l.startsWith('hi')) return 'hi-IN';
+  if (l.startsWith('ta')) return 'ta-IN';
+  if (l.startsWith('te')) return 'te-IN';
+  if (l.startsWith('ml')) return 'ml-IN';
+  return 'en-US';
+}
+
 function getDefaultFollowUps(lang: string, week: number): string[] {
   switch (lang) {
     case 'kn-IN':
@@ -519,7 +530,7 @@ function generateOfflineClinicalSynthesis(
   userRole: string
 ): { answer: string; followUps: string[] } {
   const q = question.toLowerCase();
-  const langKey = (language in MULTILINGUAL_AI_RESPONSES ? language : 'en-US') as SupportedLanguageCode;
+  const langKey = normalizeLanguage(language);
 
   // -------------------------------------------------------------
   // 1. Week & Fetal Growth/Size Inquiries (e.g., Week 24, Baby weight, how big is baby)
@@ -561,6 +572,40 @@ function generateOfflineClinicalSynthesis(
         ]
       };
     }
+
+    if (langKey === 'ta-IN') {
+      return {
+        answer: `வணக்கம் ${motherName}! 🌸 கர்ப்பத்தின் **${wk.week}வது வாரத்தில்** (${wk.trimester}வது காலாண்டு) குழந்தையின் வளர்ச்சி விவரங்கள்:\n\n• **குழந்தையின் அளவு:** ${wk.fruitEmoji} ${wk.babySizeFruit}\n• **நீளம் & எடை:** நீளம் சுமார் **${wk.babyLengthCm} செ.மீ**, எடை சுமார் **${wk.babyWeightG} கிராம்**\n• **குழந்தையின் வளர்ச்சி:** ${wk.babyDevelopment}\n• **தாயின் உடல் மாற்றங்கள்:** ${wk.motherChanges}\n• **ஊட்டச்சத்து குறிப்பு:** ${wk.nutritionTip}\n• **பாதுகாப்பான உடற்பயிற்சி:** ${wk.safeExerciseTip}`,
+        followUps: [
+          `${wk.week}வது வாரத்தின் முக்கிய அறிகுறிகள்`,
+          'கர்ப்பகால ஆரோக்கியமான உணவுப் பட்டியல்',
+          'குழந்தையின் உதைப்புகளைக் கணக்கிடுவது எப்படி?'
+        ]
+      };
+    }
+
+    if (langKey === 'te-IN') {
+      return {
+        answer: `నమస్కారం ${motherName}! 🌸 గర్భధారణ **${wk.week}వ వారంలో** (${wk.trimester}వ త్రైమాసికం) శిశువు ఎదుగుదల వివరాలు:\n\n• **శిశువు పరిమాణం:** ${wk.fruitEmoji} ${wk.babySizeFruit}\n• **పొడవు & బరువు:** పొడవు దాదాపు **${wk.babyLengthCm} సెం.మీ**, బరువు దాదాపు **${wk.babyWeightG} గ్రాములు**\n• **శిశువు ఎదుగుదల:** ${wk.babyDevelopment}\n• **తల్లిలో మార్పులు:** ${wk.motherChanges}\n• **పోషకాహార సూచన:** ${wk.nutritionTip}\n• **సురక్షిత వ్యాయామం:** ${wk.safeExerciseTip}`,
+        followUps: [
+          `${wk.week}వ వారం ముఖ్య లక్షణాలు`,
+          'గర్భధారణలో పోషకాహార చార్ట్',
+          'శిశువు కిక్స్ ఎలా లెక్కించాలి?'
+        ]
+      };
+    }
+
+    if (langKey === 'ml-IN') {
+      return {
+        answer: `നമസ്കാരം ${motherName}! 🌸 ഗർഭധാരണത്തിന്റെ **${wk.week}-ാം ആഴ്ചയിൽ** (${wk.trimester}-ാം ത്രൈമാസം) കുഞ്ഞിന്റെ വളർച്ചാ വിവരങ്ങൾ:\n\n• **കുഞ്ഞിന്റെ വലിപ്പം:** ${wk.fruitEmoji} ${wk.babySizeFruit}\n• **നീളവും ഭാരവും:** നീളം ഏകദേശം **${wk.babyLengthCm} സെ.മീ**, ഭാരം ഏകദേശം **${wk.babyWeightG} ഗ്രാം**\n• **കുഞ്ഞിന്റെ വളർച്ച:** ${wk.babyDevelopment}\n• **അമ്മയിലെ മാറ്റങ്ങൾ:** ${wk.motherChanges}\n• **പോഷകാഹാര നിർദ്ദേശം:** ${wk.nutritionTip}\n• **സുരക്ഷിത വ്യായാമം:** ${wk.safeExerciseTip}`,
+        followUps: [
+          `${wk.week}-ാം ആഴ്ചയിലെ പ്രധാന ലക്ഷണങ്ങൾ`,
+          'ഗർഭകാല പോഷകാഹാര പട്ടിക',
+          'കുഞ്ഞിന്റെ കിക്കുകൾ എങ്ങനെ കണക്കാക്കാം?'
+        ]
+      };
+    }
+
 
     return {
       answer: `Hello ${motherName}! 🌸 Here is your fetal development update for **Week ${wk.week}** (Trimester ${wk.trimester}):\n\n• **Baby Size:** ${wk.fruitEmoji} ${wk.babySizeFruit}\n• **Measurements:** Length ~**${wk.babyLengthCm} cm**, Weight ~**${wk.babyWeightG} grams**\n• **Milestones:** ${wk.headline} — ${wk.babyDevelopment}\n• **Maternal Changes:** ${wk.motherChanges}\n• **Clinical Nutrition Tip:** ${wk.nutritionTip}\n• **Safe Activity Guidance:** ${wk.safeExerciseTip}`,
@@ -812,6 +857,39 @@ function generateOfflineClinicalSynthesis(
     };
   }
 
+  if (langKey === 'ta-IN') {
+    return {
+      answer: `வணக்கம் ${motherName}! 🌸 கர்ப்பத்தின் **${gestationalWeek}வது வாரத்தில்** (${currentWk.trimester}வது காலாண்டு) உங்களுக்கான மருத்துவ வழிகாட்டல்:\n\n• **குழந்தையின் தற்போதைய நிலை:** ${currentWk.fruitEmoji} குழந்தை இப்போது **${currentWk.babySizeFruit}** அளவில் உள்ளது (~ ${currentWk.babyLengthCm} செ.மீ, ~ ${currentWk.babyWeightG}g).\n• **ஆரோக்கிய பராமரிப்பு:** இடது பக்கமாகப் படுங்கள் (SOS), போதுமான ஓய்வு எடுங்கள், தினமும் 2.5 லிட்டர் தண்ணீர் குடியுங்கள்.\n• **மருத்துவக் குறிப்பு:** ${currentWk.weeklyAdvice}\n• **கவனம்:** கடுமையான வயிற்று வலி, பனிக்குட நீர் கசிவு அல்லது குழந்தையின் அசைவு குறைந்தால் உடனடியாக மருத்துவரை அணுகவும்.`,
+      followUps: [
+        `${gestationalWeek}வது வாரத்தின் வளர்ச்சி நிலைகள்`,
+        'மருத்துவமனை பை சரிபார்ப்பு பட்டியல்',
+        'இந்த வாரத்திற்கான பாதுகாப்பான உடற்பயிற்சிகள்'
+      ]
+    };
+  }
+
+  if (langKey === 'te-IN') {
+    return {
+      answer: `నమస్కారం ${motherName}! 🌸 గర్భధారణ **${gestationalWeek}వ వారంలో** (${currentWk.trimester}వ త్రైమాసికం) మీ కోసం వైద్య సలహా:\n\n• **శిశువు ప్రస్తుత స్థితి:** ${currentWk.fruitEmoji} బిడ్డ ఇప్పుడు **${currentWk.babySizeFruit}** పరిమాణంలో ఉంది (~ ${currentWk.babyLengthCm} సెం.మీ, ~ ${currentWk.babyWeightG}g).\n• **ఆరోగ్య సంరక్షణ:** ఎడమ వైపు తిరిగి పడుకోండి, తగినంత విశ్రాంతి తీసుకోండి, రోజుకు 2.5 లీటర్ల నీరు తాగండి.\n• **ఈ వారం వైద్యుడి సూచన:** ${currentWk.weeklyAdvice}\n• **హెచ్చరిక:** ఆకస్మిక కడుపు నొప్పి, రక్తస్రావం లేదా కదలికలు తగ్గితే వెంటనే మీ గైనకాలజిస్ట్‌ని సంప్రదించండి.`,
+      followUps: [
+        `${gestationalWeek}వ వారం ఎదుగుదల వివరాలు`,
+        'హాస్పిటల్ బ్యాగ్ ప్యాకింగ్ చెక్‌లిస్ట్',
+        'గర్భధారణలో సురక్షిత వ్యాయామాలు'
+      ]
+    };
+  }
+
+  if (langKey === 'ml-IN') {
+    return {
+      answer: `നമസ്കാരം ${motherName}! 🌸 ഗർഭധാരണത്തിന്റെ **${gestationalWeek}-ാം ആഴ്ചയിൽ** (${currentWk.trimester}-ാം ത്രൈമാസം) നിങ്ങളുടെ ആരോഗ്യ സംരക്ഷണത്തിനായുള്ള നിർദ്ദേശങ്ങൾ:\n\n• **കുഞ്ഞിന്റെ ഇപ്പോഴത്തെ അവസ്ഥ:** ${currentWk.fruitEmoji} കുഞ്ഞ് ഇപ്പോൾ **${currentWk.babySizeFruit}** വലിപ്പത്തിലാണ് (~ ${currentWk.babyLengthCm} സെ.മീ, ~ ${currentWk.babyWeightG}g).\n• **ദൈനംദിന പരിചരണം:** ഇടതുവശം ചരിഞ്ഞ് കിടക്കുക (SOS), ആവശ്യത്തിന് വിശ്രമിക്കുക, ദിവസവും 2.5 ലിറ്റർ വെള്ളം കുടിക്കുക.\n• **ഡോക്ടറുടെ ഈ ആഴ്ചയിലെ ഉപദേശം:** ${currentWk.weeklyAdvice}\n• **പ്രത്യേകം ശ്രദ്ധിക്കുക:** കഠിനമായ വയറുവേദനയോ രക്തസ്രാവമോ കുഞ്ഞിന്റെ ചലനം കുറയുകയോ ചെയ്താൽ ഉടൻ ഡോക്ടറെ കാണുക.`,
+      followUps: [
+        `${gestationalWeek}-ാം ആഴ്ചയിലെ പ്രധാന മാറ്റങ്ങൾ`,
+        'ഹോസ്പിറ്റൽ ബാഗ് ചെക്ക് ലിസ്റ്റ്',
+        'സുരക്ഷിതമായ ഗർഭകാല വ്യായാമങ്ങൾ'
+      ]
+    };
+  }
+
   return {
     answer: `Hello ${motherName}! 🌸 Regarding your query at **Week ${gestationalWeek}** (Trimester ${currentWk.trimester}):\n\n• **Baby Status:** ${currentWk.fruitEmoji} Baby is currently the size of a **${currentWk.babySizeFruit}** (~${currentWk.babyLengthCm} cm, ~${currentWk.babyWeightG}g).\n• **Core Maternal Care:** Prioritize restful left-side sleeping (SOS position), 2.5L+ hydration, and a balanced diet rich in iron, calcium, and protein.\n• **Clinical Focus for This Week:** ${currentWk.weeklyAdvice}\n• **Safety Standard:** If you ever experience persistent abdominal pain, fluid leakage, or reduced fetal movement, contact Dr. Sunita or your maternity triage immediately.\n\nFeel free to ask more specific questions about safe foods, travel, sleeping postures, scans, kicks, or hospital bags!`,
     followUps: [
@@ -893,10 +971,12 @@ export async function POST(req: NextRequest) {
       history = [],
       gestationalWeek = 24,
       userRole = 'mother',
-      language = 'en-US',
+      language: rawLanguage = 'en-US',
       motherName = 'Priya',
       test = false
     } = body;
+
+    const language = normalizeLanguage(rawLanguage);
 
     const cleanInput = (message || '').trim();
     if (!cleanInput && !test) {
