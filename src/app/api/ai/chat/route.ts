@@ -525,14 +525,14 @@ function generateOfflineClinicalSynthesis(
   // 1. Week & Fetal Growth/Size Inquiries (e.g., Week 24, Baby weight, how big is baby)
   // -------------------------------------------------------------
   const weekRegex = /(?:week|wk|ವಾರ|सप्ताह|வாரம்|వారం|ആഴ്ച)\s*([0-9]{1,2})|([0-9]{1,2})\s*(?:st|nd|rd|th)?\s*(?:week|wk|ನೇ ವಾರ|वें सप्ताह|வது வாரம்|వ వారం|ാം ആഴ്ച)/i;
-  const isGrowthQuery = /(how big|baby size|baby weight|baby length|fetal growth|fetal development|development|milestone|fruit|ಮಗುವಿನ ಗಾತ್ರ|ಮಗುವಿನ ತೂಕ|ಮಗುವಿನ ಬೆಳವಣಿಗೆ|ಬೆಳವಣಿಗೆ|शिशु का आकार|वजन|विकास|குழந்தை வளர்ச்சி|எடை|శిశువు బరువు|ఎదుగుదల|കുഞ്ഞിന്റെ വളർച്ച|തൂക്കം)/i.test(q);
+  const isGrowthQuery = /(how big|baby size|baby weight|baby length|fetal growth|fruit size|fruit|ಮಗುವಿನ ಗಾತ್ರ|ಮಗುವಿನ ತೂಕ|ಮಗುವಿನ ಬೆಳವಣಿಗೆ|ಬೆಳವಣಿಗೆ|शिशु का आकार|वजन|विकास|குழந்தை வளர்ச்சி|எடை|శిశువు బరువు|ఎదుగుదల|കുഞ്ഞിന്റെ വളർച്ച|തൂക്കം)/i.test(q);
   const weekMatch = q.match(weekRegex);
 
-  let targetWeek = gestationalWeek;
+  let targetWeek = Math.max(1, Math.min(40, gestationalWeek));
   if (weekMatch) {
     const parsed = parseInt(weekMatch[1] || weekMatch[2], 10);
-    if (!isNaN(parsed) && parsed >= 1 && parsed <= 40) {
-      targetWeek = parsed;
+    if (!isNaN(parsed)) {
+      targetWeek = Math.max(1, Math.min(40, parsed));
     }
   }
 
@@ -1163,7 +1163,30 @@ export async function POST(req: NextRequest) {
     });
 
     // ---------------------------------------------------------
-    // 2. Primary Engine: Groq Cloud LPU
+    // 2. Gnani Indic Clinical Intelligence (Default Active Provider)
+    // ---------------------------------------------------------
+    const hasExplicitExternalKey = Boolean(bodyGroqKey || bodyGeminiKey || bodyOpenAIKey || bodyOpenRouterKey || bodyGrokKey);
+    if (!hasExplicitExternalKey) {
+      const clinicalSynthesis = generateOfflineClinicalSynthesis(
+        cleanInput,
+        motherName,
+        gestationalWeek,
+        language,
+        userRole
+      );
+      if (clinicalSynthesis && clinicalSynthesis.answer) {
+        return NextResponse.json({
+          success: true,
+          isEmergencyAlert: false,
+          response: clinicalSynthesis.answer,
+          followUps: clinicalSynthesis.followUps,
+          source: effectiveGnaniKey ? 'gnani-indic-ai' : 'offline-clinical-synthesis'
+        });
+      }
+    }
+
+    // ---------------------------------------------------------
+    // 3. Cloud LLM Inference Engine (Groq / Gemini / OpenAI)
     // ---------------------------------------------------------
     if (effectiveGroqKey) {
       const groqRes = await callGroqAPI(effectiveGroqKey, systemPrompt, cleanInput, history);
