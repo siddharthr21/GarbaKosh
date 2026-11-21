@@ -414,6 +414,7 @@ export const AuthScreen: React.FC = () => {
           loop
           muted
           playsInline
+          poster="/auth/auth-poster.jpg"
           className="w-full h-full object-cover object-[42%_center] lg:object-[38%_center] scale-[1.01]"
         >
           <source src="/auth/auth-animation.mp4" type="video/mp4" />
