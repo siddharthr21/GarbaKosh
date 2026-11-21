@@ -163,7 +163,7 @@ export const HealthTrackerModule: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-blush-100 font-mono text-xs font-bold text-gray-700">
+            <div className="flex items-center gap-2 bg-white dark:bg-card px-3 py-1.5 rounded-xl border border-blush-100 dark:border-border font-mono text-xs font-bold text-gray-700 dark:text-gray-300">
               <Clock className="w-3.5 h-3.5 text-blush-500" />
               <span>{formatTimer(kickTimerSec)}</span>
             </div>
@@ -173,21 +173,21 @@ export const HealthTrackerModule: React.FC = () => {
           <div className="py-6 flex flex-col items-center justify-center">
             <button
               onClick={handleRegisterKick}
-              className="w-36 h-36 rounded-full bg-gradient-to-tr from-blush-500 via-rose-400 to-peach-400 text-white flex flex-col items-center justify-center shadow-xl shadow-blush-200 hover:scale-105 active:scale-95 transition-all group cursor-pointer"
+              className="w-36 h-36 rounded-full bg-gradient-to-tr from-blush-500 via-rose-400 to-peach-400 text-white flex flex-col items-center justify-center shadow-xl shadow-blush-200 dark:shadow-none hover:scale-105 active:scale-95 transition-all group cursor-pointer"
             >
               <Footprints className="w-8 h-8 group-hover:animate-bounce mb-1" />
               <span className="text-3xl font-black">{kickCount}</span>
               <span className="text-[11px] uppercase font-bold tracking-wider opacity-90">{t('Tap on Kick', 'Tap on Kick')}</span>
             </button>
-            <p className="text-xs text-gray-500 mt-4 text-center max-w-xs">
+            <p className="text-xs text-gray-500 dark:text-muted-foreground mt-4 text-center max-w-xs">
               {t('kickCounterDesc', 'Relax on your left side in a calm room. Tap each time you feel a distinct kick, swish, or flutter.')}
             </p>
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-blush-200/60">
+          <div className="flex items-center justify-between pt-2 border-t border-blush-200/60 dark:border-border">
             <button
               onClick={resetKickSession}
-              className="px-3 py-1.5 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 text-xs font-semibold text-gray-600 flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-card hover:bg-gray-100 dark:hover:bg-muted border border-gray-200 dark:border-border text-xs font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>{t('Reset', 'Reset')}</span>
@@ -196,7 +196,7 @@ export const HealthTrackerModule: React.FC = () => {
             <button
               onClick={saveKickSession}
               disabled={kickCount === 0}
-              className="px-4 py-2 rounded-xl bg-blush-500 hover:bg-blush-600 text-white text-xs font-bold shadow-md shadow-blush-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-blush-500 hover:bg-blush-600 text-white text-xs font-bold shadow-md shadow-blush-200 dark:shadow-none transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               {t('Log Kick Count', 'Log Kick Count')} ({kickCount})
             </button>
@@ -204,14 +204,14 @@ export const HealthTrackerModule: React.FC = () => {
         </div>
 
         {/* Log Today's Vitals Form */}
-        <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
               <HeartPulse className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-gray-900">{t('Record Today’s Vitals', 'Record Today’s Vitals')}</h3>
-              <p className="text-xs text-gray-500">{t('Track cardiovascular & metabolic markers', 'Track cardiovascular & metabolic markers')}</p>
+              <h3 className="text-base font-bold text-gray-900 dark:text-foreground">{t('Record Today’s Vitals', 'Record Today’s Vitals')}</h3>
+              <p className="text-xs text-gray-500 dark:text-muted-foreground">{t('Track cardiovascular & metabolic markers', 'Track cardiovascular & metabolic markers')}</p>
             </div>
           </div>
 
@@ -302,16 +302,16 @@ export const HealthTrackerModule: React.FC = () => {
       </div>
 
       {/* Historical Vitals Table */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
-        <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-emerald-600" />
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           {t('vitalHistory', 'Recent Vitals History')}
         </h3>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-gray-200 text-gray-400 uppercase font-bold text-[10px]">
+              <tr className="border-b border-gray-200 dark:border-border text-gray-400 dark:text-muted-foreground uppercase font-bold text-[10px]">
                 <th className="py-2.5 px-3">{t('Date', 'Date')}</th>
                 <th className="py-2.5 px-3">{t('Blood Pressure', 'Blood Pressure')}</th>
                 <th className="py-2.5 px-3">{t('Weight', 'Weight')}</th>
@@ -321,25 +321,25 @@ export const HealthTrackerModule: React.FC = () => {
                 <th className="py-2.5 px-3">{t('Notes', 'Notes')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-border">
               {vitals.map(v => (
-                <tr key={v.id} className="hover:bg-gray-50/50">
-                  <td className="py-3 px-3 font-semibold text-gray-900">{v.date}</td>
+                <tr key={v.id} className="hover:bg-gray-50/50 dark:hover:bg-muted/30">
+                  <td className="py-3 px-3 font-semibold text-gray-900 dark:text-foreground">{v.date}</td>
                   <td className="py-3 px-3">
-                    <span className="font-bold text-gray-800">{v.bloodPressureSys}/{v.bloodPressureDia}</span>
-                    <span className="text-[10px] text-gray-400 ml-1">mmHg</span>
+                    <span className="font-bold text-gray-800 dark:text-gray-200">{v.bloodPressureSys}/{v.bloodPressureDia}</span>
+                    <span className="text-[10px] text-gray-400 dark:text-muted-foreground ml-1">mmHg</span>
                   </td>
-                  <td className="py-3 px-3 font-semibold text-gray-700">{v.weightKg} kg</td>
-                  <td className="py-3 px-3 text-gray-600">{v.pulseBpm} bpm</td>
-                  <td className="py-3 px-3 text-gray-600">{v.bloodGlucoseMgDl ? `${v.bloodGlucoseMgDl} mg/dL` : '—'}</td>
+                  <td className="py-3 px-3 font-semibold text-gray-700 dark:text-gray-300">{v.weightKg} kg</td>
+                  <td className="py-3 px-3 text-gray-600 dark:text-muted-foreground">{v.pulseBpm} bpm</td>
+                  <td className="py-3 px-3 text-gray-600 dark:text-muted-foreground">{v.bloodGlucoseMgDl ? `${v.bloodGlucoseMgDl} mg/dL` : '—'}</td>
                   <td className="py-3 px-3">
                     {v.kickCount ? (
-                      <span className="px-2 py-0.5 rounded-full bg-blush-100 text-blush-700 font-bold text-[10px]">
+                      <span className="px-2 py-0.5 rounded-full bg-blush-100 dark:bg-blush-950/60 text-blush-700 dark:text-blush-300 font-bold text-[10px]">
                         {v.kickCount} {t('kicks', 'kicks')}
                       </span>
                     ) : '—'}
                   </td>
-                  <td className="py-3 px-3 text-gray-500 text-[11px] truncate max-w-xs">{v.notes || '—'}</td>
+                  <td className="py-3 px-3 text-gray-500 dark:text-muted-foreground text-[11px] truncate max-w-xs">{v.notes || '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -348,14 +348,14 @@ export const HealthTrackerModule: React.FC = () => {
       </div>
 
       {/* Smart Reminders & Appointments Section */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-lavender-600" />
+            <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-lavender-600 dark:text-lavender-400" />
               {t('Smart Reminders & Clinical Calendar', 'Smart Reminders & Clinical Calendar')}
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-muted-foreground">
               {t('Prenatal checkups, blood tests, ultrasound scans, and daily prescriptions', 'Prenatal checkups, blood tests, ultrasound scans, and daily prescriptions')}
             </p>
           </div>
@@ -371,27 +371,27 @@ export const HealthTrackerModule: React.FC = () => {
 
         {/* Add Reminder Form */}
         {showAddReminder && (
-          <form onSubmit={handleCreateReminder} className="p-4 bg-lavender-50/60 rounded-2xl border border-lavender-200 text-xs space-y-3">
-            <h4 className="font-bold text-lavender-900">{t('Schedule New Reminder', 'Schedule New Reminder')}</h4>
+          <form onSubmit={handleCreateReminder} className="p-4 bg-lavender-50/60 dark:bg-muted/40 rounded-2xl border border-lavender-200 dark:border-border text-xs space-y-3">
+            <h4 className="font-bold text-lavender-900 dark:text-foreground">{t('Schedule New Reminder', 'Schedule New Reminder')}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">{t('Title', 'Title')}</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">{t('Title', 'Title')}</label>
                 <input
                   type="text"
                   value={remTitle}
                   onChange={e => setRemTitle(e.target.value)}
                   placeholder="e.g. 28-Week Growth Scan"
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                  className="w-full px-3 py-2 bg-white dark:bg-card text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">{t('Category', 'Category')}</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">{t('Category', 'Category')}</label>
                 <select
                   value={remCategory}
                   onChange={e => setRemCategory(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                  className="w-full px-3 py-2 bg-white dark:bg-card text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
                 >
                   <option value="doctor">{t('Doctor Visit', 'Doctor Visit')}</option>
                   <option value="scan">{t('Ultrasound Scan', 'Ultrasound Scan')}</option>
@@ -402,35 +402,35 @@ export const HealthTrackerModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">{t('Date', 'Date')}</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">{t('Date', 'Date')}</label>
                 <input
                   type="date"
                   value={remDate}
                   onChange={e => setRemDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                  className="w-full px-3 py-2 bg-white dark:bg-card text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">{t('Time', 'Time')}</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">{t('Time', 'Time')}</label>
                 <input
                   type="text"
                   value={remTime}
                   onChange={e => setRemTime(e.target.value)}
                   placeholder="10:00 AM"
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                  className="w-full px-3 py-2 bg-white dark:bg-card text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1">{t('Doctor or Location', 'Doctor or Location')}</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">{t('Doctor or Location', 'Doctor or Location')}</label>
               <input
                 type="text"
                 value={remDoctor}
                 onChange={e => setRemDoctor(e.target.value)}
                 placeholder="Dr. Sunita / Fetal Imaging Suite"
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                className="w-full px-3 py-2 bg-white dark:bg-card text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
               />
             </div>
 
@@ -438,7 +438,7 @@ export const HealthTrackerModule: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAddReminder(false)}
-                className="px-3 py-1.5 rounded-xl bg-gray-200 text-gray-700 font-bold cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-gray-200 dark:bg-muted text-gray-700 dark:text-gray-300 font-bold cursor-pointer"
               >
                 {t('Cancel', 'Cancel')}
               </button>

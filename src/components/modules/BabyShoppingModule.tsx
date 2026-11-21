@@ -487,9 +487,9 @@ export const BabyShoppingModule: React.FC = () => {
       </div>
 
       {filteredProducts.length === 0 && (
-        <div className="p-12 text-center bg-white rounded-3xl border border-blush-100 space-y-3">
-          <p className="font-bold text-gray-700">No catalog products match "{searchQuery}".</p>
-          <p className="text-xs text-gray-500">
+        <div className="p-12 text-center bg-white dark:bg-card rounded-3xl border border-blush-100 dark:border-border space-y-3">
+          <p className="font-bold text-gray-700 dark:text-gray-300">No catalog products match "{searchQuery}".</p>
+          <p className="text-xs text-gray-500 dark:text-muted-foreground">
             You can search for "{searchQuery}" directly on Amazon or Flipkart above, or add it to your personal registry below:
           </p>
           <button
@@ -497,7 +497,7 @@ export const BabyShoppingModule: React.FC = () => {
               setNewProdName(searchQuery);
               setShowAddModal(true);
             }}
-            className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all shadow-xs"
+            className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
           >
             + Add "{searchQuery}" to My Registry
           </button>
@@ -605,19 +605,19 @@ export const BabyShoppingModule: React.FC = () => {
                     </div>
 
                     <div className="text-right">
-                      <div className="flex items-center gap-1 text-amber-500 font-bold text-sm bg-white px-2.5 py-1 rounded-xl border border-gray-200 shadow-2xs">
+                      <div className="flex items-center gap-1 text-amber-500 font-bold text-sm bg-white dark:bg-card px-2.5 py-1 rounded-xl border border-gray-200 dark:border-border shadow-2xs">
                         <Star className="w-4 h-4 fill-current" />
                         <span>{selectedProductModal.rating}</span>
                       </div>
-                      <span className="text-[10px] text-gray-400 block mt-0.5">
+                      <span className="text-[10px] text-gray-400 dark:text-muted-foreground block mt-0.5">
                         {selectedProductModal.reviewCount} verified ratings
                       </span>
                     </div>
                   </div>
 
                   {/* Delivery & Assurance note */}
-                  <div className="flex items-center gap-2 text-xs text-gray-600 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100">
-                    <Truck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 bg-emerald-50/70 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/60">
+                    <Truck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>{selectedProductModal.deliveryInfo || 'Fast 2-day delivery on Amazon India & Flipkart • 10-day replacement policy'}</span>
                   </div>
 
@@ -710,15 +710,15 @@ export const BabyShoppingModule: React.FC = () => {
               {/* Technical Specifications Table */}
               {selectedProductModal.specifications && Object.keys(selectedProductModal.specifications).length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-gray-900 dark:text-foreground uppercase tracking-wider flex items-center gap-1.5">
                     <Info className="w-3.5 h-3.5 text-amber-600" />
                     <span>Specifications & Materials</span>
                   </h4>
-                  <div className="rounded-2xl border border-gray-200 overflow-hidden divide-y divide-gray-100 text-xs">
+                  <div className="rounded-2xl border border-gray-200 dark:border-border overflow-hidden divide-y divide-gray-100 dark:divide-border text-xs">
                     {Object.entries(selectedProductModal.specifications).map(([key, val], idx) => (
-                      <div key={idx} className="grid grid-cols-3 p-3 bg-white even:bg-gray-50/50">
-                        <span className="font-bold text-gray-700">{key}</span>
-                        <span className="col-span-2 text-gray-600">{val}</span>
+                      <div key={idx} className="grid grid-cols-3 p-3 bg-white dark:bg-card even:bg-gray-50/50 dark:even:bg-muted/30">
+                        <span className="font-bold text-gray-700 dark:text-gray-300">{key}</span>
+                        <span className="col-span-2 text-gray-600 dark:text-gray-400">{val}</span>
                       </div>
                     ))}
                   </div>
@@ -728,8 +728,8 @@ export const BabyShoppingModule: React.FC = () => {
               {/* What's In The Box */}
               {selectedProductModal.whatsIncluded && selectedProductModal.whatsIncluded.length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Package Contents (What's in the Box)</h4>
-                  <ul className="list-disc list-inside text-xs text-gray-600 space-y-1 bg-gray-50 p-3.5 rounded-2xl border border-gray-100">
+                  <h4 className="text-xs font-bold text-gray-900 dark:text-foreground uppercase tracking-wider">Package Contents (What's in the Box)</h4>
+                  <ul className="list-disc list-inside text-xs text-gray-600 dark:text-gray-300 space-y-1 bg-gray-50 dark:bg-muted/30 p-3.5 rounded-2xl border border-gray-100 dark:border-border">
                     {selectedProductModal.whatsIncluded.map((item, idx) => (
                       <li key={idx} className="leading-relaxed">{item}</li>
                     ))}
@@ -769,35 +769,35 @@ export const BabyShoppingModule: React.FC = () => {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-gray-700 font-bold mb-1">Product Title *</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Product Title *</label>
                 <input
                   type="text"
                   value={newProdName}
                   onChange={e => setNewProdName(e.target.value)}
                   placeholder="e.g. Ergonomic 4-Position Baby Carrier"
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-700 font-bold mb-1">Brand Name</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Brand Name</label>
                   <input
                     type="text"
                     value={newProdBrand}
                     onChange={e => setNewProdBrand(e.target.value)}
                     placeholder="e.g. Ergobaby / LuvLap"
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-bold mb-1">Category</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Category</label>
                   <select
                     value={newProdCat}
                     onChange={e => setNewProdCat(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                   >
                     <option value="clothing">Clothing</option>
                     <option value="diapering">Diapering</option>
@@ -812,60 +812,60 @@ export const BabyShoppingModule: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-bold mb-1">Estimated Price in INR (₹) *</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Estimated Price in INR (₹) *</label>
                 <input
                   type="number"
                   value={newProdPrice}
                   onChange={e => setNewProdPrice(e.target.value)}
                   placeholder="e.g. 1999"
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-bold mb-1">Image URL (Optional)</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Image URL (Optional)</label>
                 <input
                   type="url"
                   value={newProdImage}
                   onChange={e => setNewProdImage(e.target.value)}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-700 font-bold mb-1">Amazon India URL (Optional)</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Amazon India URL (Optional)</label>
                   <input
                     type="url"
                     value={newProdAmazon}
                     onChange={e => setNewProdAmazon(e.target.value)}
                     placeholder="https://www.amazon.in/dp/..."
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-bold mb-1">Flipkart URL (Optional)</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Flipkart URL (Optional)</label>
                   <input
                     type="url"
                     value={newProdFlipkart}
                     onChange={e => setNewProdFlipkart(e.target.value)}
                     placeholder="https://www.flipkart.com/..."
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-700 font-bold mb-1">Safety & Pediatric Notes</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">Safety & Pediatric Notes</label>
                 <textarea
                   value={newProdNotes}
                   onChange={e => setNewProdNotes(e.target.value)}
                   placeholder="e.g. 100% BPA free, certified safe for infant sleep"
                   rows={2}
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white dark:focus:bg-card"
                 />
               </div>
             </div>

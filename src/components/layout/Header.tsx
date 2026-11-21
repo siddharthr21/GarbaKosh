@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
           <img
             src="/garbhsarthi-logo.jpg"
             alt="GarbhSarthi Logo"
-            className="w-8 h-8 rounded-xl object-cover lg:hidden border border-border/80 shadow-2xs shrink-0 bg-white"
+            className="w-8 h-8 rounded-xl object-cover lg:hidden border border-border/80 shadow-2xs shrink-0 bg-white dark:bg-card"
           />
 
           {/* Quick Exit / Return to Dashboard Back Button if user is on any other tab */}

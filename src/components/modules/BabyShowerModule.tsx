@@ -108,21 +108,21 @@ export const BabyShowerModule: React.FC = () => {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 text-xs font-bold mb-2 border border-rose-200 dark:border-rose-900/40">
             <PartyPopper className="w-3.5 h-3.5" />
             <span>{t('Celebration & Blessing Planning', 'Celebration & Blessing Planning')}</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-foreground">
             {t('Baby Shower & Ceremony Planner', 'Baby Shower & Ceremony Planner')}
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-muted-foreground">
             {t('Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.', 'Design your Godh Bharai, Seemantham, or modern baby shower: guest list RSVP, budget, theme, and registry.')}
           </p>
         </div>
 
         <button
           onClick={() => setIsEditingDetails(!isEditingDetails)}
-          className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white hover:bg-muted border-2 border-blush-200 text-foreground font-bold text-xs shadow-xs transition-all self-start sm:self-auto cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white dark:bg-card hover:bg-muted border-2 border-blush-200 dark:border-border text-foreground font-bold text-xs shadow-xs transition-all self-start sm:self-auto cursor-pointer"
         >
           {isEditingDetails ? <X className="w-4 h-4 text-rose-500" /> : <Edit3 className="w-4 h-4 text-primary" />}
           <span>{isEditingDetails ? t('Cancel Editing', 'Cancel Editing') : t('Edit Event Details', 'Edit Event Details')}</span>
@@ -131,9 +131,9 @@ export const BabyShowerModule: React.FC = () => {
 
       {/* Edit Details Drawer/Form */}
       {isEditingDetails && (
-        <form onSubmit={handleSaveDetails} className="bg-gradient-to-r from-cream-100 via-blush-50 to-cream-100 p-6 rounded-3xl border-2 border-primary/30 shadow-md space-y-4 animate-in fade-in duration-200">
+        <form onSubmit={handleSaveDetails} className="bg-gradient-to-r from-cream-100 via-blush-50 to-cream-100 dark:from-card dark:via-muted/30 dark:to-card p-6 rounded-3xl border-2 border-primary/30 shadow-md space-y-4 animate-in fade-in duration-200">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
               <Edit3 className="w-4 h-4 text-primary" />
               <span>{t('Edit Date, Celebration Venue & Budget', 'Edit Date, Celebration Venue & Budget')}</span>
             </h3>
@@ -142,48 +142,48 @@ export const BabyShowerModule: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
             <div>
-              <label className="block text-gray-700 font-bold mb-1">{t('Celebration Date', 'Celebration Date')}</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">{t('Celebration Date', 'Celebration Date')}</label>
               <input
                 type="date"
                 value={editDate}
                 onChange={e => setEditDate(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
                 required
               />
             </div>
 
             <div className="lg:col-span-2">
-              <label className="block text-gray-700 font-bold mb-1">{t('Celebration Venue', 'Celebration Venue')}</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">{t('Celebration Venue', 'Celebration Venue')}</label>
               <input
                 type="text"
                 value={editVenue}
                 onChange={e => setEditVenue(e.target.value)}
                 placeholder="e.g. Gulmohar Garden Courtyard & Banquet"
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-gray-700 font-bold mb-1">{t('Total Budget (₹)', 'Total Budget (₹)')}</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">{t('Total Budget (₹)', 'Total Budget (₹)')}</label>
               <input
                 type="number"
                 min="0"
                 value={editBudgetTotal}
                 onChange={e => setEditBudgetTotal(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-gray-700 font-bold mb-1">{t('Budget Spent (₹)', 'Budget Spent (₹)')}</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-bold mb-1">{t('Budget Spent (₹)', 'Budget Spent (₹)')}</label>
               <input
                 type="number"
                 min="0"
                 value={editBudgetSpent}
                 onChange={e => setEditBudgetSpent(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl font-medium focus:ring-2 focus:ring-primary focus:outline-none"
                 required
               />
             </div>
@@ -193,7 +193,7 @@ export const BabyShowerModule: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsEditingDetails(false)}
-              className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer transition-all"
+              className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-muted/70 text-gray-700 dark:text-gray-300 text-xs font-bold cursor-pointer transition-all"
             >
               {t('Cancel', 'Cancel')}
             </button>
@@ -210,69 +210,69 @@ export const BabyShowerModule: React.FC = () => {
 
       {/* Overview Cards: Date, Budget, Guests, Venue */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1 relative group">
+        <div className="p-4 bg-white dark:bg-card rounded-3xl border border-blush-100 dark:border-border shadow-2xs space-y-1 relative group">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
+            <span className="text-[10px] text-gray-400 dark:text-muted-foreground font-bold uppercase flex items-center gap-1">
               <Calendar className="w-3 h-3" /> {t('Event Date', 'Event Date')}
             </span>
             <button
               onClick={() => setIsEditingDetails(true)}
-              className="text-[10px] text-primary hover:underline font-bold"
+              className="text-[10px] text-primary hover:underline font-bold cursor-pointer"
               title="Edit Event Date"
             >
               {t('edit', 'Edit')}
             </button>
           </div>
-          <div className="text-lg font-black text-gray-900">{babyShower.eventDate}</div>
-          <span className="text-[10px] text-blush-600 font-semibold">{t('Around Week 30', 'Around Week 30')}</span>
+          <div className="text-lg font-black text-gray-900 dark:text-foreground">{babyShower.eventDate}</div>
+          <span className="text-[10px] text-blush-600 dark:text-blush-400 font-semibold">{t('Around Week 30', 'Around Week 30')}</span>
         </div>
 
-        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1 relative group">
+        <div className="p-4 bg-white dark:bg-card rounded-3xl border border-blush-100 dark:border-border shadow-2xs space-y-1 relative group">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-              <IndianRupee className="w-3 h-3 text-emerald-600" /> {t('Budget Tracker (₹)', 'Budget Tracker (₹)')}
+            <span className="text-[10px] text-gray-400 dark:text-muted-foreground font-bold uppercase flex items-center gap-1">
+              <IndianRupee className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> {t('Budget Tracker (₹)', 'Budget Tracker (₹)')}
             </span>
             <button
               onClick={() => setIsEditingDetails(true)}
-              className="text-[10px] text-emerald-700 hover:underline font-bold"
+              className="text-[10px] text-emerald-700 dark:text-emerald-400 hover:underline font-bold cursor-pointer"
               title="Edit Budget"
             >
               {t('edit', 'Edit')}
             </button>
           </div>
-          <div className="text-lg font-black text-emerald-700">₹{babyShower.budgetSpent.toLocaleString('en-IN')} / ₹{babyShower.budgetTotal.toLocaleString('en-IN')}</div>
-          <span className="text-[10px] text-emerald-600 font-semibold">₹{budgetRemaining.toLocaleString('en-IN')} {t('Remaining', 'Remaining')}</span>
+          <div className="text-lg font-black text-emerald-700 dark:text-emerald-400">₹{babyShower.budgetSpent.toLocaleString('en-IN')} / ₹{babyShower.budgetTotal.toLocaleString('en-IN')}</div>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-300 font-semibold">₹{budgetRemaining.toLocaleString('en-IN')} {t('Remaining', 'Remaining')}</span>
         </div>
 
-        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
+        <div className="p-4 bg-white dark:bg-card rounded-3xl border border-blush-100 dark:border-border shadow-2xs space-y-1">
+          <span className="text-[10px] text-gray-400 dark:text-muted-foreground font-bold uppercase flex items-center gap-1">
             <Users className="w-3 h-3" /> {t('Guests Confirmed', 'Guests Confirmed')}
           </span>
-          <div className="text-lg font-black text-purple-700">{attendingCount} {t('Confirmed', 'Confirmed')}</div>
-          <span className="text-[10px] text-gray-500">{babyShower.guestCount} {t('Invited', 'Invited')}</span>
+          <div className="text-lg font-black text-purple-700 dark:text-purple-400">{attendingCount} {t('Confirmed', 'Confirmed')}</div>
+          <span className="text-[10px] text-gray-500 dark:text-muted-foreground">{babyShower.guestCount} {t('Invited', 'Invited')}</span>
         </div>
 
-        <div className="p-4 bg-white rounded-3xl border border-blush-100 shadow-2xs space-y-1 relative group">
+        <div className="p-4 bg-white dark:bg-card rounded-3xl border border-blush-100 dark:border-border shadow-2xs space-y-1 relative group">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
+            <span className="text-[10px] text-gray-400 dark:text-muted-foreground font-bold uppercase flex items-center gap-1">
               <MapPin className="w-3 h-3" /> {t('Celebration Venue', 'Celebration Venue')}
             </span>
             <button
               onClick={() => setIsEditingDetails(true)}
-              className="text-[10px] text-primary hover:underline font-bold"
+              className="text-[10px] text-primary hover:underline font-bold cursor-pointer"
               title="Edit Venue"
             >
               {t('edit', 'Edit')}
             </button>
           </div>
-          <div className="text-xs font-bold text-gray-800 truncate mt-1">{babyShower.venue}</div>
-          <span className="text-[10px] text-gray-400">{t('Indoor & Garden', 'Indoor & Garden')}</span>
+          <div className="text-xs font-bold text-gray-800 dark:text-gray-200 truncate mt-1">{babyShower.venue}</div>
+          <span className="text-[10px] text-gray-400 dark:text-muted-foreground">{t('Indoor & Garden', 'Indoor & Garden')}</span>
         </div>
       </div>
 
       {/* Theme Selector */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
-        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
+        <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-amber-500" />
           {t('Choose Celebration Theme & Aesthetic', 'Choose Celebration Theme & Aesthetic')}
         </h3>
@@ -338,10 +338,10 @@ export const BabyShowerModule: React.FC = () => {
         </div>
 
         {/* Task Management */}
-        <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-gray-900">{t('eventTasksChecklist', 'Event Tasks & Checklists')}</h3>
-            <span className="text-xs text-gray-500">
+            <h3 className="text-base font-bold text-gray-900 dark:text-foreground">{t('eventTasksChecklist', 'Event Tasks & Checklists')}</h3>
+            <span className="text-xs text-gray-500 dark:text-muted-foreground">
               {babyShower.tasks.filter(t => t.completed).length} of {babyShower.tasks.length} {t('completedTasks', 'done')}
             </span>
           </div>
@@ -353,8 +353,8 @@ export const BabyShowerModule: React.FC = () => {
                 onClick={() => toggleShowerTask(task.id)}
                 className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-2.5 text-xs ${
                   task.completed
-                    ? 'bg-emerald-50/50 border-emerald-200 text-gray-400 line-through'
-                    : 'bg-white border-gray-200 hover:border-blush-300 text-gray-800'
+                    ? 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-gray-400 dark:text-muted-foreground line-through'
+                    : 'bg-white dark:bg-card border-gray-200 dark:border-border hover:border-blush-300 dark:hover:border-blush-600 text-gray-800 dark:text-gray-200'
                 }`}
               >
                 <input
@@ -368,17 +368,17 @@ export const BabyShowerModule: React.FC = () => {
             ))}
           </div>
 
-          <form onSubmit={handleAddTask} className="flex gap-2 pt-2 border-t border-gray-100">
+          <form onSubmit={handleAddTask} className="flex gap-2 pt-2 border-t border-gray-100 dark:border-border">
             <input
               type="text"
               value={newTaskTitle}
               onChange={e => setNewTaskTitle(e.target.value)}
               placeholder={t('addEventTaskPlaceholder', 'Add event task (e.g. Order sweets, hire photographer)...')}
-              className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
+              className="flex-1 px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl text-xs"
             />
             <button
               type="submit"
-              className="p-2 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-bold"
+              className="p-2 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-bold cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -389,21 +389,21 @@ export const BabyShowerModule: React.FC = () => {
       {/* Guest List & Registry */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Guest RSVP */}
-        <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-gray-900">{t('Guest List & RSVPs', 'Guest List & RSVPs')}</h3>
-            <span className="text-xs text-gray-500">{babyShower.guests.length} {t('Guests Listed', 'Guests Listed')}</span>
+            <h3 className="text-base font-bold text-gray-900 dark:text-foreground">{t('Guest List & RSVPs', 'Guest List & RSVPs')}</h3>
+            <span className="text-xs text-gray-500 dark:text-muted-foreground">{babyShower.guests.length} {t('Guests Listed', 'Guests Listed')}</span>
           </div>
 
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
             {babyShower.guests.map(guest => (
               <div
                 key={guest.id}
-                className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between gap-2 text-xs"
+                className="p-3 bg-gray-50 dark:bg-muted/30 rounded-xl border border-gray-100 dark:border-border flex items-center justify-between gap-2 text-xs"
               >
                 <div>
-                  <h4 className="font-bold text-gray-900">{guest.name}</h4>
-                  {guest.gift && <p className="text-[10px] text-gray-500">🎁 {t('Gift', 'Gift')}: {t(guest.gift, guest.gift)}</p>}
+                  <h4 className="font-bold text-gray-900 dark:text-foreground">{guest.name}</h4>
+                  {guest.gift && <p className="text-[10px] text-gray-500 dark:text-muted-foreground">🎁 {t('Gift', 'Gift')}: {t(guest.gift, guest.gift)}</p>}
                 </div>
 
                 <div className="flex items-center gap-1 text-[10px] font-bold">
@@ -418,7 +418,7 @@ export const BabyShowerModule: React.FC = () => {
                             : status === 'declined'
                             ? 'bg-rose-500 text-white'
                             : 'bg-amber-400 text-gray-900'
-                          : 'bg-white border border-gray-200 text-gray-500'
+                          : 'bg-white dark:bg-muted border border-gray-200 dark:border-border text-gray-500 dark:text-gray-300'
                       }`}
                     >
                       {t(status, status)}
@@ -429,13 +429,13 @@ export const BabyShowerModule: React.FC = () => {
             ))}
           </div>
 
-          <form onSubmit={handleAddGuest} className="flex gap-2 pt-2 border-t border-gray-100">
+          <form onSubmit={handleAddGuest} className="flex gap-2 pt-2 border-t border-gray-100 dark:border-border">
             <input
               type="text"
               value={newGuestName}
               onChange={e => setNewGuestName(e.target.value)}
               placeholder={t('Invite guest name...', 'Invite guest name...')}
-              className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
+              className="flex-1 px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl text-xs"
             />
             <button
               type="submit"
@@ -447,13 +447,13 @@ export const BabyShowerModule: React.FC = () => {
         </div>
 
         {/* Gift Registry */}
-        <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+            <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
               <Gift className="w-4 h-4 text-rose-500" />
               {t('Gift Registry & Wishlist', 'Gift Registry & Wishlist')}
             </h3>
-            <span className="text-xs text-rose-600 font-bold">
+            <span className="text-xs text-rose-600 dark:text-rose-400 font-bold">
               {babyShower.registryItems.filter(i => i.claimedBy).length}/{babyShower.registryItems.length} {t('Claimed', 'Claimed')}
             </span>
           </div>
@@ -462,11 +462,11 @@ export const BabyShowerModule: React.FC = () => {
             {babyShower.registryItems.map(item => (
               <div
                 key={item.id}
-                className="p-3 bg-cream-50/60 rounded-xl border border-cream-200 flex items-center justify-between gap-3 text-xs"
+                className="p-3 bg-cream-50/60 dark:bg-muted/30 rounded-xl border border-cream-200 dark:border-border flex items-center justify-between gap-3 text-xs"
               >
                 <div>
-                  <h4 className="font-bold text-gray-900">{t(item.name, item.name)}</h4>
-                  <span className="text-[10px] text-gray-500">
+                  <h4 className="font-bold text-gray-900 dark:text-foreground">{t(item.name, item.name)}</h4>
+                  <span className="text-[10px] text-gray-500 dark:text-muted-foreground">
                     {item.priceEst ? `₹${item.priceEst.toLocaleString('en-IN')} · ` : ''}
                     {item.claimedBy ? `${t('Claimed by', 'Claimed by')} ${item.claimedBy} 🎁` : t('Available to gift', 'Available to gift')}
                   </span>
@@ -477,7 +477,7 @@ export const BabyShowerModule: React.FC = () => {
                   onClick={() => toggleClaimRegistryItem(item.id)}
                   className={`px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer ${
                     item.claimedBy
-                      ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'
+                      ? 'bg-emerald-100 dark:bg-emerald-950/60 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300'
                       : 'bg-primary-soft hover:bg-primary/20 text-primary border border-primary/30'
                   }`}
                   title={t('Click to toggle gift claim status', 'Click to toggle gift claim status')}

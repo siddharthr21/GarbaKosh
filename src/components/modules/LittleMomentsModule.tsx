@@ -120,7 +120,7 @@ export const LittleMomentsModule: React.FC = () => {
 
           <button
             onClick={handleExportScrapbook}
-            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-card text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-muted transition-colors flex items-center gap-1.5 cursor-pointer"
             title={t('Download Scrapbook Export', 'Download Scrapbook Export')}
           >
             <Download className="w-4 h-4" />
@@ -129,7 +129,7 @@ export const LittleMomentsModule: React.FC = () => {
 
           <button
             onClick={() => setShowUploadModal(true)}
-            className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 dark:shadow-none transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t('uploadScan', 'Add Scan / Memory')}</span>
@@ -138,11 +138,11 @@ export const LittleMomentsModule: React.FC = () => {
       </div>
 
       {/* Mandatory Medical Safety Disclaimer */}
-      <div className="p-4 bg-amber-50 rounded-3xl border border-amber-200 text-xs text-amber-900 space-y-1 flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+      <div className="p-4 bg-amber-50 dark:bg-amber-950/30 rounded-3xl border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 space-y-1 flex items-start gap-3">
+        <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
         <div>
-          <h4 className="font-bold text-amber-950 uppercase text-[11px]">{t('Diagnostic Imagery Disclaimer', 'Diagnostic Imagery Disclaimer')}:</h4>
-          <p className="text-amber-800 leading-relaxed">
+          <h4 className="font-bold text-amber-950 dark:text-amber-200 uppercase text-[11px]">{t('Diagnostic Imagery Disclaimer', 'Diagnostic Imagery Disclaimer')}:</h4>
+          <p className="text-amber-800 dark:text-amber-300 leading-relaxed">
             {t('vaultDisclaimer', 'Ultrasound scans stored in Little Moments are for emotional bonding, personal organization, and parental memory keeping. Do not attempt diagnostic comparisons or growth evaluations through visual inspection. Official clinical interpretation must always remain with your certified radiologist or OB/GYN.')}
           </p>
         </div>
@@ -150,24 +150,24 @@ export const LittleMomentsModule: React.FC = () => {
 
       {/* Side-by-Side Comparison Tool Mode */}
       {compareMode && (
-        <div className="bg-gradient-to-r from-purple-50 via-cream-50 to-blush-50 rounded-3xl p-6 border border-purple-200/70 shadow-sm space-y-4">
+        <div className="bg-gradient-to-r from-purple-50 via-cream-50 to-blush-50 dark:from-purple-950/30 dark:via-muted/20 dark:to-card rounded-3xl p-6 border border-purple-200/70 dark:border-border shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <Columns className="w-5 h-5 text-purple-600" />
+            <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
+              <Columns className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               Stage Comparison Tool (Week vs Week)
             </h3>
-            <span className="text-xs text-purple-700 font-semibold">Visual Keepsake Progression</span>
+            <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">Visual Keepsake Progression</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Scan A */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-gray-700">Earlier Stage:</span>
+                <span className="font-bold text-gray-700 dark:text-gray-300">Earlier Stage:</span>
                 <select
                   value={selectedScanA}
                   onChange={e => setSelectedScanA(e.target.value)}
-                  className="bg-white border border-gray-200 rounded-xl px-2.5 py-1 text-xs"
+                  className="bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl px-2.5 py-1 text-xs"
                 >
                   {memories.map(m => (
                     <option key={m.id} value={m.id}>
@@ -178,18 +178,18 @@ export const LittleMomentsModule: React.FC = () => {
               </div>
 
               {scanA && (
-                <div className="bg-white p-4 rounded-2xl border border-gray-200 space-y-2">
-                  <div className="h-48 rounded-xl overflow-hidden bg-black/5 flex items-center justify-center">
+                <div className="bg-white dark:bg-card p-4 rounded-2xl border border-gray-200 dark:border-border space-y-2">
+                  <div className="h-48 rounded-xl overflow-hidden bg-black/5 dark:bg-black/20 flex items-center justify-center">
                     <img
                       src={scanA.imageUrl}
                       alt={scanA.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h4 className="font-bold text-gray-900 text-sm">{scanA.title} (Week {scanA.gestationalWeek})</h4>
-                  <p className="text-xs text-gray-600">{scanA.caption}</p>
+                  <h4 className="font-bold text-gray-900 dark:text-foreground text-sm">{scanA.title} (Week {scanA.gestationalWeek})</h4>
+                  <p className="text-xs text-gray-600 dark:text-muted-foreground">{scanA.caption}</p>
                   {scanA.doctorComments && (
-                    <p className="text-[11px] text-gray-500 italic">Dr Note: {scanA.doctorComments}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-muted-foreground italic">Dr Note: {scanA.doctorComments}</p>
                   )}
                 </div>
               )}
@@ -198,11 +198,11 @@ export const LittleMomentsModule: React.FC = () => {
             {/* Scan B */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-gray-700">Later Stage:</span>
+                <span className="font-bold text-gray-700 dark:text-gray-300">Later Stage:</span>
                 <select
                   value={selectedScanB}
                   onChange={e => setSelectedScanB(e.target.value)}
-                  className="bg-white border border-gray-200 rounded-xl px-2.5 py-1 text-xs"
+                  className="bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl px-2.5 py-1 text-xs"
                 >
                   {memories.map(m => (
                     <option key={m.id} value={m.id}>
@@ -213,18 +213,18 @@ export const LittleMomentsModule: React.FC = () => {
               </div>
 
               {scanB && (
-                <div className="bg-white p-4 rounded-2xl border border-gray-200 space-y-2">
-                  <div className="h-48 rounded-xl overflow-hidden bg-black/5 flex items-center justify-center">
+                <div className="bg-white dark:bg-card p-4 rounded-2xl border border-gray-200 dark:border-border space-y-2">
+                  <div className="h-48 rounded-xl overflow-hidden bg-black/5 dark:bg-black/20 flex items-center justify-center">
                     <img
                       src={scanB.imageUrl}
                       alt={scanB.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h4 className="font-bold text-gray-900 text-sm">{scanB.title} (Week {scanB.gestationalWeek})</h4>
-                  <p className="text-xs text-gray-600">{scanB.caption}</p>
+                  <h4 className="font-bold text-gray-900 dark:text-foreground text-sm">{scanB.title} (Week {scanB.gestationalWeek})</h4>
+                  <p className="text-xs text-gray-600 dark:text-muted-foreground">{scanB.caption}</p>
                   {scanB.doctorComments && (
-                    <p className="text-[11px] text-gray-500 italic">Dr Note: {scanB.doctorComments}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-muted-foreground italic">Dr Note: {scanB.doctorComments}</p>
                   )}
                 </div>
               )}
@@ -238,16 +238,16 @@ export const LittleMomentsModule: React.FC = () => {
         {memories.map(mem => (
           <div
             key={mem.id}
-            className="bg-white rounded-3xl overflow-hidden border border-blush-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+            className="bg-white dark:bg-card rounded-3xl overflow-hidden border border-blush-100 dark:border-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
           >
             <div>
-              <div className="relative h-52 bg-gray-100 overflow-hidden">
+              <div className="relative h-52 bg-gray-100 dark:bg-muted overflow-hidden">
                 <img
                   src={mem.imageUrl}
                   alt={mem.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-blush-700 uppercase tracking-wider border border-blush-200">
+                <div className="absolute top-3 left-3 bg-white/90 dark:bg-card/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-blush-700 dark:text-blush-300 uppercase tracking-wider border border-blush-200 dark:border-border">
                   {t('Week', 'Week')} {mem.gestationalWeek}
                 </div>
                 <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-md text-white px-2 py-0.5 rounded-md text-[10px] capitalize">
@@ -256,7 +256,7 @@ export const LittleMomentsModule: React.FC = () => {
               </div>
 
               <div className="p-5 space-y-2">
-                <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                <div className="flex items-center gap-2 text-[11px] text-gray-400 dark:text-muted-foreground">
                   <Calendar className="w-3 h-3" />
                   <span>{mem.date}</span>
                 </div>
@@ -294,12 +294,12 @@ export const LittleMomentsModule: React.FC = () => {
       {/* Upload Modal Dialog */}
       {showUploadModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-card rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-blush-100 dark:border-border space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900">Upload Ultrasound or Milestone</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-foreground">Upload Ultrasound or Milestone</h3>
               <button
                 onClick={() => setShowUploadModal(false)}
-                className="text-gray-400 hover:text-gray-700 text-sm font-bold"
+                className="text-gray-400 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-gray-200 text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -307,24 +307,24 @@ export const LittleMomentsModule: React.FC = () => {
 
             <form onSubmit={handleUpload} className="space-y-3 text-xs">
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Title</label>
+                <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Title</label>
                 <input
                   type="text"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   placeholder="e.g. 24-Week Detailed Profile Scan"
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-1">{t('Type', 'Type')}</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">{t('Type', 'Type')}</label>
                   <select
                     value={type}
                     onChange={e => setType(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
                   >
                     <option value="ultrasound">{t('Ultrasound Scan', 'Ultrasound Scan')}</option>
                     <option value="belly-bump">{t('Belly Bump Photo', 'Belly Bump Photo')}</option>
@@ -334,7 +334,7 @@ export const LittleMomentsModule: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700 font-semibold mb-1">{t('scanWeek', 'Gestational Week')}</label>
+                  <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">{t('scanWeek', 'Gestational Week')}</label>
                   <input
                     type="number"
                     value={week}

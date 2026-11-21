@@ -129,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <img
               src="/garbhsarthi-logo.jpg"
               alt="GarbhSarthi Logo"
-              className="w-10 h-10 rounded-2xl object-cover shadow-xs border border-border shrink-0 bg-white"
+              className="w-10 h-10 rounded-2xl object-cover shadow-xs border border-border shrink-0 bg-white dark:bg-card"
             />
             <div>
               <div className="flex items-center gap-1.5">

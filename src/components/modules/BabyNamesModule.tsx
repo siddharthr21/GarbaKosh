@@ -87,21 +87,21 @@ export const BabyNamesModule: React.FC = () => {
       {/* Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-bold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-950/60 text-pink-800 dark:text-pink-300 text-xs font-bold mb-2 border border-pink-200 dark:border-pink-900/40">
             <BookHeart className="w-3.5 h-3.5" />
             <span>{t('AI Baby Name Explorer & Couple Voting', 'AI Baby Name Explorer & Couple Voting')}</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-foreground">
             {t('babyNamesTitle', 'Baby Names & Shortlist')}
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-muted-foreground">
             {t('babyNamesSubtitle', 'Curated names across Sanskrit, Tamil, Hindi, Kannada, Telugu, Malayalam, and global origins. Both parents can vote together!')}
           </p>
         </div>
 
         <button
           onClick={() => setShowAddCustom(!showAddCustom)}
-          className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-blush-500 to-rose-400 hover:from-blush-600 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blush-200 dark:shadow-none transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{t('Add Custom Name', 'Add Custom Name')}</span>
@@ -109,9 +109,9 @@ export const BabyNamesModule: React.FC = () => {
       </div>
 
       {notification && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center justify-between text-xs font-semibold animate-in fade-in">
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-2xl flex items-center justify-between text-xs font-semibold animate-in fade-in">
           <span>{notification}</span>
-          <button onClick={() => setNotification(null)} className="text-emerald-600 hover:text-emerald-900 text-xs ml-2 font-bold cursor-pointer">
+          <button onClick={() => setNotification(null)} className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-100 text-xs ml-2 font-bold cursor-pointer">
             Dismiss
           </button>
         </div>
@@ -119,27 +119,27 @@ export const BabyNamesModule: React.FC = () => {
 
       {/* Add Custom Name Dialog / Panel */}
       {showAddCustom && (
-        <form onSubmit={handleAddCustom} className="p-5 bg-gradient-to-r from-cream-100 to-blush-50 rounded-3xl border border-blush-200 text-xs space-y-3">
-          <h3 className="font-bold text-gray-900 text-sm">Add Custom Baby Name to Couple Shortlist</h3>
+        <form onSubmit={handleAddCustom} className="p-5 bg-gradient-to-r from-cream-100 to-blush-50 dark:from-card dark:to-muted/30 rounded-3xl border border-blush-200 dark:border-border text-xs space-y-3">
+          <h3 className="font-bold text-gray-900 dark:text-foreground text-sm">Add Custom Baby Name to Couple Shortlist</h3>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
-              <label className="block text-gray-700 font-semibold mb-1">Name</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Name</label>
               <input
                 type="text"
                 value={customName}
                 onChange={e => setCustomName(e.target.value)}
                 placeholder="e.g. Advika"
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1">Gender</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Gender</label>
               <select
                 value={customGender}
                 onChange={e => setCustomGender(e.target.value as any)}
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
               >
                 <option value="girl">Girl</option>
                 <option value="boy">Boy</option>
@@ -148,24 +148,24 @@ export const BabyNamesModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1">Origin / Language</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Origin / Language</label>
               <input
                 type="text"
                 value={customOrigin}
                 onChange={e => setCustomOrigin(e.target.value)}
                 placeholder="e.g. Sanskrit / Tamil"
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
               />
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-1">Meaning & Context</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Meaning & Context</label>
               <input
                 type="text"
                 value={customMeaning}
                 onChange={e => setCustomMeaning(e.target.value)}
                 placeholder="e.g. Unique; First light"
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl"
+                className="w-full px-3 py-2 bg-white dark:bg-muted/40 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl"
               />
             </div>
           </div>
@@ -174,13 +174,13 @@ export const BabyNamesModule: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAddCustom(false)}
-              className="px-3 py-1.5 rounded-xl bg-gray-200 text-gray-700 font-bold"
+              className="px-3 py-1.5 rounded-xl bg-gray-200 dark:bg-muted text-gray-700 dark:text-gray-300 font-bold"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 rounded-xl bg-blush-500 hover:bg-blush-600 text-white font-bold shadow-xs"
+              className="px-4 py-1.5 rounded-xl bg-blush-500 hover:bg-blush-600 text-white font-bold shadow-xs cursor-pointer"
             >
               Save to Shortlist
             </button>
@@ -189,16 +189,16 @@ export const BabyNamesModule: React.FC = () => {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-3xl p-5 border border-blush-100 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-card rounded-3xl p-5 border border-blush-100 dark:border-border shadow-sm space-y-4">
         {/* Navigation Tabs */}
-        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-          <div className="flex items-center gap-2 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-border pb-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
             <button
               onClick={() => setActiveTab('explore')}
               className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
                 activeTab === 'explore'
                   ? 'bg-blush-500 text-white shadow-xs'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  : 'text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted/40'
               }`}
             >
               {t('Explore All Names', 'Explore All Names')} ({babyNames.length})
@@ -209,7 +209,7 @@ export const BabyNamesModule: React.FC = () => {
               className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'shortlist'
                   ? 'bg-blush-500 text-white shadow-xs'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  : 'text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted/40'
               }`}
             >
               <span>{t('shortlist', 'Shared Couple Shortlist')}</span>
@@ -223,7 +223,7 @@ export const BabyNamesModule: React.FC = () => {
               className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'favorites'
                   ? 'bg-blush-500 text-white shadow-xs'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  : 'text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted/40'
               }`}
             >
               <Heart className="w-3.5 h-3.5 fill-current" />
@@ -231,7 +231,7 @@ export const BabyNamesModule: React.FC = () => {
             </button>
           </div>
 
-          <span className="text-[11px] text-gray-500 hidden sm:inline">
+          <span className="text-[11px] text-gray-500 dark:text-muted-foreground hidden sm:inline">
             {t('Voting as', 'Voting as')}: <strong className="capitalize">{activeRole}</strong>
           </span>
         </div>
@@ -239,13 +239,13 @@ export const BabyNamesModule: React.FC = () => {
         {/* Search input & drop-downs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400 dark:text-muted-foreground" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={t('searchNames', 'Search by name, meaning, or keyword...')}
-              className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blush-400 focus:outline-none"
+              className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-muted/30 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:ring-2 focus:ring-blush-400 focus:outline-none"
             />
           </div>
 
@@ -253,7 +253,7 @@ export const BabyNamesModule: React.FC = () => {
             <select
               value={selectedGender}
               onChange={e => setSelectedGender(e.target.value as any)}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none cursor-pointer"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/30 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none cursor-pointer"
             >
               <option value="all">{t('All Genders', 'All Genders')}</option>
               <option value="girl">🌸 {t('filterGirls', 'Girl Names')}</option>
@@ -266,7 +266,7 @@ export const BabyNamesModule: React.FC = () => {
             <select
               value={selectedOrigin}
               onChange={e => setSelectedOrigin(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none cursor-pointer"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/30 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none cursor-pointer"
             >
               <option value="all">All Origins & Languages</option>
               <option value="sanskrit">Sanskrit Classics</option>
@@ -280,7 +280,7 @@ export const BabyNamesModule: React.FC = () => {
             <select
               value={selectedStyle}
               onChange={e => setSelectedStyle(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none cursor-pointer"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-muted/30 text-gray-900 dark:text-foreground border border-gray-200 dark:border-border rounded-xl focus:outline-none cursor-pointer"
             >
               <option value="all">All Styles</option>
               <option value="modern">Modern & Trendy</option>
@@ -307,21 +307,21 @@ export const BabyNamesModule: React.FC = () => {
           return (
             <div
               key={name.id}
-              className="bg-white rounded-3xl p-5 border border-blush-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-3 group"
+              className="bg-white dark:bg-card rounded-3xl p-5 border border-blush-100 dark:border-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-3 group"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl font-black text-gray-900">{localizedName}</span>
+                    <span className="text-xl font-black text-gray-900 dark:text-foreground">{localizedName}</span>
                     {hasDifferentScript && (
-                      <span className="text-xs text-gray-400 font-semibold">({name.name})</span>
+                      <span className="text-xs text-gray-400 dark:text-muted-foreground font-semibold">({name.name})</span>
                     )}
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                       name.gender === 'girl'
-                        ? 'bg-rose-100 text-rose-700'
+                        ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300'
                         : name.gender === 'boy'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-purple-100 text-purple-700'
+                        ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300'
+                        : 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300'
                     }`}>
                       {name.gender}
                     </span>
@@ -329,40 +329,40 @@ export const BabyNamesModule: React.FC = () => {
 
                   <button
                     onClick={() => toggleFavoriteName(name.id)}
-                    className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                    className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-muted/40 transition-colors"
                     title="Toggle favorite"
                   >
                     <Heart
                       className={`w-5 h-5 transition-colors ${
-                        name.isFavorite ? 'fill-rose-500 text-rose-500' : 'text-gray-300'
+                        name.isFavorite ? 'fill-rose-500 text-rose-500' : 'text-gray-300 dark:text-muted-foreground'
                       }`}
                     />
                   </button>
                 </div>
 
-                <div className="text-[11px] text-gray-500 flex items-center gap-2">
-                  <span className="font-semibold text-gray-700">{name.origin}</span>
+                <div className="text-[11px] text-gray-500 dark:text-muted-foreground flex items-center gap-2">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">{name.origin}</span>
                   <span>·</span>
                   <span className="italic">{name.pronunciation}</span>
                 </div>
 
-                <p className="text-xs text-gray-700 leading-relaxed font-medium">
+                <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                   <strong>{t('meaning', 'Meaning')}:</strong> {localizedMeaning}
                 </p>
 
                 {name.culturalContext && (
-                  <p className="text-[11px] text-gray-500 leading-relaxed italic border-t border-gray-100 pt-2">
+                  <p className="text-[11px] text-gray-500 dark:text-muted-foreground leading-relaxed italic border-t border-gray-100 dark:border-border pt-2">
                     {name.culturalContext}
                   </p>
                 )}
               </div>
 
               {/* Couple Voting System */}
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-gray-100 dark:border-border flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-bold text-gray-400">Couple Score:</span>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 dark:text-muted-foreground">Couple Score:</span>
                   <span className={`px-2 py-0.5 rounded-full font-bold text-xs ${
-                    totalScore > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'
+                    totalScore > 0 ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'
                   }`}>
                     {totalScore > 0 ? `+${totalScore}` : totalScore}
                   </span>
@@ -375,7 +375,7 @@ export const BabyNamesModule: React.FC = () => {
                     className={`p-1.5 rounded-lg border text-xs font-bold flex items-center gap-1 transition-all ${
                       (activeRole === 'mother' ? name.motherVote === 1 : name.partnerVote === 1)
                         ? 'bg-emerald-500 text-white border-emerald-500 shadow-2xs'
-                        : 'bg-white border-gray-200 text-gray-600 hover:bg-emerald-50'
+                        : 'bg-white dark:bg-card border-gray-200 dark:border-border text-gray-600 dark:text-muted-foreground hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
                     }`}
                     title="I love this name"
                   >
@@ -387,7 +387,7 @@ export const BabyNamesModule: React.FC = () => {
                     className={`p-1.5 rounded-lg border text-xs font-bold flex items-center gap-1 transition-all ${
                       (activeRole === 'mother' ? name.motherVote === -1 : name.partnerVote === -1)
                         ? 'bg-rose-500 text-white border-rose-500 shadow-2xs'
-                        : 'bg-white border-gray-200 text-gray-600 hover:bg-rose-50'
+                        : 'bg-white dark:bg-card border-gray-200 dark:border-border text-gray-600 dark:text-muted-foreground hover:bg-rose-50 dark:hover:bg-rose-950/40'
                     }`}
                     title="Not feeling this name"
                   >

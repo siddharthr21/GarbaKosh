@@ -119,23 +119,23 @@ export const MoodWellnessModule: React.FC = () => {
 
         <button
           onClick={() => setActiveAffirmationIdx((prev) => (prev + 1) % DAILY_AFFIRMATIONS.length)}
-          className="shrink-0 px-4 py-2 bg-white hover:bg-purple-50 text-purple-800 rounded-xl text-xs font-bold shadow-xs border border-purple-200 transition-colors cursor-pointer"
+          className="shrink-0 px-4 py-2 bg-white dark:bg-card hover:bg-purple-50 dark:hover:bg-muted text-purple-800 dark:text-purple-300 rounded-xl text-xs font-bold shadow-xs border border-purple-200 dark:border-border transition-colors cursor-pointer"
         >
           {t('New Affirmation', 'New Affirmation')} ✨
         </button>
       </div>
 
       {/* Guided 4-7-8 Breathing Sanctuary */}
-      <div className="bg-gradient-to-r from-teal-50 via-cyan-50 to-indigo-50 rounded-3xl p-6 border border-teal-200/70 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-teal-50 via-cyan-50 to-indigo-50 dark:from-teal-950/30 dark:via-muted/20 dark:to-card rounded-3xl p-6 border border-teal-200/70 dark:border-border shadow-2xs flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-[11px] font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-[11px] font-bold">
             <Wind className="w-3.5 h-3.5" />
             <span>4-7-8 Maternal Calming Breathwork</span>
           </div>
-          <h3 className="text-base font-bold text-gray-900">
+          <h3 className="text-base font-bold text-gray-900 dark:text-foreground">
             Guided Vagal Nerve Relaxation
           </h3>
-          <p className="text-xs text-gray-600 leading-relaxed">
+          <p className="text-xs text-gray-600 dark:text-muted-foreground leading-relaxed">
             Inhale gently through your nose (4s), hold with peaceful calm (7s), and release softly through your mouth (8s). Calms elevated heart rate and soothes maternal nervous system.
           </p>
         </div>
@@ -144,7 +144,7 @@ export const MoodWellnessModule: React.FC = () => {
           <div
             className={`w-28 h-28 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-1000 ${
               !isBreathingCoach
-                ? 'bg-white border-teal-300 text-teal-700 shadow-sm'
+                ? 'bg-white dark:bg-card border-teal-300 dark:border-teal-700 text-teal-700 dark:text-teal-300 shadow-sm'
                 : breathPhase === 'Inhale'
                 ? 'scale-110 bg-teal-500 border-teal-300 text-white shadow-xl shadow-teal-200'
                 : breathPhase === 'Hold'
@@ -177,8 +177,8 @@ export const MoodWellnessModule: React.FC = () => {
       {/* Check-In Grid: Daily Mood Form & Emotional Journal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Mood Check-In Card */}
-        <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
+          <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
             <Heart className="w-4 h-4 text-rose-500" />
             {t('howAreYouFeeling', 'How are you feeling right now')}?
           </h3>
@@ -304,38 +304,38 @@ export const MoodWellnessModule: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 bg-white/80 rounded-2xl border border-teal-100 text-xs text-teal-900">
+            <div className="p-3 bg-white/80 dark:bg-card/80 rounded-2xl border border-teal-100 dark:border-border text-xs text-teal-900 dark:text-teal-200">
               <p className="font-semibold mb-1">{t('Gentle instructions', 'Gentle instructions')}:</p>
-              <p className="text-teal-800">
+              <p className="text-teal-800 dark:text-teal-300">
                 {t('Inhale quietly through your nose for 4 seconds, soft pause for 4 seconds, exhale through soft lips for 6 seconds.', 'Inhale quietly through your nose for 4 seconds, soft pause for 4 seconds, exhale through soft lips for 6 seconds.')}
               </p>
             </div>
           </div>
 
           {/* Emotional Crisis Help Notice */}
-          <div className="bg-rose-50 rounded-3xl p-5 border border-rose-200 text-xs space-y-2">
-            <h4 className="font-bold text-rose-950 flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-rose-600" />
+          <div className="bg-rose-50 dark:bg-rose-950/30 rounded-3xl p-5 border border-rose-200 dark:border-rose-900/60 text-xs space-y-2">
+            <h4 className="font-bold text-rose-950 dark:text-rose-200 flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               {t('Perinatal Mental Health Support Hotline', 'Perinatal Mental Health Support Hotline')}
             </h4>
-            <p className="text-rose-900 leading-relaxed">
+            <p className="text-rose-900 dark:text-rose-300 leading-relaxed">
               {t('If you ever feel persistent sadness, detachment, or overwhelming anxiety, please know that you are deeply worthy of care. Specialized perinatal counselors are available 24/7 free of charge.', 'If you ever feel persistent sadness, detachment, or overwhelming anxiety, please know that you are deeply worthy of care. Specialized perinatal counselors are available 24/7 free of charge.')}
             </p>
-            <div className="flex flex-wrap gap-2 pt-1 font-bold text-rose-800">
-              <span className="px-2.5 py-1 bg-white rounded-lg border border-rose-200">📞 {t('National Maternal Hotline', 'National Maternal Hotline')}: 1-833-852-6262</span>
-              <span className="px-2.5 py-1 bg-white rounded-lg border border-rose-200">📞 {t('India Vandrevala Mental Health', 'India Vandrevala Mental Health')}: 9999 666 555</span>
+            <div className="flex flex-wrap gap-2 pt-1 font-bold text-rose-800 dark:text-rose-300">
+              <span className="px-2.5 py-1 bg-white dark:bg-card rounded-lg border border-rose-200 dark:border-border">📞 {t('National Maternal Hotline', 'National Maternal Hotline')}: 1-833-852-6262</span>
+              <span className="px-2.5 py-1 bg-white dark:bg-card rounded-lg border border-rose-200 dark:border-border">📞 {t('India Vandrevala Mental Health', 'India Vandrevala Mental Health')}: 9999 666 555</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Historical Mood Calendar & Patterns */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-purple-600" />
+          <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             <span>{t('Recent Emotional Journal History', 'Recent Emotional Journal History')}</span>
-            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-xs font-bold font-mono">
+            <span className="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 text-xs font-bold font-mono">
               {moodLogs.length}
             </span>
           </h3>
@@ -346,7 +346,7 @@ export const MoodWellnessModule: React.FC = () => {
           {moodLogs.map(log => (
             <div
               key={log.id}
-              className="p-4 bg-gray-50/70 rounded-2xl border border-gray-200 space-y-2 text-xs"
+              className="p-4 bg-gray-50/70 dark:bg-muted/30 rounded-2xl border border-gray-200 dark:border-border space-y-2 text-xs"
             >
               <div className="flex items-center justify-between">
                 <span className="capitalize font-bold text-gray-800 flex items-center gap-1.5">

@@ -76,7 +76,7 @@ export const HospitalChecklistModule: React.FC = () => {
 
         <button
           onClick={handlePrint}
-          className="px-4 py-2 bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
+          className="px-4 py-2 bg-white dark:bg-card text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-muted border border-gray-200 dark:border-border rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
         >
           <Printer className="w-4 h-4" />
           <span>{t('Print / Export PDF', 'Print / Export PDF')}</span>
@@ -84,35 +84,35 @@ export const HospitalChecklistModule: React.FC = () => {
       </div>
 
       {/* Progress & Countdown Bar */}
-      <div className="bg-gradient-to-r from-cream-100 via-blush-50 to-teal-50 rounded-3xl p-6 border border-blush-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-cream-100 via-blush-50 to-teal-50 dark:from-card dark:via-muted/30 dark:to-teal-950/20 rounded-3xl p-6 border border-blush-200 dark:border-border shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2 flex-1">
-          <div className="flex items-center justify-between text-xs font-bold text-gray-800">
+          <div className="flex items-center justify-between text-xs font-bold text-gray-800 dark:text-gray-200">
             <span>{t('Overall Hospital Bag Readiness', 'Overall Hospital Bag Readiness')}:</span>
-            <span className="text-teal-700 font-extrabold">{packedPercent}% {t('Ready', 'Ready')} ({packedItems}/{totalItems} {t('Packed', 'Packed')})</span>
+            <span className="text-teal-700 dark:text-teal-400 font-extrabold">{packedPercent}% {t('Ready', 'Ready')} ({packedItems}/{totalItems} {t('Packed', 'Packed')})</span>
           </div>
-          <div className="w-full bg-white h-3 rounded-full overflow-hidden border border-blush-100">
+          <div className="w-full bg-white dark:bg-muted/40 h-3 rounded-full overflow-hidden border border-blush-100 dark:border-border">
             <div
               className="bg-gradient-to-r from-teal-500 to-emerald-500 h-full rounded-full transition-all duration-500"
               style={{ width: `${packedPercent}%` }}
             />
           </div>
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-gray-500 dark:text-muted-foreground">
             {t('Aim to have both hospital bags zipped and stored near the front door by Week 35-36.', 'Aim to have both hospital bags zipped and stored near the front door by Week 35-36.')}
           </p>
         </div>
 
         {/* Quick Emergency Call Pill */}
-        <div className="shrink-0 p-4 bg-white rounded-2xl border border-rose-200 shadow-xs text-xs space-y-1">
-          <span className="font-bold text-gray-900 block flex items-center gap-1">
+        <div className="shrink-0 p-4 bg-white dark:bg-card rounded-2xl border border-rose-200 dark:border-rose-900/60 shadow-xs text-xs space-y-1">
+          <span className="font-bold text-gray-900 dark:text-foreground block flex items-center gap-1">
             <Phone className="w-3.5 h-3.5 text-rose-500" /> {t('Hospital Labor Triage', 'Hospital Labor Triage')}
           </span>
-          <p className="text-rose-700 font-bold">{profile.doctorInfo.emergencyContact}</p>
-          <p className="text-[10px] text-gray-400">{t('Call when contractions are 5-1-1', 'Call when contractions are 5-1-1')}</p>
+          <p className="text-rose-700 dark:text-rose-400 font-bold">{profile.doctorInfo.emergencyContact}</p>
+          <p className="text-[10px] text-gray-400 dark:text-muted-foreground">{t('Call when contractions are 5-1-1', 'Call when contractions are 5-1-1')}</p>
         </div>
       </div>
 
       {/* Interactive Checklist Section */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
         {/* Category Tabs */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-3">
           <div className="flex items-center gap-2 text-xs">
@@ -205,12 +205,12 @@ export const HospitalChecklistModule: React.FC = () => {
       </div>
 
       {/* Birth Plan Preferences Notepad */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-3">
-        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-          <FileText className="w-5 h-5 text-purple-600" />
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-3">
+        <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
+          <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
           Birth Preferences & Labor Wishes Notes
         </h3>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 dark:text-muted-foreground">
           Document your preferences for labor comfort, companion involvement, pain management, and newborn immediate care. Share these with {profile.doctorInfo.name.startsWith('Dr.') ? profile.doctorInfo.name : `Dr. ${profile.doctorInfo.name}`}.
         </p>
 
@@ -218,11 +218,11 @@ export const HospitalChecklistModule: React.FC = () => {
           rows={5}
           value={birthPlanNotes}
           onChange={e => setBirthPlanNotes(e.target.value)}
-          className="w-full p-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs text-gray-800 leading-relaxed font-mono focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="w-full p-3 bg-gray-50 dark:bg-muted/40 border border-gray-200 dark:border-border rounded-2xl text-xs text-gray-800 dark:text-gray-200 leading-relaxed font-mono focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
 
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-emerald-600 font-bold">
+          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
             {notesSavedNotice ? '✓ Saved and synchronized with Birth Plan preferences!' : ''}
           </span>
           <button

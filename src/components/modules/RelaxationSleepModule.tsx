@@ -200,12 +200,12 @@ export const RelaxationSleepModule: React.FC = () => {
       </div>
 
       {/* Bedtime Guided Sleep Stories */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
         <div className="flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-purple-600" />
-          <h3 className="text-base font-bold text-gray-900">{t('Bedtime Visualizations & Sleep Stories', 'Bedtime Visualizations & Sleep Stories')}</h3>
+          <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <h3 className="text-base font-bold text-gray-900 dark:text-foreground">{t('Bedtime Visualizations & Sleep Stories', 'Bedtime Visualizations & Sleep Stories')}</h3>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 dark:text-muted-foreground">
           {t('Gently narrated visualizations to guide your mind into deep, dreamless restorative delta sleep.', 'Gently narrated visualizations to guide your mind into deep, dreamless restorative delta sleep.')}
         </p>
 
@@ -216,18 +216,18 @@ export const RelaxationSleepModule: React.FC = () => {
               onClick={() => setActiveSleepStory(story)}
               className={`p-5 rounded-2xl border cursor-pointer transition-all space-y-3 ${
                 activeSleepStory.id === story.id
-                  ? 'bg-purple-50/50 border-purple-300'
-                  : 'bg-gray-50 border-gray-200 hover:bg-white'
+                  ? 'bg-purple-50/50 dark:bg-purple-950/30 border-purple-300 dark:border-purple-800'
+                  : 'bg-gray-50 dark:bg-muted/30 border-gray-200 dark:border-border hover:bg-white dark:hover:bg-muted/50'
               }`}
             >
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-gray-900 text-sm">{t(story.title, story.title)}</span>
-                <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[10px] font-bold">
+                <span className="font-bold text-gray-900 dark:text-foreground text-sm">{t(story.title, story.title)}</span>
+                <span className="px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-[10px] font-bold">
                   {t(story.duration, story.duration)}
                 </span>
               </div>
-              <p className="text-xs text-gray-600 leading-relaxed">{t(story.summary, story.summary)}</p>
-              <div className="p-3 bg-white rounded-xl border border-gray-100 text-[11px] text-gray-600 italic leading-relaxed">
+              <p className="text-xs text-gray-600 dark:text-muted-foreground leading-relaxed">{t(story.summary, story.summary)}</p>
+              <div className="p-3 bg-white dark:bg-card/80 rounded-xl border border-gray-100 dark:border-border text-[11px] text-gray-600 dark:text-gray-300 italic leading-relaxed">
                 "{t(story.textSnippet, story.textSnippet)}"
               </div>
             </div>

@@ -111,13 +111,13 @@ export const ExerciseModule: React.FC = () => {
       {/* Interactive Pelvic Floor Kegel Trainer & Walking Counter */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Animated Kegel & Labor Breath Trainer */}
-        <div className="bg-white rounded-3xl p-6 border-2 border-primary/25 shadow-card space-y-4">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border-2 border-primary/25 dark:border-primary/40 shadow-card space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-bold text-gray-900">{t('kegelTitle', 'Pelvic Floor & Kegel Trainer')}</h3>
-              <p className="text-xs text-gray-500">{t('Rhythmic contraction and release coaching', 'Rhythmic contraction and release coaching')}</p>
+              <h3 className="text-base font-bold text-gray-900 dark:text-foreground">{t('kegelTitle', 'Pelvic Floor & Kegel Trainer')}</h3>
+              <p className="text-xs text-gray-500 dark:text-muted-foreground">{t('Rhythmic contraction and release coaching', 'Rhythmic contraction and release coaching')}</p>
             </div>
-            <span className="px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/30 text-xs font-bold">
+            <span className="px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary border border-primary/30 text-xs font-bold">
               {trainerCyclesDone} {t('Reps Completed', 'Reps Completed')}
             </span>
           </div>
@@ -137,7 +137,7 @@ export const ExerciseModule: React.FC = () => {
               </span>
             </div>
 
-            <p className="text-xs font-semibold text-gray-800 mt-4 text-center max-w-sm px-4 py-2 bg-stone-50 rounded-xl border border-stone-200">
+            <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-4 text-center max-w-sm px-4 py-2 bg-stone-50 dark:bg-muted/40 rounded-xl border border-stone-200 dark:border-border">
               {trainerPhase === 'squeeze'
                 ? t('Engage your deep pelvic hammock as if stopping the flow of urine. Do not hold breath.', 'Engage your deep pelvic hammock as if stopping the flow of urine. Do not hold breath.')
                 : t('Allow all muscles to drop and fully relax into your seat. Full release is essential.', 'Allow all muscles to drop and fully relax into your seat. Full release is essential.')}
@@ -159,7 +159,7 @@ export const ExerciseModule: React.FC = () => {
 
             <button
               onClick={resetTrainer}
-              className="p-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 transition-colors cursor-pointer"
+              className="p-2.5 rounded-2xl bg-stone-100 dark:bg-muted hover:bg-stone-200 dark:hover:bg-muted/70 border border-stone-300 dark:border-border text-stone-700 dark:text-gray-200 transition-colors cursor-pointer"
               title={t('Reset', 'Reset')}
             >
               <RotateCcw className="w-4 h-4" />
@@ -168,34 +168,34 @@ export const ExerciseModule: React.FC = () => {
         </div>
 
         {/* Daily Walking Tracker */}
-        <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <Footprints className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-gray-900">{t('Mindful Walking Tracker', 'Mindful Walking Tracker')}</h3>
-              <p className="text-xs text-gray-500">{t('Low-impact cardiovascular conditioning', 'Low-impact cardiovascular conditioning')}</p>
+              <h3 className="text-base font-bold text-gray-900 dark:text-foreground">{t('Mindful Walking Tracker', 'Mindful Walking Tracker')}</h3>
+              <p className="text-xs text-gray-500 dark:text-muted-foreground">{t('Low-impact cardiovascular conditioning', 'Low-impact cardiovascular conditioning')}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-center py-2">
-            <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100">
-              <span className="text-[10px] text-emerald-800 uppercase font-bold">{t('Minutes Walked', 'Minutes Walked')}</span>
-              <div className="text-2xl font-black text-emerald-700 mt-1">{walkingMinutes} min</div>
-              <span className="text-[10px] text-gray-500">{t('Goal: 20-30 mins', 'Goal: 20-30 mins')}</span>
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-100 dark:border-emerald-800">
+              <span className="text-[10px] text-emerald-800 dark:text-emerald-300 uppercase font-bold">{t('Minutes Walked', 'Minutes Walked')}</span>
+              <div className="text-2xl font-black text-emerald-700 dark:text-emerald-400 mt-1">{walkingMinutes} min</div>
+              <span className="text-[10px] text-gray-500 dark:text-muted-foreground">{t('Goal: 20-30 mins', 'Goal: 20-30 mins')}</span>
             </div>
 
-            <div className="p-3 bg-teal-50 rounded-2xl border border-teal-100">
-              <span className="text-[10px] text-teal-800 uppercase font-bold">{t('Estimated Steps', 'Estimated Steps')}</span>
-              <div className="text-2xl font-black text-teal-700 mt-1">{walkingSteps}</div>
-              <span className="text-[10px] text-gray-500">{t('Moderate pace', 'Moderate pace')}</span>
+            <div className="p-3 bg-teal-50 dark:bg-teal-950/30 rounded-2xl border border-teal-100 dark:border-teal-800">
+              <span className="text-[10px] text-teal-800 dark:text-teal-300 uppercase font-bold">{t('Estimated Steps', 'Estimated Steps')}</span>
+              <div className="text-2xl font-black text-teal-700 dark:text-teal-400 mt-1">{walkingSteps}</div>
+              <span className="text-[10px] text-gray-500 dark:text-muted-foreground">{t('Moderate pace', 'Moderate pace')}</span>
             </div>
           </div>
 
           <div className="space-y-3 text-xs">
             <div>
-              <label className="block text-gray-600 font-semibold mb-1">{t('Adjust Duration (Minutes)', 'Adjust Duration (Minutes)')}:</label>
+              <label className="block text-gray-600 dark:text-gray-300 font-semibold mb-1">{t('Adjust Duration (Minutes)', 'Adjust Duration (Minutes)')}:</label>
               <input
                 type="range"
                 min="5"
@@ -222,11 +222,11 @@ export const ExerciseModule: React.FC = () => {
       </div>
 
       {/* Stage-Based Exercise Library */}
-      <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-gray-900">{t('safeExercisesList', 'Pregnancy Exercise Library')}</h3>
-            <p className="text-xs text-gray-500">{t('Filtered for Trimester 2 suitability', 'Filtered for Trimester 2 suitability')}</p>
+            <h3 className="text-base font-bold text-gray-900 dark:text-foreground">{t('safeExercisesList', 'Pregnancy Exercise Library')}</h3>
+            <p className="text-xs text-gray-500 dark:text-muted-foreground">{t('Filtered for Trimester 2 suitability', 'Filtered for Trimester 2 suitability')}</p>
           </div>
 
           <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
@@ -237,7 +237,7 @@ export const ExerciseModule: React.FC = () => {
                 className={`px-3 py-1.5 rounded-xl capitalize font-bold transition-all shrink-0 cursor-pointer ${
                   activeCategory === cat
                     ? 'bg-blush-500 text-white shadow-xs'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-muted/70'
                 }`}
               >
                 {t(cat.replace('-', ' '), cat.replace('-', ' '))}
@@ -254,28 +254,28 @@ export const ExerciseModule: React.FC = () => {
             return (
               <div
                 key={routine.id}
-                className="p-4 bg-gray-50/60 hover:bg-white rounded-2xl border border-gray-200 hover:border-blush-200 transition-all flex flex-col justify-between space-y-3"
+                className="p-4 bg-gray-50/60 dark:bg-muted/30 hover:bg-white dark:hover:bg-card rounded-2xl border border-gray-200 dark:border-border hover:border-blush-200 dark:hover:border-blush-600 transition-all flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="px-2 py-0.5 rounded-md font-bold text-[10px] bg-blush-100 text-blush-800 uppercase">
+                    <span className="px-2 py-0.5 rounded-md font-bold text-[10px] bg-blush-100 dark:bg-blush-950/60 text-blush-800 dark:text-blush-300 uppercase">
                       {t(routine.difficulty, routine.difficulty)}
                     </span>
-                    <span className="text-gray-500 text-[11px] flex items-center gap-1">
+                    <span className="text-gray-500 dark:text-muted-foreground text-[11px] flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {routine.durationMinutes} {t('mins', 'mins')}
                     </span>
                   </div>
 
-                  <h4 className="text-sm font-bold text-gray-900">{t(routine.name, routine.name)}</h4>
-                  <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-foreground">{t(routine.name, routine.name)}</h4>
+                  <p className="text-xs text-gray-600 dark:text-muted-foreground leading-relaxed line-clamp-3">
                     {t(routine.description, routine.description)}
                   </p>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-gray-100">
-                  <div className="text-[11px] text-gray-500 space-y-1">
-                    <p className="font-semibold text-gray-700">{t('Instructions', 'Instructions')}:</p>
+                <div className="space-y-2 pt-2 border-t border-gray-100 dark:border-border">
+                  <div className="text-[11px] text-gray-500 dark:text-muted-foreground space-y-1">
+                    <p className="font-semibold text-gray-700 dark:text-gray-300">{t('Instructions', 'Instructions')}:</p>
                     <p className="italic line-clamp-2">{t(routine.instructions[0], routine.instructions[0])}</p>
                   </div>
 

@@ -621,7 +621,7 @@ export const SettingsModule: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="text-[11px] font-mono px-3 py-1 rounded-xl bg-white border border-border font-bold text-foreground">
+            <div className="text-[11px] font-mono px-3 py-1 rounded-xl bg-white dark:bg-card border border-border font-bold text-foreground">
               EDD: {dueDate}
             </div>
           </div>
