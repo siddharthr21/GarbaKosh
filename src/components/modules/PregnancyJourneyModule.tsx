@@ -63,7 +63,7 @@ export const PregnancyJourneyModule: React.FC = () => {
         </div>
 
         {/* View Mode Toggle Pill */}
-        <div className="flex items-center gap-1.5 p-1.5 bg-muted/60 dark:bg-muted/40 rounded-2xl border border-border self-start md:self-auto shadow-xs">
+        <div className="flex items-center gap-1.5 p-1.5 bg-muted/60 dark:bg-muted/40 rounded-2xl border border-border self-start md:self-auto shadow-xs shrink-0">
           <button
             onClick={() => setViewMode('weeks')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${

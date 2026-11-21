@@ -64,8 +64,8 @@ export const Header: React.FC<HeaderProps> = ({
   const daysLeft = timing.daysRemaining;
 
   return (
-    <header className="sticky top-0 z-30 glass-panel border-b border-border px-3 sm:px-5 lg:px-8 py-2.5 transition-all">
-      <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-7xl mx-auto w-full">
+    <header className="sticky top-0 z-30 glass-panel border-b border-border px-3 sm:px-5 lg:px-6 py-2.5 transition-all w-full">
+      <div className="flex items-center justify-between gap-2 sm:gap-4 w-full">
         {/* Left: Mobile Toggle, Back Button (if on subpage), & Title Breadcrumb */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
@@ -122,22 +122,12 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Section: Compact Language, Role Badge, SOS Emergency & Exit Button */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Quick Onboarding Trigger (Only on extra large screens) */}
-          <button
-            onClick={() => setIsOnboardingOpen(true)}
-            className="hidden 2xl:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-xl hover:bg-muted/50 transition-colors font-medium cursor-pointer tap-bounce"
-            title="Open Setup Wizard"
-          >
-            <Compass className="w-3.5 h-3.5 text-primary" />
-            <span>{t('onboarding')}</span>
-          </button>
-
           {/* Language Selector (Clean & Compact) */}
-          <div className="relative hidden md:flex items-center shrink-0">
+          <div className="relative hidden lg:flex items-center shrink-0">
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="text-xs bg-card hover:bg-muted/40 text-foreground border border-input rounded-xl pl-2.5 pr-6 py-1.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary font-medium appearance-none shadow-2xs max-w-[110px] truncate transition-colors"
+              className="text-xs bg-card hover:bg-muted/40 text-foreground border border-input rounded-xl pl-2.5 pr-6 py-1.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary font-medium appearance-none shadow-2xs max-w-[105px] truncate transition-colors"
               aria-label="Choose Language"
             >
               {SUPPORTED_LANGUAGES.map((lang) => (
@@ -150,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Account Role & Pairing Status Badge */}
-          <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+          <div className="hidden xl:flex items-center gap-1.5 shrink-0">
             <div
               className={`px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border shadow-2xs transition-all ${
                 isMother
@@ -159,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               {isMother ? <UserCheck className="w-3.5 h-3.5 shrink-0" /> : <Users className="w-3.5 h-3.5 shrink-0" />}
-              <span className="hidden xl:inline font-bold">
+              <span className="font-bold">
                 {isMother ? t('mother', 'Mother') : t('partner', 'Partner')}
               </span>
               <span
@@ -175,7 +165,7 @@ export const Header: React.FC<HeaderProps> = ({
             {!isMother && isPaired && (
               <button
                 onClick={() => setIsMotherSharedDashboardOpen(true)}
-                className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-card hover:bg-muted border border-border text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs tap-bounce"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-card hover:bg-muted border border-border text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs tap-bounce"
                 title="View Mother's Shared Dashboard"
               >
                 <span>🌸</span>
