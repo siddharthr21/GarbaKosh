@@ -547,6 +547,9 @@ export const BabyShoppingModule: React.FC = () => {
                       }
                       alt={selectedProductModal.name}
                       className="w-full h-full object-cover transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&auto=format&fit=crop&q=80';
+                      }}
                     />
 
                     {selectedProductModal.discountPercent && selectedProductModal.discountPercent > 0 && (

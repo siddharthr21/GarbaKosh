@@ -69,10 +69,10 @@ export const PostpartumModule: React.FC = () => {
             <CalendarHeart className="w-3.5 h-3.5" />
             <span>{t('The Fourth Trimester Maternal Recovery', 'The Fourth Trimester Maternal Recovery')}</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-foreground">
             {t('postpartumTitle', 'Postpartum Recovery Dashboard')}
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-muted-foreground">
             {t('postpartumSubtitle', 'Nurturing the mother after birth: lochia flow, perineal/incision healing, breastfeeding, sleep, and emotional health.')}
           </p>
         </div>
@@ -82,7 +82,7 @@ export const PostpartumModule: React.FC = () => {
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer ${
             profile.isPostpartum
               ? 'bg-emerald-600 text-white'
-              : 'bg-cream-100 text-gray-700 hover:bg-cream-200 border border-cream-200'
+              : 'bg-cream-100 dark:bg-muted text-gray-700 dark:text-foreground hover:bg-cream-200 dark:hover:bg-muted/80 border border-cream-200 dark:border-border'
           }`}
         >
           <Baby className="w-4 h-4" />
@@ -91,11 +91,11 @@ export const PostpartumModule: React.FC = () => {
       </div>
 
       {/* Emergency Red-Flag Warning Banner for Postpartum Complications */}
-      <div className="p-4 bg-red-50 rounded-3xl border-2 border-red-300 text-xs text-red-950 space-y-1.5 flex items-start gap-3">
-        <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+      <div className="p-4 bg-red-50 dark:bg-red-950/40 rounded-3xl border-2 border-red-300 dark:border-red-900/60 text-xs text-red-950 dark:text-red-200 space-y-1.5 flex items-start gap-3">
+        <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
         <div>
-          <h4 className="font-bold text-red-900 uppercase text-[11px]">{t('Emergency Postpartum Red Flags', 'Emergency Postpartum Red Flags')}:</h4>
-          <p className="text-red-900/90 leading-relaxed">
+          <h4 className="font-bold text-red-900 dark:text-red-300 uppercase text-[11px]">{t('Emergency Postpartum Red Flags', 'Emergency Postpartum Red Flags')}:</h4>
+          <p className="text-red-900/90 dark:text-red-200/90 leading-relaxed">
             {t('Seek immediate emergency care (112 / 911 / 108) if you experience: Heavy vaginal bleeding, severe chest pain or shortness of breath, persistent severe headache, or fever.', 'Seek immediate emergency care (112 / 911 / 108) if you experience: Heavy vaginal bleeding (soaking a pad in 1 hour), severe chest pain or shortness of breath, persistent severe headache with visual disturbances, fever over 38°C, or thoughts of harming yourself or baby.')}
           </p>
         </div>
@@ -103,8 +103,8 @@ export const PostpartumModule: React.FC = () => {
 
       {/* Daily Postpartum Check-in Form */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-4">
+          <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
             <Heart className="w-4 h-4 text-rose-500" />
             {t('Daily Maternal Recovery Log', 'Daily Maternal Recovery Log')}
           </h3>
@@ -216,30 +216,30 @@ export const PostpartumModule: React.FC = () => {
 
         {/* Postpartum Timeline & Education */}
         <div className="space-y-4">
-          <div className="bg-white rounded-3xl p-6 border border-blush-100 shadow-sm space-y-3">
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-purple-600" />
+          <div className="bg-white dark:bg-card rounded-3xl p-6 border border-blush-100 dark:border-border shadow-sm space-y-3">
+            <h3 className="text-base font-bold text-gray-900 dark:text-foreground flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               {t('The 6-Week Recovery Milestones', 'The 6-Week Recovery Milestones')}
             </h3>
 
             <div className="space-y-2.5 text-xs">
-              <div className="p-3 bg-purple-50/60 rounded-xl border border-purple-100 space-y-1">
-                <span className="font-bold text-purple-900">{t('Days 1 - 7: Immediate Involution', 'Days 1 - 7: Immediate Involution')}</span>
-                <p className="text-purple-800 leading-relaxed">
+              <div className="p-3 bg-purple-50/60 dark:bg-purple-950/30 rounded-xl border border-purple-100 dark:border-purple-900/40 space-y-1">
+                <span className="font-bold text-purple-900 dark:text-purple-300">{t('Days 1 - 7: Immediate Involution', 'Days 1 - 7: Immediate Involution')}</span>
+                <p className="text-purple-800 dark:text-purple-200/90 leading-relaxed">
                   {t('Uterus contracts back toward pelvic bone with cramp-like afterpains (encouraged by breastfeeding oxytocin). Colostrum transitions to mature milk around day 3-5.', 'Uterus contracts back toward pelvic bone with cramp-like afterpains (encouraged by breastfeeding oxytocin). Colostrum transitions to mature milk around day 3-5.')}
                 </p>
               </div>
 
-              <div className="p-3 bg-rose-50/60 rounded-xl border border-rose-100 space-y-1">
-                <span className="font-bold text-rose-900">{t('Weeks 2 - 4: Healing & Gentle Rhythm', 'Weeks 2 - 4: Healing & Gentle Rhythm')}</span>
-                <p className="text-rose-800 leading-relaxed">
+              <div className="p-3 bg-rose-50/60 dark:bg-rose-950/30 rounded-xl border border-rose-100 dark:border-rose-900/40 space-y-1">
+                <span className="font-bold text-rose-900 dark:text-rose-300">{t('Weeks 2 - 4: Healing & Gentle Rhythm', 'Weeks 2 - 4: Healing & Gentle Rhythm')}</span>
+                <p className="text-rose-800 dark:text-rose-200/90 leading-relaxed">
                   {t('Lochia lightens from bright red (rubra) to pinkish-yellow (serosa/alba). Rest is non-negotiable: limit stairs and heavy lifting.', 'Lochia lightens from bright red (rubra) to pinkish-yellow (serosa/alba). Rest is non-negotiable: limit stairs and heavy lifting.')}
                 </p>
               </div>
 
-              <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-100 space-y-1">
-                <span className="font-bold text-teal-900">{t('Week 6: Postpartum Clinical Checkup', 'Week 6: Postpartum Clinical Checkup')}</span>
-                <p className="text-teal-800 leading-relaxed">
+              <div className="p-3 bg-teal-50/60 dark:bg-teal-950/30 rounded-xl border border-teal-100 dark:border-teal-900/40 space-y-1">
+                <span className="font-bold text-teal-900 dark:text-teal-300">{t('Week 6: Postpartum Clinical Checkup', 'Week 6: Postpartum Clinical Checkup')}</span>
+                <p className="text-teal-800 dark:text-teal-200/90 leading-relaxed">
                   {t('Doctor evaluates cervical closure, pelvic floor tone, perineal/incision healing, mental health screening, and contraceptive planning.', 'Doctor evaluates cervical closure, pelvic floor tone, perineal/incision healing, mental health screening, and contraceptive planning.')}
                 </p>
               </div>

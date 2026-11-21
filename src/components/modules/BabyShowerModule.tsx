@@ -93,7 +93,9 @@ export const BabyShowerModule: React.FC = () => {
 
   const copyInviteText = () => {
     const text = `🌸 Join us in celebrating our baby shower / Godh Bharai! 🌸\nHonoring: ${profile.name} & ${profile.partnerProfile?.name || 'Rohan'}\nDate: ${babyShower.eventDate}\nVenue: ${babyShower.venue}\nTheme: ${babyShower.theme}\nRSVP via GarbhSarthi!`;
-    navigator.clipboard.writeText(text);
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
     setCopiedInvite(true);
     setTimeout(() => setCopiedInvite(false), 2000);
   };

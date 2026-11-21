@@ -46,6 +46,13 @@ export const RelaxationSleepModule: React.FC = () => {
     audioSynth.setVolume(newVol);
   };
 
+  // Stop audio playback when leaving module
+  useEffect(() => {
+    return () => {
+      audioSynth.stop();
+    };
+  }, []);
+
   // Sleep timer effect
   useEffect(() => {
     let timer: any = null;
@@ -54,7 +61,6 @@ export const RelaxationSleepModule: React.FC = () => {
         audioSynth.stop();
         setIsPlaying(false);
         setSleepTimerMinutes(null);
-        alert('Sleep timer completed. Sweet dreams! 🌙');
       }, sleepTimerMinutes * 60 * 1000);
     }
     return () => clearTimeout(timer);

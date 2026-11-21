@@ -122,7 +122,9 @@ export const PartnerSpaceModule: React.FC<{ onNavigateTab?: (tab: string) => voi
   };
 
   const copyCode = (codeToCopy: string) => {
-    navigator.clipboard.writeText(codeToCopy);
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(codeToCopy).catch(() => {});
+    }
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };

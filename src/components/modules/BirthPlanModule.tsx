@@ -24,7 +24,9 @@ export const BirthPlanModule: React.FC = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
   };
 
   const handleSave = () => {

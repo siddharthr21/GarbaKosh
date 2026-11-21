@@ -44,7 +44,9 @@ export const HospitalChecklistModule: React.FC = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
   };
 
   const totalItems = hospitalChecklist.length;

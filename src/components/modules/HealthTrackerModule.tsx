@@ -48,7 +48,13 @@ export const HealthTrackerModule: React.FC = () => {
   const [showAddReminder, setShowAddReminder] = useState(false);
   const [remTitle, setRemTitle] = useState('');
   const [remCategory, setRemCategory] = useState<any>('doctor');
-  const [remDate, setRemDate] = useState('2026-11-15');
+  const [remDate, setRemDate] = useState(() => {
+    try {
+      return new Date().toISOString().split('T')[0];
+    } catch {
+      return '2026-11-21';
+    }
+  });
   const [remTime, setRemTime] = useState('10:00 AM');
   const [remDoctor, setRemDoctor] = useState('');
 

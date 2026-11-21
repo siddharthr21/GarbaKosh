@@ -479,7 +479,7 @@ export const NutritionModule: React.FC = () => {
                 <button
                   onClick={() => {
                     if (meals.length === 0) return;
-                    if (window.confirm(t("Reset today's meal diary? All logged food items will be cleared.", "Reset today's meal diary? All logged food items will be cleared."))) {
+                    if (typeof window !== 'undefined' && window.confirm(t("Reset today's meal diary? All logged food items will be cleared.", "Reset today's meal diary? All logged food items will be cleared."))) {
                       resetMeals();
                     }
                   }}

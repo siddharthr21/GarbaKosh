@@ -143,7 +143,9 @@ export const SettingsModule: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const copyCode = () => {
-    navigator.clipboard.writeText(mySecurityCode);
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(mySecurityCode).catch(() => {});
+    }
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
