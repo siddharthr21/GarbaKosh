@@ -87,17 +87,17 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={() => onNavigateTab('dashboard')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card hover:bg-muted/80 border border-border text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs shrink-0 tap-bounce hover-card-lift"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-card hover:bg-muted/80 border border-border text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs shrink-0 tap-bounce hover-card-lift"
               title="Return to Home Dashboard"
             >
               <ArrowLeft className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-bold">{t('homeDashboard', 'Dashboard')}</span>
+              <span className="hidden sm:inline text-xs font-bold">{t('homeDashboard', 'Dashboard')}</span>
             </button>
           )}
 
           <div className="hidden sm:flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <h2 className="text-xs sm:text-sm font-serif font-bold text-foreground capitalize truncate max-w-[130px] md:max-w-none tracking-tight">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+            <h2 className="text-xs sm:text-sm font-serif font-bold text-foreground capitalize truncate max-w-[150px] lg:max-w-none tracking-tight">
               {t(activeTab, activeTab)}
             </h2>
           </div>

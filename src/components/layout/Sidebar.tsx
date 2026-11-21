@@ -249,27 +249,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* Language Selector */}
-        <div className="px-3 py-1.5 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40 shrink-0">
-          <div className="flex items-center gap-1.5 font-medium">
-            <Globe className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[11px]">{t('language', 'Language')}</span>
-          </div>
-          <select
-            value={selectedLanguage}
-            onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="text-[11px] bg-card hover:bg-muted/40 text-foreground border border-input rounded-lg px-2 py-0.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary font-medium"
-            aria-label="Choose Language"
-          >
-            {SUPPORTED_LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code}>
-                {lang.native}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Bottom User Card (Exact match to photo: s siri / Mother with Live Toggle) */}
+        {/* Bottom User Card (Caregiver & Profile Info) */}
         <div className="p-3 mx-2 mb-2 border-t border-border flex flex-col gap-2 bg-muted/20 rounded-2xl shrink-0">
           <div className="flex items-center justify-between">
             <div
@@ -280,7 +260,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {profile.name.charAt(0).toUpperCase()}
               </div>
               <div className="overflow-hidden">
-                <p className="text-xs font-bold text-foreground truncate">{profile.name.toLowerCase()}</p>
+                <p className="text-xs font-bold text-foreground truncate">{profile.name}</p>
                 <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground capitalize">
                   <span>{activeRole === 'mother' ? t('mother') : t('partner')}</span>
                   <span>·</span>
